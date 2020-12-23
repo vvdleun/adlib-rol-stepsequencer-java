@@ -2,6 +2,7 @@ package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -9,8 +10,10 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 public class ChannelTests {
-	private static NoteEvent SOME_NOTE_EVENT = new NoteEvent(100, 1);
-	private static NoteEvent OTHER_NOTE_EVENT = new NoteEvent(200, 1);
+	private static final int SOME_NOTE = 100;
+	private static final int OTHER_NOTE = 200;
+	private static NoteEvent SOME_NOTE_EVENT = new NoteEvent(SOME_NOTE, 1);
+	private static NoteEvent OTHER_NOTE_EVENT = new NoteEvent(OTHER_NOTE, 1);
 	
 	private final Channel channel = new Channel();
 
@@ -31,6 +34,9 @@ public class ChannelTests {
 		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
 		assertEquals(SOME_NOTE_EVENT, channelEvents.getNote());
+		assertNull(channelEvents.getInstrument());
+		assertNull(channelEvents.getPitch());
+		assertNull(channelEvents.getVolume());
 	}
 
 	@Test
@@ -44,6 +50,7 @@ public class ChannelTests {
 		assertEquals("PIANO1", channelEvents.getInstrument());
 		assertEquals(1.0f, channelEvents.getPitch());
 		assertEquals(0.75f, channelEvents.getVolume());
+		assertNull(channelEvents.getNote());
 	}
 	
 	@Test
@@ -63,11 +70,90 @@ public class ChannelTests {
 	
 	@Test
 	public void shouldOnlyReturnNoteEventIfNoteStartsAtSpecifiedTick() {
-		channel.addNoteEvent(0, new NoteEvent(100, 10)); // Spans ticks 0 to 9
+		channel.addNoteEvent(0, new NoteEvent(100, 10));
 		
-		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
+		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(10);
 		
 		assertNull(channelEventsAtTick1.getNote());
+	}
+
+	@Test
+	public void shouldAddNonOverlappingNotes() {
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 1)); // Spans tick 0
+		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 2)); // Spans tick 1 and 2
+		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 3)); // Spans tick 3, 4 and 5
+		
+		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
+		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
+		
+		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
+		NoteEvent noteEventAtTick1 = channelEventsAtTick1.getNote();
+		NoteEvent noteEventAtTick3 = channelEventsAtTick3.getNote();
+		
+		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
+		assertEquals(1, noteEventAtTick0.getDuration());
+
+		assertEquals(SOME_NOTE, noteEventAtTick1.getNote());
+		assertEquals(2, noteEventAtTick1.getDuration());
+
+		assertEquals(SOME_NOTE, noteEventAtTick3.getNote());
+		assertEquals(3, noteEventAtTick3.getDuration());
+	}
+	
+	@Test
+	public void shouldShortenOverlappingNotePrecedingAddedNote() {
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans tick 0, 1, 2
+		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1));
+
+		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		ChannelEvents channelEventsAtTick2 = channel.getEventsAtTick(2);
+
+		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
+		NoteEvent noteEventAtTick2 = channelEventsAtTick2.getNote();
+		
+		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
+		// Note should be shortened from 3 to 2, to make room for the new note
+		assertEquals(2, noteEventAtTick0.getDuration());
+
+		assertEquals(SOME_NOTE, noteEventAtTick2.getNote());
+		assertEquals(1, noteEventAtTick2.getDuration());
+	}
+	
+	@Test
+	public void shouldDeleteOverlappingNotesFollowingIt() {
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 1));
+		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 1));
+		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1));
+		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 1));
+		
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans ticks 0, 1 and 2
+
+		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
+
+		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
+		NoteEvent noteEventAtTick3 = channelEventsAtTick3.getNote();
+
+		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
+		assertEquals(3, noteEventAtTick0.getDuration());
+
+		assertEquals(SOME_NOTE, noteEventAtTick3.getNote());
+		assertEquals(1, noteEventAtTick3.getDuration());
+	}
+	
+	@Test
+	public void shouldThrowWhenAddingNotesWithNoDuration() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			channel.addNoteEvent(30, new NoteEvent(SOME_NOTE, 0));
+		});
+	}
+
+	@Test
+	public void shouldThrowWhenAddingNotesOnTickSmallerThanZero() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			channel.addNoteEvent(-1, new NoteEvent(SOME_NOTE, 10));
+		});
 	}
 	
 	@Test
@@ -85,7 +171,7 @@ public class ChannelTests {
 		channel.addNoteEvent(2, OTHER_NOTE_EVENT);
 		channel.addVolumeEvent(2, 1.0f);
 
-		Set<TickChannelEvents> allEventsSet = channel.getEvents();
+		Set<TickChannelEvents> allEventsSet = channel.getAllEvents();
 
 		assertEquals(4, allEventsSet.size());
 		

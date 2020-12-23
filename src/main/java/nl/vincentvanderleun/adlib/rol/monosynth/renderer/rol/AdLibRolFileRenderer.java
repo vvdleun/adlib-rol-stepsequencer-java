@@ -59,7 +59,4 @@ public class AdLibRolFileRenderer {
 	private void writeChannelTracks(Song song) throws IOException {
 		
 	}
-	
-	
-	
 }

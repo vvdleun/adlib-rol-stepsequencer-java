@@ -2,40 +2,72 @@ package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NavigableMap;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Channel {
-	private final MonophonicNoteEvents notes;
-	// Note that "otherEvents" does not store note events, but hides this fact for the consumer
-	// by returning the note in each and every returned ChannelEvents instance.
+	// Note that "otherEvents" does not store note and instrument events, but hides
+	// this fact for the consumer by returning the note in each and every returned ChannelEvents instance.
+	private final NavigableMap<Integer, NoteEvent> notes;
 	private final Map<Integer, ChannelEvents> otherEvents;
 	
 	public Channel() {
-		this.notes = new MonophonicNoteEvents();
+		this.notes = new TreeMap<>();
 		this.otherEvents = new HashMap<>();
 	}
 
 	public void addNoteEvent(int tick, NoteEvent note) {
-		notes.placeNote(tick, note);
+		// Some sanity checks
+		validateTick(tick);
+		if(note.getDuration() == 0) {
+			throw new IllegalArgumentException("Note duration must be > 0");
+		}
+		
+		// Overlapping with an earlier note? That note will be shortened then.
+		final Entry<Integer, NoteEvent> lowerEntry = notes.lowerEntry(tick);
+		if(lowerEntry != null && getNoteEnd(lowerEntry) >= tick) {
+			int newDuration = tick - lowerEntry.getKey();
+			lowerEntry.getValue().setDuration(newDuration);
+		}
+		
+		notes.put(tick, note);
+		
+		// Delete remaining overlapping notes
+		Entry<Integer, NoteEvent> nextHigherEntry = notes.higherEntry(tick);
+		while(nextHigherEntry != null && nextHigherEntry.getKey() < tick + note.getDuration()) {
+			notes.remove(nextHigherEntry.getKey());
+			nextHigherEntry = notes.higherEntry(tick);
+		}
 	}
 	
+	private int getNoteEnd(Entry<Integer, NoteEvent> noteStart) {
+		return noteStart.getKey() + noteStart.getValue().getDuration() - 1;
+	}
+
 	public void addInstrumentEvent(int tick, String instrument) {
+		validateTick(tick);
+
 		ChannelEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
 		otherEvent.setInstrument(instrument);
 	}
 
 	public void addVolumeEvent(int tick, float volume) {
+		validateTick(tick);
+
 		ChannelEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
 		otherEvent.setVolume(volume);
 	}
 
 	public void addPitchEvent(int tick, float pitch) {
+		validateTick(tick);
+
 		ChannelEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
 		otherEvent.setPitch(pitch);
 	}
@@ -44,28 +76,37 @@ public class Channel {
 		return otherEvents.computeIfAbsent(tick, (key) -> ChannelEvents.empty());
 	}
 
+	private void validateTick(int tick) {
+		if(tick < 0 || tick > 65535) {
+			throw new IllegalArgumentException("Tick must be between 0 and 65535 (both inclusive)");
+		}
+	}
+
 	public ChannelEvents getEventsAtTick(int tick) {
-		Optional<NoteEvent> noteEvent = notes.getNoteThatStartsAt(tick);
-		ChannelEvents otherEvents = this.otherEvents.get(tick);
-		
-		if(noteEvent.isEmpty() && otherEvents == null) {
+		final NoteEvent noteEvent = notes.get(tick);
+		final ChannelEvents otherEvents = this.otherEvents.get(tick);
+
+		if(noteEvent == null && otherEvents == null) {
 			return new ChannelEvents(null, null, null, null);
 		}
-		
+
 		return new ChannelEvents(
-				noteEvent.orElse(null),
+				noteEvent,
 				otherEvents != null ? otherEvents.getInstrument() : null,
 				otherEvents != null ? otherEvents.getVolume() : null,
 				otherEvents != null ? otherEvents.getPitch() : null);
 	}
 
-	public Set<TickChannelEvents> getEvents() {
-		// TODO would be more efficient if the inputs would be Stream<Map<...>.Entry<Integer, NoteEvent>>
-		// and Stream<Map<...>.Entry<Integer, ChannelEvents>>
-		Stream<TickChannelEvents> streamNoteEvents = notes.streamNotes();
+	public Set<TickChannelEvents> getAllEvents() {
+		Stream<TickChannelEvents> streamNoteEvents = notes.entrySet().stream()
+				.map((entry) -> new TickChannelEvents(
+						entry.getKey(),
+						ChannelEvents.fromNote(entry.getValue())));
 
 		Stream<TickChannelEvents> streamOtherEvents = otherEvents.entrySet().stream()
-				.map((entry) -> new TickChannelEvents(entry.getKey(), entry.getValue()));
+				.map((entry) -> new TickChannelEvents(
+						entry.getKey(),
+						entry.getValue()));
 		
 		return Stream.concat(streamNoteEvents, streamOtherEvents)
 				.collect(
