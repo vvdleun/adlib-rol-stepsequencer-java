@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
+package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
 
 import java.util.Map;
 import java.util.Map.Entry;

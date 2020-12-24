@@ -1,20 +1,22 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
+package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
 
 import java.util.Objects;
 
 public class ChannelEvents implements Comparable<ChannelEvents> {
 	private final int tick;
+	private final Integer channel;
 	private final NoteEvent note;
 	private final String instrument;
 	private final Float volume;
 	private final Float pitch;
 
-	public static ChannelEvents from(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
-		return new ChannelEvents(tick, noteEvent, instrument, volume, pitch);
+	public static ChannelEvents fromAllEvents(int channel, int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+		return new ChannelEvents(channel, tick, noteEvent, instrument, volume, pitch);
 	}
 	
-	public static ChannelEvents fromNoteEvenOnly(int tick, NoteEvent noteEvent) {
+	public static ChannelEvents fromNoteEvenOnly(int channel, int tick, NoteEvent noteEvent) {
 		return new ChannelEvents(
+				channel,
 				tick,						// Tick
 				noteEvent,					// Note event
 				null,						// Instrument
@@ -22,8 +24,9 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 				null);						// Pitch
 	}
 
-	public static ChannelEvents fromInstrumentOnly(int tick, String instrument) {
+	public static ChannelEvents fromInstrumentOnly(int channel, int tick, String instrument) {
 		return new ChannelEvents(
+				channel,
 				tick,						// Tick
 				null,						// Note event
 				instrument,					// Instrument
@@ -31,8 +34,9 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 				null);						// Pitch		
 	}
 
-	public static ChannelEvents fromVolumeOnly(int tick, float volume) {
+	public static ChannelEvents fromVolumeOnly(int channel, int tick, float volume) {
 		return new ChannelEvents(
+				channel,
 				tick,						// Tick
 				null,						// Note event
 				null,						// Instrument
@@ -40,8 +44,9 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 				null);						// Pitch		
 	}
 
-	public static ChannelEvents fromPitchOnly(int tick, float pitch) {
+	public static ChannelEvents fromPitchOnly(int channel, int tick, float pitch) {
 		return new ChannelEvents(
+				channel,
 				tick,						// Tick
 				null,						// Note event
 				null,						// Instrument
@@ -49,7 +54,8 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 				pitch);						// Pitch		
 	}
 
-	private ChannelEvents(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+	private ChannelEvents(int channel, int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+		this.channel = channel;
 		this.tick = tick;
 		this.note = noteEvent;
 		this.instrument = instrument;
@@ -67,6 +73,10 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 		return 0;
 	}
 
+	public int getChannel() {
+		return channel;
+	}
+	
 	public int getTick() {
 		return tick;
 	}
@@ -89,7 +99,7 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(instrument, note, pitch, tick, volume);
+		return Objects.hash(channel, instrument, note, pitch, tick, volume);
 	}
 
 	@Override
@@ -101,13 +111,14 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 		if (getClass() != obj.getClass())
 			return false;
 		ChannelEvents other = (ChannelEvents) obj;
-		return Objects.equals(instrument, other.instrument) && Objects.equals(note, other.note)
-				&& Objects.equals(pitch, other.pitch) && tick == other.tick && Objects.equals(volume, other.volume);
+		return Objects.equals(channel, other.channel) && Objects.equals(instrument, other.instrument)
+				&& Objects.equals(note, other.note) && Objects.equals(pitch, other.pitch) && tick == other.tick
+				&& Objects.equals(volume, other.volume);
 	}
 
 	@Override
 	public String toString() {
-		return "TickChannelEvents [tick=" + tick + ", note=" + note + ", instrument=" + instrument + ", volume="
-				+ volume + ", pitch=" + pitch + "]";
+		return "ChannelEvents [tick=" + tick + ", channel=" + channel + ", note=" + note + ", instrument=" + instrument
+				+ ", volume=" + volume + ", pitch=" + pitch + "]";
 	}
 }

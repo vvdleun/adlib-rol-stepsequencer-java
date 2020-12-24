@@ -1,6 +1,7 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
+package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
 
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -10,24 +11,25 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class aims to make it convenient to work with channel-based ROL events. It tries to fix conflicting
- * events (for example: when placing a note that overlaps with other notes, it will shorten the note that
- * preceded the note and delete conflicting notes that succeed it). For non-note events, it won't add events
- * if it sees that exactly the same event preceded it and/or will delete events succeeding it, if those are
- * exactly the same. It tries hard to create normalized collection of events, with no redundant events where possible.
+ * This class aims to make it convenient to work with channel-based ROL events. It tries to automatically fix conflicting
+ * events (for example: when placing a note that overlaps with other notes, it will shorten the note that preceded the note
+ * and delete conflicting notes that succeed it). For non-note events, it won't add events if it sees that exactly the same
+ * event preceded it and/or will delete the event succeeding it, if it were duplicates. It tries hard to create normalized
+ * collection of events, with no redundant events where possible.
  * 
  * It's heavily opinionated and should ideally have some configurable behavior. 
  *
  * @author Vincent
- *
  */
 public class Channel {
+	private final int channel;
 	private final NavigableMap<Integer, NoteEvent> notes;
 	private final NormalizedEvents<String> instruments;
 	private final NormalizedEvents<Float> volumes;
 	private final NormalizedEvents<Float> pitches;
 	
-	public Channel() {
+	public Channel(int channel) {
+		this.channel = channel;
 		this.notes = new TreeMap<>();
 		this.instruments = new NormalizedEvents<>();
 		this.volumes = new NormalizedEvents<>();
@@ -95,23 +97,27 @@ public class Channel {
 		final Float volume = volumes.get(tick);
 		final Float pitch = pitches.get(tick);
 
-		return ChannelEvents.from(tick, noteEvent, instrument, volume, pitch);
+		return ChannelEvents.fromAllEvents(channel, tick, noteEvent, instrument, volume, pitch);
 	}
 
 	public Set<ChannelEvents> getAllEvents() {
 		Stream<ChannelEvents> streamNoteEvents = notes.entrySet().stream()
-				.map((entry) -> ChannelEvents.fromNoteEvenOnly(entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromNoteEvenOnly(channel, entry.getKey(), entry.getValue()));
 
 		Stream<ChannelEvents> streamInstrumentEvents = instruments.getMap().entrySet().stream()
-				.map((entry) -> ChannelEvents.fromInstrumentOnly(entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromInstrumentOnly(channel, entry.getKey(), entry.getValue()));
 
 		Stream<ChannelEvents> streamVolumeEvents = volumes.getMap().entrySet().stream()
-				.map((entry) -> ChannelEvents.fromVolumeOnly(entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromVolumeOnly(channel, entry.getKey(), entry.getValue()));
 
 		Stream<ChannelEvents> streamPitchEvents = pitches.getMap().entrySet().stream()
-				.map((entry) -> ChannelEvents.fromPitchOnly(entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromPitchOnly(channel, entry.getKey(), entry.getValue()));
 		
-		return Stream.of(streamNoteEvents, streamInstrumentEvents, streamVolumeEvents, streamPitchEvents)
+		return Stream.of(
+						streamNoteEvents,
+						streamInstrumentEvents,
+						streamVolumeEvents,
+						streamPitchEvents)
 				.flatMap(events -> events)
 				.collect(
 						Collectors.collectingAndThen(
@@ -123,11 +129,36 @@ public class Channel {
 	}
 	
 	private ChannelEvents mergeNoteAndOtherEvents(ChannelEvents event1, ChannelEvents event2) {
-		return ChannelEvents.from(
+		return ChannelEvents.fromAllEvents(
+				channel,
 				event1.getTick(),
 				event1.getNote() != null ? event1.getNote() : event2.getNote(),
 				event1.getInstrument() != null ? event1.getInstrument() : event2.getInstrument(),
 				event1.getVolume() != null ? event1.getVolume() : event2.getVolume(),
 				event1.getPitch() != null ? event1.getPitch() : event2.getPitch());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(instruments, notes, pitches, volumes);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Channel other = (Channel) obj;
+		return Objects.equals(instruments, other.instruments) && Objects.equals(notes, other.notes)
+				&& Objects.equals(pitches, other.pitches) && Objects.equals(volumes, other.volumes);
+	}
+
+	@Override
+	public String toString() {
+		return "Channel [notes=" + notes + ", instruments=" + instruments + ", volumes=" + volumes + ", pitches="
+				+ pitches + "]";
 	}
 }

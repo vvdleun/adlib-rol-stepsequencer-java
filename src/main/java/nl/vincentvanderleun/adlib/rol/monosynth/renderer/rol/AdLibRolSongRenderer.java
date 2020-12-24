@@ -7,17 +7,17 @@ import nl.vincentvanderleun.adlib.rol.monosynth.song.Song;
 import nl.vincentvanderleun.adlib.rol.monosynth.song.SongMode;
 import nl.vincentvanderleun.dos.io.DosBinaryFileWriter;
 
-public class AdLibRolFileRenderer {
+public class AdLibRolSongRenderer {
 	private final DosBinaryFileWriter writer;
 	
-	public AdLibRolFileRenderer(OutputStream outputStream) {
+	public AdLibRolSongRenderer(OutputStream outputStream) {
 		writer = new DosBinaryFileWriter(outputStream);
 	}
 	
 	public void renderRolFile(Song song) throws IOException {
-		RolEventConverter rolEventConverter = new RolEventConverter(song);
+		SongToRolEventsConverter songToRolConverter = new SongToRolEventsConverter(song);
 		
-		rolEventConverter.convertEvents();
+		songToRolConverter.convertToNormalizedRolEvents();
 		
 		writeHeader(song);
 		writeTempoTrack(song);

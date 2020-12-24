@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
+package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -9,13 +9,16 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.Channel;
+
 public class ChannelTests {
+	private static final int CHANNEL = 0;
 	private static final int SOME_NOTE = 100;
 	private static final int OTHER_NOTE = 200;
 	private static NoteEvent SOME_NOTE_EVENT = new NoteEvent(SOME_NOTE, 1);
 	private static NoteEvent OTHER_NOTE_EVENT = new NoteEvent(OTHER_NOTE, 1);
 	
-	private final Channel channel = new Channel();
+	private final Channel channel = new Channel(CHANNEL);
 
 	@Test
 	public void shouldReturnEmptyEventWhenThereAreNoEventsAddedToTheTick() {
@@ -189,10 +192,10 @@ public class ChannelTests {
 		
 		var allEvents = new ArrayList<>(allEventsSet);
 		
-		assertEquals(ChannelEvents.fromInstrumentOnly(0, "PIANO1"), allEvents.get(0));
-		assertEquals(ChannelEvents.fromNoteEvenOnly(1, SOME_NOTE_EVENT), allEvents.get(1));
+		assertEquals(ChannelEvents.fromInstrumentOnly(CHANNEL, 0, "PIANO1"), allEvents.get(0));
+		assertEquals(ChannelEvents.fromNoteEvenOnly(CHANNEL, 1, SOME_NOTE_EVENT), allEvents.get(1));
 		assertEquals(createNoteAndVolumeEvent(2, OTHER_NOTE_EVENT, 1.0f), allEvents.get(2));
-		assertEquals(ChannelEvents.from(3, OTHER_NOTE_EVENT, "PIANO2", 0.75f, 2.0f), allEvents.get(3));
+		assertEquals(ChannelEvents.fromAllEvents(CHANNEL, 3, OTHER_NOTE_EVENT, "PIANO2", 0.75f, 2.0f), allEvents.get(3));
 	}
 	
 	@Test
@@ -204,7 +207,7 @@ public class ChannelTests {
 
 		assertEquals(1, allEventsSet.size());
 		
-		assertEquals(ChannelEvents.fromInstrumentOnly(10, "PIANO1"), allEventsSet.iterator().next());
+		assertEquals(ChannelEvents.fromInstrumentOnly(CHANNEL, 10, "PIANO1"), allEventsSet.iterator().next());
 	}
 
 	@Test
@@ -216,7 +219,7 @@ public class ChannelTests {
 
 		assertEquals(1, allEventsSet.size());
 		
-		assertEquals(ChannelEvents.fromInstrumentOnly(10, "PIANO1"), allEventsSet.iterator().next());
+		assertEquals(ChannelEvents.fromInstrumentOnly(CHANNEL, 10, "PIANO1"), allEventsSet.iterator().next());
 	}
 
 	@Test
@@ -228,7 +231,7 @@ public class ChannelTests {
 
 		assertEquals(1, allEventsSet.size());
 		
-		assertEquals(ChannelEvents.fromVolumeOnly(10, 1.23f), allEventsSet.iterator().next());
+		assertEquals(ChannelEvents.fromVolumeOnly(CHANNEL, 10, 1.23f), allEventsSet.iterator().next());
 	}
 
 	@Test
@@ -240,7 +243,7 @@ public class ChannelTests {
 
 		assertEquals(1, allEventsSet.size());
 		
-		assertEquals(ChannelEvents.fromVolumeOnly(10, 1.23f), allEventsSet.iterator().next());
+		assertEquals(ChannelEvents.fromVolumeOnly(CHANNEL, 10, 1.23f), allEventsSet.iterator().next());
 	}
 
 	@Test
@@ -252,7 +255,7 @@ public class ChannelTests {
 
 		assertEquals(1, allEventsSet.size());
 		
-		assertEquals(ChannelEvents.fromPitchOnly(10, 13.37f), allEventsSet.iterator().next());
+		assertEquals(ChannelEvents.fromPitchOnly(CHANNEL, 10, 13.37f), allEventsSet.iterator().next());
 	}
 
 	@Test
@@ -264,11 +267,11 @@ public class ChannelTests {
 
 		assertEquals(1, allEventsSet.size());
 		
-		assertEquals(ChannelEvents.fromPitchOnly(10, 13.37f), allEventsSet.iterator().next());
+		assertEquals(ChannelEvents.fromPitchOnly(CHANNEL, 10, 13.37f), allEventsSet.iterator().next());
 	}
 
 	private ChannelEvents createNoteAndVolumeEvent(int tick, NoteEvent noteEvent, Float volume) {
-		return ChannelEvents.from(tick, noteEvent, null, volume, null);
+		return ChannelEvents.fromAllEvents(CHANNEL, tick, noteEvent, null, volume, null);
 	}
 }
 
