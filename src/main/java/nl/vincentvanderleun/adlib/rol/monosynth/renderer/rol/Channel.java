@@ -12,11 +12,17 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class makes it very convenient to work with channel-based ROL events, especially notes,
+ * as it automatically shortens notes that overlap with newly added notes and delete notes that
+ * overlap that were placed after the start tick.
+ *
+ * @author Vincent
+ *
+ */
 public class Channel {
-	// Note that "otherEvents" does not store note and instrument events, but hides
-	// this fact for the consumer by returning the note in each and every returned ChannelEvents instance.
 	private final NavigableMap<Integer, NoteEvent> notes;
-	private final Map<Integer, ChannelEvents> otherEvents;
+	private final Map<Integer, OtherEvents> otherEvents;	// OtherEvents is private class defined below
 	
 	public Channel() {
 		this.notes = new TreeMap<>();
@@ -54,26 +60,26 @@ public class Channel {
 	public void addInstrumentEvent(int tick, String instrument) {
 		validateTick(tick);
 
-		ChannelEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
-		otherEvent.setInstrument(instrument);
+		OtherEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
+		otherEvent.instrument = instrument;
 	}
 
 	public void addVolumeEvent(int tick, float volume) {
 		validateTick(tick);
 
-		ChannelEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
-		otherEvent.setVolume(volume);
+		OtherEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
+		otherEvent.volume = volume;
 	}
 
 	public void addPitchEvent(int tick, float pitch) {
 		validateTick(tick);
 
-		ChannelEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
-		otherEvent.setPitch(pitch);
+		OtherEvents otherEvent = getExistingOrAddEmptyOtherEventAt(tick);
+		otherEvent.pitch = pitch;
 	}
 
-	private ChannelEvents getExistingOrAddEmptyOtherEventAt(int tick) {
-		return otherEvents.computeIfAbsent(tick, (key) -> new ChannelEvents());
+	private OtherEvents getExistingOrAddEmptyOtherEventAt(int tick) {
+		return otherEvents.computeIfAbsent(tick, (key) -> new OtherEvents());
 	}
 
 	private void validateTick(int tick) {
@@ -82,54 +88,54 @@ public class Channel {
 		}
 	}
 
-	public TickChannelEvents getEventsAtTick(int tick) {
+	public ChannelEvents getEventsAtTick(int tick) {
 		final NoteEvent noteEvent = notes.get(tick);
-		final ChannelEvents otherEvents = this.otherEvents.get(tick);
+		final OtherEvents otherEvents = this.otherEvents.get(tick);
 
-		return new TickChannelEvents(
+		return new ChannelEvents(
 				tick,
 				noteEvent,
-				otherEvents != null ? otherEvents.getInstrument() : null,
-				otherEvents != null ? otherEvents.getVolume() : null,
-				otherEvents != null ? otherEvents.getPitch() : null);
+				otherEvents != null ? otherEvents.instrument : null,
+				otherEvents != null ? otherEvents.volume : null,
+				otherEvents != null ? otherEvents.pitch : null);
 	}
 
-	public Set<TickChannelEvents> getAllEvents() {
-		Stream<TickChannelEvents> streamNoteEvents = notes.entrySet().stream()
-				.map((entry) -> new TickChannelEvents(
+	public Set<ChannelEvents> getAllEvents() {
+		Stream<ChannelEvents> streamNoteEvents = notes.entrySet().stream()
+				.map((entry) -> new ChannelEvents(
 						entry.getKey(),						// Tick
 						entry.getValue(),					// Note event
 						null,								// Instrument
 						null,								// Volume
 						null));								// Pitch
 
-		Stream<TickChannelEvents> streamOtherEvents = otherEvents.entrySet().stream()
-				.map((entry) -> new TickChannelEvents(
+		Stream<ChannelEvents> streamOtherEvents = otherEvents.entrySet().stream()
+				.map((entry) -> new ChannelEvents(
 						entry.getKey(),						// Tick
 						null,								// Note event
-						entry.getValue().getInstrument(),	// Instrument
-						entry.getValue().getVolume(),		// Volume
-						entry.getValue().getPitch()));		// Pitch
+						entry.getValue().instrument,		// Instrument
+						entry.getValue().volume,			// Volume
+						entry.getValue().pitch));			// Pitch
 		
 		return Stream.concat(streamNoteEvents, streamOtherEvents)
 				.collect(
 						Collectors.collectingAndThen(
 								Collectors.toMap(
-										TickChannelEvents::getTick,
+										ChannelEvents::getTick,
 										Function.identity(),
 										this::mergeNoteAndOtherEvents), 
 								(eventMap) -> new TreeSet<>(eventMap.values())));
 	}
 	
-	private TickChannelEvents mergeNoteAndOtherEvents(TickChannelEvents event1, TickChannelEvents event2) {
-		final TickChannelEvents noteEvent = event1.getNote() != null ? event1 : event2;
-		final TickChannelEvents otherEvents = event1.getNote() == null ? event1 : event2;
+	private ChannelEvents mergeNoteAndOtherEvents(ChannelEvents event1, ChannelEvents event2) {
+		final ChannelEvents noteEvent = event1.getNote() != null ? event1 : event2;
+		final ChannelEvents otherEvents = event1.getNote() == null ? event1 : event2;
 
 		if(noteEvent == otherEvents || event1.getTick() != event2.getTick()) {
 			throw new IllegalStateException("Internal error: merge conflict");
 		}
 		
-		return new TickChannelEvents(
+		return new ChannelEvents(
 				event1.getTick(),
 				noteEvent.getNote(),
 				otherEvents.getInstrument(),
@@ -157,5 +163,15 @@ public class Channel {
 	@Override
 	public String toString() {
 		return "Channel [notes=" + notes + ", otherEvents=" + otherEvents + "]";
+	}
+	
+	// Quick & dirty class to store a selection of the possible ROL events (those that do not require
+	// special logic when adding those events) in one data-structure. No getters/setters as this 
+	// class is not exposed outside this class.
+	
+	private static class OtherEvents {
+		private String instrument;
+		private Float volume;
+		private Float pitch;
 	}
 }

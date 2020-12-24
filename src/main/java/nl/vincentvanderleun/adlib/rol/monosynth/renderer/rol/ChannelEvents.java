@@ -2,57 +2,54 @@ package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
 
 import java.util.Objects;
 
-public class ChannelEvents {
-	private NoteEvent note;
-	private String instrument;
-	private Float volume;
-	private Float pitch;
+public class ChannelEvents implements Comparable<ChannelEvents> {
+	private final int tick;
+	private final NoteEvent note;
+	private final String instrument;
+	private final Float volume;
+	private final Float pitch;
 
-	ChannelEvents() {
-	}
-	
-	ChannelEvents(NoteEvent note, String instrument, Float volume, Float pitch) {
-		this.note = note;
-		this.instrument= instrument;
+	ChannelEvents(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+		this.tick = tick;
+		this.note = noteEvent;
+		this.instrument = instrument;
 		this.volume = volume;
 		this.pitch = pitch;
+	}
+	
+	@Override
+	public int compareTo(ChannelEvents other) {
+		if(tick > other.getTick()) {
+			return 1;
+		} else if(tick < other.getTick()) {
+			return -1;
+		}
+		return 0;
+	}
+
+	public int getTick() {
+		return tick;
 	}
 
 	public NoteEvent getNote() {
 		return note;
 	}
 
-	public void setNote(NoteEvent note) {
-		this.note = note;
-	}
-
 	public String getInstrument() {
 		return instrument;
-	}
-
-	public void setInstrument(String instrument) {
-		this.instrument = instrument;
 	}
 
 	public Float getVolume() {
 		return volume;
 	}
 
-	public void setVolume(Float volume) {
-		this.volume = volume;
-	}
-
 	public Float getPitch() {
 		return pitch;
 	}
 
-	public void setPitch(Float pitch) {
-		this.pitch = pitch;
-	}
-
 	@Override
 	public int hashCode() {
-		return Objects.hash(instrument, note, pitch, volume);
+		return Objects.hash(instrument, note, pitch, tick, volume);
 	}
 
 	@Override
@@ -65,12 +62,12 @@ public class ChannelEvents {
 			return false;
 		ChannelEvents other = (ChannelEvents) obj;
 		return Objects.equals(instrument, other.instrument) && Objects.equals(note, other.note)
-				&& Objects.equals(pitch, other.pitch) && Objects.equals(volume, other.volume);
+				&& Objects.equals(pitch, other.pitch) && tick == other.tick && Objects.equals(volume, other.volume);
 	}
 
 	@Override
 	public String toString() {
-		return "ChannelEvents [note=" + note + ", instrument=" + instrument + ", volume=" + volume + ", pitch=" + pitch
-				+ "]";
+		return "TickChannelEvents [tick=" + tick + ", note=" + note + ", instrument=" + instrument + ", volume="
+				+ volume + ", pitch=" + pitch + "]";
 	}
 }

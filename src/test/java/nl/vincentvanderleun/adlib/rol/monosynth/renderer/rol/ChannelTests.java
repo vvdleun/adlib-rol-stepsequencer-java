@@ -19,7 +19,7 @@ public class ChannelTests {
 
 	@Test
 	public void shouldReturnEmptyEventWhenThereAreNoEventsAddedToTheTick() {
-		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
+		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
 		assertEquals(0, channelEvents.getTick());
 		assertNull(channelEvents.getNote());
@@ -32,7 +32,7 @@ public class ChannelTests {
 	public void shouldAddNonNoteEventsToATick() {
 		channel.addNoteEvent(0, SOME_NOTE_EVENT);
 		
-		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
+		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
 		assertEquals(0, channelEvents.getTick());
 		assertEquals(SOME_NOTE_EVENT, channelEvents.getNote());
@@ -47,7 +47,7 @@ public class ChannelTests {
 		channel.addPitchEvent(0, 1.0f);
 		channel.addVolumeEvent(0, 0.75f);
 		
-		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
+		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
 		assertEquals(0, channelEvents.getTick());
 		assertEquals("PIANO1", channelEvents.getInstrument());
@@ -63,7 +63,7 @@ public class ChannelTests {
 		channel.addPitchEvent(0, 1.0f);
 		channel.addVolumeEvent(0, 0.75f);
 		
-		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
+		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
 		assertEquals(0, channelEvents.getTick());
 		assertEquals(SOME_NOTE_EVENT, channelEvents.getNote());
@@ -76,7 +76,7 @@ public class ChannelTests {
 	public void shouldOnlyReturnNoteEventIfNoteStartsAtSpecifiedTick() {
 		channel.addNoteEvent(0, new NoteEvent(100, 10)); // 0..9
 		
-		TickChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
+		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
 		
 		assertEquals(1, channelEventsAtTick1.getTick());
 		assertNull(channelEventsAtTick1.getNote());
@@ -88,9 +88,9 @@ public class ChannelTests {
 		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 2)); // Spans tick 1 and 2
 		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 3)); // Spans tick 3, 4 and 5
 		
-		TickChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
-		TickChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
-		TickChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
+		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
+		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
 		
 		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
 		NoteEvent noteEventAtTick1 = channelEventsAtTick1.getNote();
@@ -114,8 +114,8 @@ public class ChannelTests {
 		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans tick 0, 1, 2
 		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1));
 
-		TickChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
-		TickChannelEvents channelEventsAtTick2 = channel.getEventsAtTick(2);
+		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		ChannelEvents channelEventsAtTick2 = channel.getEventsAtTick(2);
 
 		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
 		NoteEvent noteEventAtTick2 = channelEventsAtTick2.getNote();
@@ -139,8 +139,8 @@ public class ChannelTests {
 		
 		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans ticks 0, 1 and 2
 
-		TickChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
-		TickChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
+		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
 
 		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
 		NoteEvent noteEventAtTick3 = channelEventsAtTick3.getNote();
@@ -183,7 +183,7 @@ public class ChannelTests {
 		channel.addNoteEvent(2, OTHER_NOTE_EVENT);
 		channel.addVolumeEvent(2, 1.0f);
 
-		Set<TickChannelEvents> allEventsSet = channel.getAllEvents();
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
 		assertEquals(4, allEventsSet.size());
 		
@@ -195,20 +195,20 @@ public class ChannelTests {
 		assertEquals(createEvent(3, OTHER_NOTE_EVENT, "PIANO2", 0.75f, 2.0f), allEvents.get(3));
 	}
 	
-	private TickChannelEvents createNoteEvent(int tick, NoteEvent noteEvent) {
+	private ChannelEvents createNoteEvent(int tick, NoteEvent noteEvent) {
 		return createEvent(tick, noteEvent, null, null, null);
 	}
 	
-	private TickChannelEvents createInstrumentEvent(int tick, String instrument) {
+	private ChannelEvents createInstrumentEvent(int tick, String instrument) {
 		return createEvent(tick, null, instrument, null, null);
 	}
 	
-	private TickChannelEvents createNoteAndVolumeEvent(int tick, NoteEvent noteEvent, Float volume) {
+	private ChannelEvents createNoteAndVolumeEvent(int tick, NoteEvent noteEvent, Float volume) {
 		return createEvent(tick, noteEvent, null, volume, null);
 	}
 	
-	private TickChannelEvents createEvent(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
-		return new TickChannelEvents(tick, noteEvent, instrument, volume, pitch);
+	private ChannelEvents createEvent(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+		return new ChannelEvents(tick, noteEvent, instrument, volume, pitch);
 	}
 }
 
