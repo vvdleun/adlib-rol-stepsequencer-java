@@ -19,9 +19,6 @@ public class AdLibRolSongRenderer {
 		
 		songToRolConverter.convertToNormalizedRolEvents();
 		
-		writeHeader(song);
-		writeTempoTrack(song);
-		writeChannelTracks(song);
 	}
 	
 	private void writeHeader(Song song) throws IOException {

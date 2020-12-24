@@ -69,7 +69,7 @@ public class AdLibRolFile {
 			return scaleX;
 		}
 
-		public int getMelodic() {
+		public int getSongMode() {
 			return songMode;
 		}
 
