@@ -138,19 +138,12 @@ public class Channel {
 	}
 	
 	private ChannelEvents mergeNoteAndOtherEvents(ChannelEvents event1, ChannelEvents event2) {
-		final ChannelEvents noteEvent = event1.getNote() != null ? event1 : event2;
-		final ChannelEvents otherEvents = event1.getNote() == null ? event1 : event2;
-
-		if(noteEvent == otherEvents || event1.getTick() != event2.getTick()) {
-			throw new IllegalStateException("Internal error: merge conflict");
-		}
-		
 		return new ChannelEvents(
 				event1.getTick(),
-				noteEvent.getNote(),
-				otherEvents.getInstrument(),
-				otherEvents.getVolume(),
-				otherEvents.getPitch());
+				event1.getNote() != null ? event1.getNote() : event2.getNote(),
+				event1.getInstrument() != null ? event1.getInstrument() : event2.getInstrument(),
+				event1.getVolume() != null ? event1.getVolume() : event2.getVolume(),
+				event1.getPitch() != null ? event1.getPitch() : event2.getPitch());
 	}
 
 	@Override
