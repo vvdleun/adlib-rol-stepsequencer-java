@@ -7,20 +7,15 @@ public class ChannelEvents {
 	private String instrument;
 	private Float volume;
 	private Float pitch;
+
+	ChannelEvents() {
+	}
 	
 	ChannelEvents(NoteEvent note, String instrument, Float volume, Float pitch) {
 		this.note = note;
 		this.instrument= instrument;
 		this.volume = volume;
 		this.pitch = pitch;
-	}
-
-	public static ChannelEvents empty() {
-		return new ChannelEvents(null, null, null, null);
-	}
-	
-	static ChannelEvents fromNote(NoteEvent note) {
-		return new ChannelEvents(note, null, null, null);
 	}
 
 	public NoteEvent getNote() {

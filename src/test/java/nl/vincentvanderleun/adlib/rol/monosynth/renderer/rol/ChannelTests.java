@@ -28,7 +28,7 @@ public class ChannelTests {
 	}
 
 	@Test
-	public void shouldAddNoteEventToATick() {
+	public void shouldAddNonNoteEventsToATick() {
 		channel.addNoteEvent(0, SOME_NOTE_EVENT);
 		
 		ChannelEvents channelEvents = channel.getEventsAtTick(0);
@@ -196,7 +196,7 @@ public class ChannelTests {
 	}
 	
 	private TickChannelEvents createEvent(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
-		return new TickChannelEvents(tick, new ChannelEvents(noteEvent, instrument, volume, pitch));
+		return new TickChannelEvents(tick, noteEvent, instrument, volume, pitch);
 	}
 }
 

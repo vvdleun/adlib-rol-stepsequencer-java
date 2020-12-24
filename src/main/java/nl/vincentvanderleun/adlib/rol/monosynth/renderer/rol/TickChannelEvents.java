@@ -4,24 +4,52 @@ import java.util.Objects;
 
 public class TickChannelEvents implements Comparable<TickChannelEvents> {
 	private final int tick;
-	private final ChannelEvents channelEvents;
-	
-	TickChannelEvents(int tick, ChannelEvents channelEvents) {
+	private final NoteEvent note;
+	private final String instrument;
+	private final Float volume;
+	private final Float pitch;
+
+	TickChannelEvents(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
 		this.tick = tick;
-		this.channelEvents = channelEvents;
-	}
-	
-	public int getTick() {
-		return tick;
-	}
-	
-	public ChannelEvents getChannelEvents() {
-		return channelEvents;
+		this.note = noteEvent;
+		this.instrument = instrument;
+		this.volume = volume;
+		this.pitch = pitch;
 	}
 	
 	@Override
+	public int compareTo(TickChannelEvents other) {
+		if(tick > other.getTick()) {
+			return 1;
+		} else if(tick < other.getTick()) {
+			return -1;
+		}
+		return 0;
+	}
+
+	public int getTick() {
+		return tick;
+	}
+
+	public NoteEvent getNote() {
+		return note;
+	}
+
+	public String getInstrument() {
+		return instrument;
+	}
+
+	public Float getVolume() {
+		return volume;
+	}
+
+	public Float getPitch() {
+		return pitch;
+	}
+
+	@Override
 	public int hashCode() {
-		return Objects.hash(channelEvents, tick);
+		return Objects.hash(instrument, note, pitch, tick, volume);
 	}
 
 	@Override
@@ -33,21 +61,13 @@ public class TickChannelEvents implements Comparable<TickChannelEvents> {
 		if (getClass() != obj.getClass())
 			return false;
 		TickChannelEvents other = (TickChannelEvents) obj;
-		return Objects.equals(channelEvents, other.channelEvents) && tick == other.tick;
+		return Objects.equals(instrument, other.instrument) && Objects.equals(note, other.note)
+				&& Objects.equals(pitch, other.pitch) && tick == other.tick && Objects.equals(volume, other.volume);
 	}
 
 	@Override
 	public String toString() {
-		return "TickChannelEvents [tick=" + tick + ", channelEvents=" + channelEvents + "]";
-	}
-
-	@Override
-	public int compareTo(TickChannelEvents other) {
-		if(tick > other.getTick()) {
-			return 1;
-		} else if(tick < other.getTick()) {
-			return -1;
-		}
-		return 0;
+		return "TickChannelEvents [tick=" + tick + ", note=" + note + ", instrument=" + instrument + ", volume="
+				+ volume + ", pitch=" + pitch + "]";
 	}
 }

@@ -73,7 +73,7 @@ public class Channel {
 	}
 
 	private ChannelEvents getExistingOrAddEmptyOtherEventAt(int tick) {
-		return otherEvents.computeIfAbsent(tick, (key) -> ChannelEvents.empty());
+		return otherEvents.computeIfAbsent(tick, (key) -> new ChannelEvents());
 	}
 
 	private void validateTick(int tick) {
@@ -100,13 +100,19 @@ public class Channel {
 	public Set<TickChannelEvents> getAllEvents() {
 		Stream<TickChannelEvents> streamNoteEvents = notes.entrySet().stream()
 				.map((entry) -> new TickChannelEvents(
-						entry.getKey(),
-						ChannelEvents.fromNote(entry.getValue())));
+						entry.getKey(),						// Tick
+						entry.getValue(),					// Note event
+						null,								// Instrument
+						null,								// Volume
+						null));								// Pitch
 
 		Stream<TickChannelEvents> streamOtherEvents = otherEvents.entrySet().stream()
 				.map((entry) -> new TickChannelEvents(
-						entry.getKey(),
-						entry.getValue()));
+						entry.getKey(),						// Tick
+						null,								// Note event
+						entry.getValue().getInstrument(),	// Instrument
+						entry.getValue().getVolume(),		// Volume
+						entry.getValue().getPitch()));		// Pitch
 		
 		return Stream.concat(streamNoteEvents, streamOtherEvents)
 				.collect(
@@ -119,20 +125,19 @@ public class Channel {
 	}
 	
 	private TickChannelEvents mergeNoteAndOtherEvents(TickChannelEvents event1, TickChannelEvents event2) {
-		final TickChannelEvents noteEvent = event1.getChannelEvents().getNote() != null ? event1 : event2;
-		final TickChannelEvents otherEvent = event1.getChannelEvents().getNote() == null ? event1 : event2;
+		final TickChannelEvents noteEvent = event1.getNote() != null ? event1 : event2;
+		final TickChannelEvents otherEvents = event1.getNote() == null ? event1 : event2;
 
-		if(noteEvent == otherEvent || event1.getTick() != event2.getTick()) {
+		if(noteEvent == otherEvents || event1.getTick() != event2.getTick()) {
 			throw new IllegalStateException("Internal error: merge conflict");
 		}
 		
-		var mergedChannelEvent = new ChannelEvents(
-				noteEvent.getChannelEvents().getNote(),
-				otherEvent.getChannelEvents().getInstrument(),
-				otherEvent.getChannelEvents().getVolume(),
-				otherEvent.getChannelEvents().getPitch());
-
-		return new TickChannelEvents(event1.getTick(), mergedChannelEvent);
+		return new TickChannelEvents(
+				event1.getTick(),
+				noteEvent.getNote(),
+				otherEvents.getInstrument(),
+				otherEvents.getVolume(),
+				otherEvents.getPitch());
 	}
 
 	@Override
