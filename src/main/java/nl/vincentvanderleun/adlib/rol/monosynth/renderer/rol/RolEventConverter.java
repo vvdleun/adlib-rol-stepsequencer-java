@@ -101,7 +101,7 @@ public class RolEventConverter {
 					convertNote((Note)event);
 					break;
 				case REST:
-					// Rests are added during rendering. Just skip the ticks.
+					// Silence notes are added during rendering. Just skip the ticks.
 					++tick;
 					break;
 				case HOLD:

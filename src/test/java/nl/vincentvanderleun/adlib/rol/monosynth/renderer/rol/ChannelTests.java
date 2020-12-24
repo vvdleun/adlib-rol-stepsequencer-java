@@ -189,26 +189,86 @@ public class ChannelTests {
 		
 		var allEvents = new ArrayList<>(allEventsSet);
 		
-		assertEquals(createInstrumentEvent(0, "PIANO1"), allEvents.get(0));
-		assertEquals(createNoteEvent(1, SOME_NOTE_EVENT), allEvents.get(1));
+		assertEquals(ChannelEvents.fromInstrumentOnly(0, "PIANO1"), allEvents.get(0));
+		assertEquals(ChannelEvents.fromNoteEvenOnly(1, SOME_NOTE_EVENT), allEvents.get(1));
 		assertEquals(createNoteAndVolumeEvent(2, OTHER_NOTE_EVENT, 1.0f), allEvents.get(2));
-		assertEquals(createEvent(3, OTHER_NOTE_EVENT, "PIANO2", 0.75f, 2.0f), allEvents.get(3));
+		assertEquals(ChannelEvents.from(3, OTHER_NOTE_EVENT, "PIANO2", 0.75f, 2.0f), allEvents.get(3));
 	}
 	
-	private ChannelEvents createNoteEvent(int tick, NoteEvent noteEvent) {
-		return createEvent(tick, noteEvent, null, null, null);
+	@Test
+	public void shouldNormalizeInstrumentEventsWhenAddingTwoDuplicateOnesAfterEachOther() {
+		channel.addInstrumentEvent(10, "PIANO1");
+		channel.addInstrumentEvent(30, "PIANO1");
+
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
+
+		assertEquals(1, allEventsSet.size());
+		
+		assertEquals(ChannelEvents.fromInstrumentOnly(10, "PIANO1"), allEventsSet.iterator().next());
 	}
-	
-	private ChannelEvents createInstrumentEvent(int tick, String instrument) {
-		return createEvent(tick, null, instrument, null, null);
+
+	@Test
+	public void shouldNormalizeInstrumentEventsWhenAddingDuplicateEventBeforeOther() {
+		channel.addInstrumentEvent(30, "PIANO1");
+		channel.addInstrumentEvent(10, "PIANO1");
+
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
+
+		assertEquals(1, allEventsSet.size());
+		
+		assertEquals(ChannelEvents.fromInstrumentOnly(10, "PIANO1"), allEventsSet.iterator().next());
 	}
-	
+
+	@Test
+	public void shouldNormalizeVolumeEventsWhenAddingTwoDuplicateOnesAfterEachOther() {
+		channel.addVolumeEvent(10, 1.23f);
+		channel.addVolumeEvent(30, 1.23f);
+
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
+
+		assertEquals(1, allEventsSet.size());
+		
+		assertEquals(ChannelEvents.fromVolumeOnly(10, 1.23f), allEventsSet.iterator().next());
+	}
+
+	@Test
+	public void shouldNormalizeVolumeEventsWhenAddingDuplicateEventBeforeOther() {
+		channel.addVolumeEvent(30, 1.23f);
+		channel.addVolumeEvent(10, 1.23f);
+
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
+
+		assertEquals(1, allEventsSet.size());
+		
+		assertEquals(ChannelEvents.fromVolumeOnly(10, 1.23f), allEventsSet.iterator().next());
+	}
+
+	@Test
+	public void shouldNormalizePitchEventsWhenAddingTwoDuplicateOnesAfterEachOther() {
+		channel.addPitchEvent(10, 13.37f);
+		channel.addPitchEvent(30, 13.37f);
+
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
+
+		assertEquals(1, allEventsSet.size());
+		
+		assertEquals(ChannelEvents.fromPitchOnly(10, 13.37f), allEventsSet.iterator().next());
+	}
+
+	@Test
+	public void shouldNormalizePitchEventsWhenAddingDuplicateEventBeforeOther() {
+		channel.addPitchEvent(30, 13.37f);
+		channel.addPitchEvent(10, 13.37f);
+
+		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
+
+		assertEquals(1, allEventsSet.size());
+		
+		assertEquals(ChannelEvents.fromPitchOnly(10, 13.37f), allEventsSet.iterator().next());
+	}
+
 	private ChannelEvents createNoteAndVolumeEvent(int tick, NoteEvent noteEvent, Float volume) {
-		return createEvent(tick, noteEvent, null, volume, null);
-	}
-	
-	private ChannelEvents createEvent(int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
-		return new ChannelEvents(tick, noteEvent, instrument, volume, pitch);
+		return ChannelEvents.from(tick, noteEvent, null, volume, null);
 	}
 }
 
