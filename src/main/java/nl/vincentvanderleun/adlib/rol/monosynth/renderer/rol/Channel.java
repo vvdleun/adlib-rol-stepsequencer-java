@@ -16,13 +16,15 @@ import java.util.stream.Stream;
  * This class makes it very convenient to work with channel-based ROL events, especially notes,
  * as it automatically shortens notes that overlap with newly added notes and delete notes that
  * overlap that were placed after the start tick.
+ * 
+ * It's heavily opinionated and should ideally have some configurable behavior. 
  *
  * @author Vincent
  *
  */
 public class Channel {
 	private final NavigableMap<Integer, NoteEvent> notes;
-	private final Map<Integer, OtherEvents> otherEvents;	// OtherEvents is private class defined below
+	private final Map<Integer, OtherEvents> otherEvents;	// OtherEvents is a private class defined below
 	
 	public Channel() {
 		this.notes = new TreeMap<>();
@@ -102,20 +104,10 @@ public class Channel {
 
 	public Set<ChannelEvents> getAllEvents() {
 		Stream<ChannelEvents> streamNoteEvents = notes.entrySet().stream()
-				.map((entry) -> new ChannelEvents(
-						entry.getKey(),						// Tick
-						entry.getValue(),					// Note event
-						null,								// Instrument
-						null,								// Volume
-						null));								// Pitch
+				.map((entry) -> eventWithNoteEvenOnly(entry.getKey(), entry.getValue()));
 
 		Stream<ChannelEvents> streamOtherEvents = otherEvents.entrySet().stream()
-				.map((entry) -> new ChannelEvents(
-						entry.getKey(),						// Tick
-						null,								// Note event
-						entry.getValue().instrument,		// Instrument
-						entry.getValue().volume,			// Volume
-						entry.getValue().pitch));			// Pitch
+				.map((entry) -> eventWithOtherEventsOnly(entry.getKey(), entry.getValue()));
 		
 		return Stream.concat(streamNoteEvents, streamOtherEvents)
 				.collect(
@@ -125,6 +117,24 @@ public class Channel {
 										Function.identity(),
 										this::mergeNoteAndOtherEvents), 
 								(eventMap) -> new TreeSet<>(eventMap.values())));
+	}
+	
+	private ChannelEvents eventWithNoteEvenOnly(int tick, NoteEvent noteEvent) {
+		return new ChannelEvents(
+				tick,						// Tick
+				noteEvent,					// Note event
+				null,						// Instrument
+				null,						// Volume
+				null);						// Pitch
+	}
+	
+	private ChannelEvents eventWithOtherEventsOnly(int tick, OtherEvents otherEvents) {
+		return new ChannelEvents(
+				tick,						// Tick
+				null,						// Note event
+				otherEvents.instrument,		// Instrument
+				otherEvents.volume,			// Volume
+				otherEvents.pitch);			// Pitch		
 	}
 	
 	private ChannelEvents mergeNoteAndOtherEvents(ChannelEvents event1, ChannelEvents event2) {
