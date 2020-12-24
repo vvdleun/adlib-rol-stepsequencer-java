@@ -82,15 +82,12 @@ public class Channel {
 		}
 	}
 
-	public ChannelEvents getEventsAtTick(int tick) {
+	public TickChannelEvents getEventsAtTick(int tick) {
 		final NoteEvent noteEvent = notes.get(tick);
 		final ChannelEvents otherEvents = this.otherEvents.get(tick);
 
-		if(noteEvent == null && otherEvents == null) {
-			return new ChannelEvents(null, null, null, null);
-		}
-
-		return new ChannelEvents(
+		return new TickChannelEvents(
+				tick,
 				noteEvent,
 				otherEvents != null ? otherEvents.getInstrument() : null,
 				otherEvents != null ? otherEvents.getVolume() : null,

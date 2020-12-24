@@ -6,9 +6,6 @@ public class NoteEvent {
 	private int note;
 	private int duration;
 	
-	public NoteEvent() {
-	}
-	
 	public NoteEvent(int note, int duration) {
 		this.note = note;
 		this.duration = duration;

@@ -19,8 +19,9 @@ public class ChannelTests {
 
 	@Test
 	public void shouldReturnEmptyEventWhenThereAreNoEventsAddedToTheTick() {
-		ChannelEvents channelEvents = channel.getEventsAtTick(0);
+		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
+		assertEquals(0, channelEvents.getTick());
 		assertNull(channelEvents.getNote());
 		assertNull(channelEvents.getInstrument());
 		assertNull(channelEvents.getPitch());
@@ -31,8 +32,9 @@ public class ChannelTests {
 	public void shouldAddNonNoteEventsToATick() {
 		channel.addNoteEvent(0, SOME_NOTE_EVENT);
 		
-		ChannelEvents channelEvents = channel.getEventsAtTick(0);
+		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
+		assertEquals(0, channelEvents.getTick());
 		assertEquals(SOME_NOTE_EVENT, channelEvents.getNote());
 		assertNull(channelEvents.getInstrument());
 		assertNull(channelEvents.getPitch());
@@ -45,8 +47,9 @@ public class ChannelTests {
 		channel.addPitchEvent(0, 1.0f);
 		channel.addVolumeEvent(0, 0.75f);
 		
-		ChannelEvents channelEvents = channel.getEventsAtTick(0);
+		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
+		assertEquals(0, channelEvents.getTick());
 		assertEquals("PIANO1", channelEvents.getInstrument());
 		assertEquals(1.0f, channelEvents.getPitch());
 		assertEquals(0.75f, channelEvents.getVolume());
@@ -60,8 +63,9 @@ public class ChannelTests {
 		channel.addPitchEvent(0, 1.0f);
 		channel.addVolumeEvent(0, 0.75f);
 		
-		ChannelEvents channelEvents = channel.getEventsAtTick(0);
+		TickChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
+		assertEquals(0, channelEvents.getTick());
 		assertEquals(SOME_NOTE_EVENT, channelEvents.getNote());
 		assertEquals("PIANO1", channelEvents.getInstrument());
 		assertEquals(1.0f, channelEvents.getPitch());
@@ -70,10 +74,11 @@ public class ChannelTests {
 	
 	@Test
 	public void shouldOnlyReturnNoteEventIfNoteStartsAtSpecifiedTick() {
-		channel.addNoteEvent(0, new NoteEvent(100, 10));
+		channel.addNoteEvent(0, new NoteEvent(100, 10)); // 0..9
 		
-		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(10);
+		TickChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
 		
+		assertEquals(1, channelEventsAtTick1.getTick());
 		assertNull(channelEventsAtTick1.getNote());
 	}
 
@@ -83,20 +88,23 @@ public class ChannelTests {
 		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 2)); // Spans tick 1 and 2
 		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 3)); // Spans tick 3, 4 and 5
 		
-		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
-		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
-		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
+		TickChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		TickChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
+		TickChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
 		
 		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
 		NoteEvent noteEventAtTick1 = channelEventsAtTick1.getNote();
 		NoteEvent noteEventAtTick3 = channelEventsAtTick3.getNote();
 		
+		assertEquals(0, channelEventsAtTick0.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
 		assertEquals(1, noteEventAtTick0.getDuration());
 
+		assertEquals(1, channelEventsAtTick1.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick1.getNote());
 		assertEquals(2, noteEventAtTick1.getDuration());
 
+		assertEquals(3, channelEventsAtTick3.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick3.getNote());
 		assertEquals(3, noteEventAtTick3.getDuration());
 	}
@@ -106,16 +114,18 @@ public class ChannelTests {
 		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans tick 0, 1, 2
 		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1));
 
-		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
-		ChannelEvents channelEventsAtTick2 = channel.getEventsAtTick(2);
+		TickChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		TickChannelEvents channelEventsAtTick2 = channel.getEventsAtTick(2);
 
 		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
 		NoteEvent noteEventAtTick2 = channelEventsAtTick2.getNote();
 		
+		assertEquals(0, channelEventsAtTick0.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
 		// Note should be shortened from 3 to 2, to make room for the new note
 		assertEquals(2, noteEventAtTick0.getDuration());
 
+		assertEquals(2, channelEventsAtTick2.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick2.getNote());
 		assertEquals(1, noteEventAtTick2.getDuration());
 	}
@@ -129,15 +139,17 @@ public class ChannelTests {
 		
 		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans ticks 0, 1 and 2
 
-		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
-		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
+		TickChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
+		TickChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
 
 		NoteEvent noteEventAtTick0 = channelEventsAtTick0.getNote();
 		NoteEvent noteEventAtTick3 = channelEventsAtTick3.getNote();
 
+		assertEquals(0, channelEventsAtTick0.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
 		assertEquals(3, noteEventAtTick0.getDuration());
 
+		assertEquals(3, channelEventsAtTick3.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick3.getNote());
 		assertEquals(1, noteEventAtTick3.getDuration());
 	}
