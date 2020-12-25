@@ -1,12 +1,10 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.NormalizedEvents;
 
 public class NormalizedEventsTests {
 	private NormalizedEvents<Integer> normalizedEvents = new NormalizedEvents<>();
