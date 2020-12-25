@@ -2,7 +2,7 @@
 version = 0
 target = ROL
 tempo = 100.0
-ticksPerBeat = 3
+ticksPerBeat = 2
 beatsPerMeasure = 4
 mode = MELODIC
 
@@ -26,5 +26,5 @@ mode = MELODIC
 [PATTERN one]
  patch(lead)    octave(3)   C D E F - G h h -G ++G
  
- [SEQUENCER]
+[SEQUENCER]
 fade-in(16) one one one

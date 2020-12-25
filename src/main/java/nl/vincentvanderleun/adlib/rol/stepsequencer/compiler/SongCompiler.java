@@ -17,7 +17,6 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveCh
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPattern;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.RenderException;
 
 public class SongCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
@@ -30,7 +29,12 @@ public class SongCompiler {
 	private int tick;
 	private Patch patch;
 
-	public SongCompiler(ParsedSong parsedSong) {
+	public static CompiledSong compile(ParsedSong parsedSong) throws CompileException {
+		var compiler = new SongCompiler(parsedSong);
+		return compiler.compile();
+	}
+	
+	private SongCompiler(ParsedSong parsedSong) {
 		this.tick = 0;
 		this.octave = DEFAULT_OCTAVE;
 		this.parsedSong = parsedSong;
@@ -45,7 +49,7 @@ public class SongCompiler {
 						Patch::getName, (patch) -> patch));
 	}
 
-	public CompiledSong compile() throws RenderException {
+	public CompiledSong compile() throws CompileException {
 		CompiledSong compiledSong = initializeCompiledSong(parsedSong);
 		
 		for(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event event : parsedSong.getSequencer().getEvents()) {
@@ -56,7 +60,7 @@ public class SongCompiler {
 					convertPattern(pattern, compiledSong);
 					break;
 				default:
-					throw new RenderException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
+					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
 			}
 		}
 		
@@ -72,7 +76,7 @@ public class SongCompiler {
 				song.getHeader().getMode());
 	}
 	
-	private void convertPattern(Pattern pattern, CompiledSong song) throws RenderException {
+	private void convertPattern(Pattern pattern, CompiledSong song) throws CompileException {
 		for(Event event : pattern.getEvents()) {
 			switch(event.getEventType()) {
 				case OCTAVE:
@@ -92,12 +96,12 @@ public class SongCompiler {
 					System.out.println("- SKipped for now");
 					break;
 				default:
-					throw new RenderException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
+					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
 			}
 		}
 	}
 
-	private void convertPatch(PatchChange patchEvent, CompiledSong song) throws RenderException {
+	private void convertPatch(PatchChange patchEvent, CompiledSong song) throws CompileException {
 		final String patchName = patchEvent.getPatchName();
 		final Patch patch = patches.get(patchName);
 
@@ -113,7 +117,7 @@ public class SongCompiler {
 		};
 	}
 
-	private void convertNote(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompiledSong song) throws RenderException {
+	private void convertNote(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompiledSong song) throws CompileException {
 		int channel = 0;
 		for(Voice voice : patch.getVoices()) {
 			NoteEvent noteEvent = new NoteEvent(
