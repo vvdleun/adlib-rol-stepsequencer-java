@@ -7,9 +7,9 @@ import java.util.Scanner;
 import java.util.function.Supplier;
 
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.PlayPattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.sequencer.Event;
+import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.sequencer.PlayPattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.sequencer.Sequencer;
 
 public class SequencerBlockParser extends BlockParser<Sequencer> {
 	

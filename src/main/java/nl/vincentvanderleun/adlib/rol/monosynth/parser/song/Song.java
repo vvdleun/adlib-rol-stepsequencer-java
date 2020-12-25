@@ -1,9 +1,9 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed;
+package nl.vincentvanderleun.adlib.rol.monosynth.parser.song;
 
 import java.util.List;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.sequencer.Sequencer;
 
 /**
  * Parsed song representation.

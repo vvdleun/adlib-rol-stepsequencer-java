@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed;
+package nl.vincentvanderleun.adlib.rol.monosynth.parser.song;
 
 import java.util.List;
 
@@ -6,7 +6,6 @@ import java.util.List;
  * Represents a parsed [PATCH <patchname>] block from the input file.
  *
  * @author Vincent
- *
  */
 public class Patch {
 	private String name;

@@ -4,8 +4,8 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Song;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.AdLibRolSongRenderer;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Song;
 
 public class OutputFileRenderer {
 	

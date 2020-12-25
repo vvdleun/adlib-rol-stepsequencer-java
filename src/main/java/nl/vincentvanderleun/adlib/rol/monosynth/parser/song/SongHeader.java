@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed;
+package nl.vincentvanderleun.adlib.rol.monosynth.parser.song;
 
 /**
  * Represents a parsed [SONG] header block from the input file.

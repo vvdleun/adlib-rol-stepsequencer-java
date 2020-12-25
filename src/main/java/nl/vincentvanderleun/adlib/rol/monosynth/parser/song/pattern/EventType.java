@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
+package nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern;
 
 /**
  * Represents all implemented events that a pattern can contain during parsing.

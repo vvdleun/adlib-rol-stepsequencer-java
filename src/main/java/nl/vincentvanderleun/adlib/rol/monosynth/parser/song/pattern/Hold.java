@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
+package nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern;
 
 /**
  * The "Hold" event increases the duration of the previous note with 1 tick.

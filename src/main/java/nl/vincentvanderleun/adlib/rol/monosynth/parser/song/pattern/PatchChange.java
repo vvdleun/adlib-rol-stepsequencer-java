@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
+package nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern;
 
 /**
  * Event that changes the current patch. This will reset various parameters of the voices' channels that make
