@@ -20,7 +20,7 @@ import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.Tracks;
 import nl.vincentvanderleun.adlib.rol.monosynth.song.Patch;
 
-public class SongToRolEventsConverter {
+public class SongToNormalizedRolEventsConverter {
 	private static final Map<NoteValue, Integer> NOTE_NUMBERS;
 	private static final int DEFAULT_OCTAVE = 4;
 	
@@ -48,7 +48,7 @@ public class SongToRolEventsConverter {
 		NOTE_NUMBERS.put(NoteValue.B, 23);
 	}
 
-	public SongToRolEventsConverter(Song song) {
+	public SongToNormalizedRolEventsConverter(Song song) {
 		this.tick = 0;
 		this.octave = DEFAULT_OCTAVE;
 		this.song = song;
@@ -62,15 +62,6 @@ public class SongToRolEventsConverter {
 				.collect(Collectors.toMap(
 						Patch::getName, (patch) -> patch));
 	}
-
-//	private void initializeRolEvents() {
-//		rolEvents.getTempoEvents().put(0, 1.0f);
-//		rolEvents.getChannels().forEach(channel -> {
-//			channel.addInstrumentEvent(0, "PIANO1");
-//			channel.addPitchEvent(0, 1.0f);
-//			channel.addVolumeEvent(0, 0.75f);
-//		});
-//	}
 
 	public Tracks convertToNormalizedRolEvents() throws RenderException {
 		final Tracks tracks = new Tracks();
@@ -129,6 +120,8 @@ public class SongToRolEventsConverter {
 			int voiceChannel = voice.getChannel();
 			Channel channel = tracks.getChannels().get(voiceChannel);
 			channel.addInstrumentEvent(tick, voice.getInstrument());
+			channel.addPitchEvent(tick, voice.getPitch());
+			channel.addVolumeEvent(tick, voice.getVolume());
 		});
 	}
 

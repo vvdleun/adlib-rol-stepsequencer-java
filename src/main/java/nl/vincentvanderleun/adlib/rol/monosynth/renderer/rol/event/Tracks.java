@@ -2,6 +2,7 @@ package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
 
 public class Tracks {
 	public final NormalizedEvents<Float> tempoEvents;
@@ -20,6 +21,10 @@ public class Tracks {
 		tempoEvents.add(tick, tempoMultiplier);
 	}
 
+	public SortedMap<Integer, Float> getTempoEvents() {
+		return tempoEvents.getMap();
+	}
+	
 	public List<Channel> getChannels() {
 		return channels;
 	}

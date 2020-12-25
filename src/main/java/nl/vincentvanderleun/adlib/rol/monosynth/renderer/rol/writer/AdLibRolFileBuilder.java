@@ -1,7 +1,9 @@
 package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.writer;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This builder (one of the most boring to write...) builds the Ad Lib ROL file using most
@@ -15,7 +17,7 @@ import java.util.List;
  * @author Vincent
  *
  */
-public class DefaultAdLibRolFileBuilder {
+public class AdLibRolFileBuilder {
 	private static final int PERCUSSIVE_SONG_MODE = 0;
 	private static final int MELODIC_SONG_MODE = 1;
 	private static final String SIGNATURE = "\\roll\\default";
@@ -33,16 +35,16 @@ public class DefaultAdLibRolFileBuilder {
 	private static final float DEFAULT_PITCH_MULTIPLIER = 1.0f;
 	private static final String DEFAULT_MELODIC_TIMBRE = "piano1";
 
-	public static DefaultAdLibRolFileBuilder createRolFile() {
+	public static AdLibRolFileBuilder createRolFile() {
 		return createPercussiveRolFile();
 	}
 
-	public static DefaultAdLibRolFileBuilder createMelodicRolFile() {
-		return new DefaultAdLibRolFileBuilder(MELODIC_SONG_MODE);
+	public static AdLibRolFileBuilder createMelodicRolFile() {
+		return new AdLibRolFileBuilder(MELODIC_SONG_MODE);
 	}
 
-	public static DefaultAdLibRolFileBuilder createPercussiveRolFile() {
-		return new DefaultAdLibRolFileBuilder(PERCUSSIVE_SONG_MODE);
+	public static AdLibRolFileBuilder createPercussiveRolFile() {
+		return new AdLibRolFileBuilder(PERCUSSIVE_SONG_MODE);
 	}
 
 	private final int songMode;
@@ -53,7 +55,7 @@ public class DefaultAdLibRolFileBuilder {
 	private int beatsPerMeasure;
 	private float tempo;
 	
-	private DefaultAdLibRolFileBuilder(int songMode) {
+	private AdLibRolFileBuilder(int songMode) {
 		this.songMode = songMode;
 		this.tempoEvents = new LinkedList<>();
 		this.channels = createChannelEventLists();
@@ -63,6 +65,7 @@ public class DefaultAdLibRolFileBuilder {
 		ChannelEventLists[] channels = new ChannelEventLists[CHANNELS];
 
 		for(int i = 0; i < CHANNELS; i++) {
+			channels[i] = new ChannelEventLists();
 			channels[i].noteEvents = new LinkedList<AdLibRolFile.Note>();
 			channels[i].timbreEvents = new LinkedList<AdLibRolFile.Timbre>();
 			channels[i].volumeEvents = new LinkedList<AdLibRolFile.Volume>();
@@ -72,17 +75,17 @@ public class DefaultAdLibRolFileBuilder {
 		return channels;
 	}
 	
-	public DefaultAdLibRolFileBuilder withTicksPerBeat(int ticksPerBeat) {
+	public AdLibRolFileBuilder withTicksPerBeat(int ticksPerBeat) {
 		this.ticksPerBeat = ticksPerBeat;
 		return this;
 	}
 	
-	public DefaultAdLibRolFileBuilder withBeatsPerMeasure(int beatsPerMeasure) {
+	public AdLibRolFileBuilder withBeatsPerMeasure(int beatsPerMeasure) {
 		this.beatsPerMeasure = beatsPerMeasure;
 		return this;
 	}
 	
-	public DefaultAdLibRolFileBuilder withMainTempo(float tempo) {
+	public AdLibRolFileBuilder withMainTempo(float tempo) {
 		this.tempo = tempo;
 		return this;
 	}
@@ -250,6 +253,36 @@ public class DefaultAdLibRolFileBuilder {
 		.reduce(0, Integer::sum);		
 	}
 	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(channels);
+		result = prime * result + Objects.hash(beatsPerMeasure, songMode, tempo, tempoEvents, ticksPerBeat);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AdLibRolFileBuilder other = (AdLibRolFileBuilder) obj;
+		return beatsPerMeasure == other.beatsPerMeasure && Arrays.equals(channels, other.channels)
+				&& songMode == other.songMode && Float.floatToIntBits(tempo) == Float.floatToIntBits(other.tempo)
+				&& Objects.equals(tempoEvents, other.tempoEvents) && ticksPerBeat == other.ticksPerBeat;
+	}
+
+	@Override
+	public String toString() {
+		return "AdLibRolFileBuilder [songMode=" + songMode + ", tempoEvents=" + tempoEvents + ", channels="
+				+ Arrays.toString(channels) + ", ticksPerBeat=" + ticksPerBeat + ", beatsPerMeasure=" + beatsPerMeasure
+				+ ", tempo=" + tempo + "]";
+	}
+
 	// Stupid container class. No getters/setters as this class is not
 	// exposed outside this class.
 	private static class ChannelEventLists {

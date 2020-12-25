@@ -1,8 +1,8 @@
 package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
 
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class NormalizedEvents<T extends Comparable<T>> {
@@ -40,7 +40,7 @@ public class NormalizedEvents<T extends Comparable<T>> {
 		return addedEvent.compareTo(otherEvent) == 0;	
 	}
 	
-	Map<Integer, T> getMap() {
+	SortedMap<Integer, T> getMap() {
 		return events;
 	}
 }

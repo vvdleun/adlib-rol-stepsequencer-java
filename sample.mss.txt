@@ -2,7 +2,7 @@
 version = 0
 target = ROL
 tempo = 100.0
-ticksPerBeat = 16
+ticksPerBeat = 2
 beatsPerMeasure = 4
 mode = MELODIC
 
@@ -10,17 +10,17 @@ mode = MELODIC
 - VOICE 1
   pitch = 1.0
   transpose = 0
-  instrument = MOOGSYNTH
+  instrument = MOOGSYNT
   volume = 1.0
 - VOICE 2
   pitch = 1.5 
-  transpose = 0
-  instrument = MOOGSYNTH
+  transpose = 12
+  instrument = MOOGSYNT
   volume = 1.0
 - VOICE 3
   pitch = 0.5
   transpose = -12
-  instrument = MOOGSYNTH
+  instrument = MOOGSYNT
   volume = 1.0
 
 [PATTERN one]

@@ -11,8 +11,8 @@ public class OutputFileRenderer {
 	
 	public void renderToAdLibRolFile(Song song, String path) throws IOException {
 		try(var outputStream = new BufferedOutputStream(new FileOutputStream(path))) {
-			AdLibRolSongRenderer adLibRolSongRenderer = new AdLibRolSongRenderer(outputStream);
-			adLibRolSongRenderer.renderRolFile(song);
+			AdLibRolSongRenderer adLibRolSongRenderer = new AdLibRolSongRenderer();
+			adLibRolSongRenderer.renderRolFile(song, outputStream);
 		}
 	}
 	
