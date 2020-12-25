@@ -1,8 +1,11 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.EventType;
-
+/**
+ * Event that changes the current patch. This will reset various parameters of the voices' channels that make
+ * up this patch.
+ *
+ * @author Vincent
+ */
 public class PatchChange extends Event {
 	private final String patchName;
 

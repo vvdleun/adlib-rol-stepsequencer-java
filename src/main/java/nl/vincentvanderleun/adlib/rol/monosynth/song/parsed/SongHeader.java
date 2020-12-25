@@ -1,5 +1,10 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed;
 
+/**
+ * Represents a parsed [SONG] header block from the input file.
+ *
+ * @author Vincent
+ */
 public class SongHeader {
 	public static final int DEFAULT_VERSION = 1;
 	
@@ -15,7 +20,7 @@ public class SongHeader {
 		this(DEFAULT_VERSION);
 	}
 
-	public SongHeader(int version) {
+	private SongHeader(int version) {
 		this.version = version;
 	}
 

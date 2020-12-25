@@ -12,14 +12,14 @@ import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.SequencerBlockParse
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.SongHeaderBlockParser;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.StructureParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Patch;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Song;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.SongHeader;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.SongMode;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Target;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Voice;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Patch;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Song;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.SongHeader;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.SongMode;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Target;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Voice;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.Sequencer;
 
 public class MonoSynthInputFileParser {
 	private final LineParser lineParser;

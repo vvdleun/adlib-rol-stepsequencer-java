@@ -1,14 +1,15 @@
 package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Song;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Voice;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.Note;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.NoteValue;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.OctaveChange;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.PatchChange;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.event.PlayPattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Patch;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Song;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Voice;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Event;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Note;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.NoteValue;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.OctaveChange;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.PatchChange;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.PlayPattern;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,6 @@ import nl.vincentvanderleun.adlib.rol.monosynth.renderer.RenderException;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.Channel;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.Tracks;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Patch;
 
 public class SongToNormalizedRolEventsConverter {
 	private static final Map<NoteValue, Integer> NOTE_NUMBERS;
@@ -72,7 +72,7 @@ public class SongToNormalizedRolEventsConverter {
 	}
 	
 	private void convertSequencerEvents(Tracks tracks) throws RenderException {
-		for(nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.Event event : song.getSequencer().getEvents()) {
+		for(nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.Event event : song.getSequencer().getEvents()) {
 			switch(event.getEventType() ) {
 				case PLAY_PATTERN:
 					PlayPattern playPattern = (PlayPattern)event;

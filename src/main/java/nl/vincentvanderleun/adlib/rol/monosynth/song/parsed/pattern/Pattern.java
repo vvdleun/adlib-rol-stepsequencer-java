@@ -1,7 +1,12 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.pattern;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
 
 import java.util.List;
 
+/**
+ * Contains all events that make up a single pattern.
+ *
+ * @author Vincent
+ */
 public class Pattern {
 	private String name;
 	private List<Event> events;

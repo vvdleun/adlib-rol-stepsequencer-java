@@ -1,7 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.event;
-
-import nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.EventType;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer;
 
 public class PlayPattern extends Event {
 	private final String patternName;

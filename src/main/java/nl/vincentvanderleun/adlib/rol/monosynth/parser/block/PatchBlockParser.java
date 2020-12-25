@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.BlockLine;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Patch;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Voice;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Patch;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Voice;
 
 public class PatchBlockParser extends BlockParser<Patch> {
 	private final String patchName;

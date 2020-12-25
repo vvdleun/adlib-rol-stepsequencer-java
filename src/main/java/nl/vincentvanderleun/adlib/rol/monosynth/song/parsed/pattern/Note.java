@@ -1,8 +1,11 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.EventType;
-
+/**
+ * The "Note" event represents a note and duration. An individual
+ * note can also overrule the current octave if it specifies an octave offset.
+ *
+ * @author Vincent
+ */
 public class Note extends Event {
 	private final NoteValue note;
 	private final int duration;

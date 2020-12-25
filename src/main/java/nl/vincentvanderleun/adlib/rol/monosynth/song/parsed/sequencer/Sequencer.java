@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer;
 
 import java.util.List;
 

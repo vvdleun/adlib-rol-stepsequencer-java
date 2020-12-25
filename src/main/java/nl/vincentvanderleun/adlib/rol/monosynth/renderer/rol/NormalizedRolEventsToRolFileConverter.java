@@ -8,8 +8,8 @@ import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.ChannelEvents
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.Tracks;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.writer.AdLibRolFile;
 import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.writer.AdLibRolFileBuilder;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.Song;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.SongMode;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.Song;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.SongMode;
 
 public class NormalizedRolEventsToRolFileConverter {
 	private static final int SILENCE = 0;

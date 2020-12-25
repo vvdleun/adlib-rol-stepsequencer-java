@@ -1,8 +1,10 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.EventType;
-
+/**
+ * Overrules the current patch' voice's pitches, while trying to keep the voice's pitch offset ratio in mind (if possible).
+ *
+ * @author Vincent
+ */
 public class Pitch extends Event {
 	private final float pitch;
 	

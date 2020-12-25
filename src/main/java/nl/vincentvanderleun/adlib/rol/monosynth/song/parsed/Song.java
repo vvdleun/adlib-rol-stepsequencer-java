@@ -1,10 +1,20 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed;
 
 import java.util.List;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer.Sequencer;
 
+/**
+ * Parsed song representation.
+ *
+ * This class follows the structure of the input file closely.
+ *
+ * Functions used in the input file have been parsed, but not been applied at this stage. Also
+ * not any form of normalization of events have taken place.
+ *
+ * @author Vincent
+ */
 public class Song {
 	private SongHeader header;
 	private List<Patch> patches;

@@ -7,8 +7,8 @@ import java.util.function.Supplier;
 
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.SongHeader;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.SongMode;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.SongHeader;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.SongMode;
 
 public class SongHeaderBlockParser extends BlockParser<SongHeader> {
 	private static final String MISSING_SONG_HEADER_TEXT = "The file must start with a \"[SONG]\" block with \"version=1\" key/value";

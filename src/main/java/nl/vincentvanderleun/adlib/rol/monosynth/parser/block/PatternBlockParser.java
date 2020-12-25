@@ -11,14 +11,14 @@ import java.util.function.Supplier;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.BlockFunction;
 import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.Hold;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.Note;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.NoteValue;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.OctaveChange;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.PatchChange;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event.Rest;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Event;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Hold;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Note;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.NoteValue;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.OctaveChange;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.PatchChange;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern.Rest;
 
 public class PatternBlockParser extends BlockParser<Pattern> {
 	private static final Map<String, NoteValue> NOTES = new HashMap<>(12);

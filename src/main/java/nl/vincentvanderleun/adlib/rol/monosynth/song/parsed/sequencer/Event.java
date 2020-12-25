@@ -1,7 +1,7 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.pattern;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.sequencer;
 
 public abstract class Event {
-	private final EventType eventType;
+	protected final EventType eventType;
 	
 	public Event(EventType eventType) {
 		this.eventType = eventType;

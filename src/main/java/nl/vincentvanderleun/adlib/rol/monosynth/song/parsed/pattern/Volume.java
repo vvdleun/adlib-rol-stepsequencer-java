@@ -1,8 +1,11 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.event;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed.pattern;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.song.pattern.EventType;
-
+/**
+ * Overrules the current patch' voice's volumes, while trying to keep the voice's volume offset ratio in mind (if possible).
+ * Softer voices remain softer.
+ *
+ * @author Vincent
+ */
 public class Volume extends Event {
 	private final float volume;
 	

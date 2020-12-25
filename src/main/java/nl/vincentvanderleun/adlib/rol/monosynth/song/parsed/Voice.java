@@ -1,5 +1,10 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.song;
+package nl.vincentvanderleun.adlib.rol.monosynth.song.parsed;
 
+/**
+ * Represents a parsed voice, parsed while parsing [PATCH] blocks, from the input file.
+ *
+ * @author Vincent
+ */
 public class Voice {
 	private String name;
 	private String instrument;
