@@ -1,6 +1,5 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -10,7 +9,6 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.Instrume
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
@@ -23,7 +21,6 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPa
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.RenderException;
 
 public class ParsedSongCompiler {
-	private static final Map<NoteValue, Integer> NOTE_NUMBERS;
 	private static final int DEFAULT_OCTAVE = 4;
 	
 	private final ParsedSong parsedSong;
@@ -33,22 +30,6 @@ public class ParsedSongCompiler {
 	private int octave;
 	private int tick;
 	private Patch patch;
-
-	static {
-		NOTE_NUMBERS = new HashMap<>(12);
-		NOTE_NUMBERS.put(NoteValue.C, 12);
-		NOTE_NUMBERS.put(NoteValue.C_SHARP, 13);
-		NOTE_NUMBERS.put(NoteValue.D, 14);
-		NOTE_NUMBERS.put(NoteValue.D_SHARP, 15);
-		NOTE_NUMBERS.put(NoteValue.E, 16);
-		NOTE_NUMBERS.put(NoteValue.F, 17);
-		NOTE_NUMBERS.put(NoteValue.F_SHARP, 18);
-		NOTE_NUMBERS.put(NoteValue.G, 19);
-		NOTE_NUMBERS.put(NoteValue.G_SHARP, 20);
-		NOTE_NUMBERS.put(NoteValue.A, 21);
-		NOTE_NUMBERS.put(NoteValue.A_SHARP, 22);
-		NOTE_NUMBERS.put(NoteValue.B, 23);
-	}
 
 	public ParsedSongCompiler(ParsedSong parsedSong) {
 		this.tick = 0;
@@ -65,7 +46,7 @@ public class ParsedSongCompiler {
 						Patch::getName, (patch) -> patch));
 	}
 
-	public void compile() throws RenderException {
+	public CompiledSong compile() throws RenderException {
 		CompiledSong compiledSong = initializeCompiledSong(parsedSong);
 		
 		for(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event event : parsedSong.getSequencer().getEvents()) {
@@ -79,6 +60,8 @@ public class ParsedSongCompiler {
 					throw new RenderException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
 			}
 		}
+		
+		return compiledSong;
 	}
 
 	private CompiledSong initializeCompiledSong(ParsedSong song) {
@@ -130,14 +113,16 @@ public class ParsedSongCompiler {
 		});
 	}
 
-	private void convertNote(Note noteEvent, CompiledSong song) throws RenderException {
+	private void convertNote(Note parsedNote, CompiledSong song) throws RenderException {
+		int channel = 0;
 		for(Voice voice : patch.getVoices()) {
-			final int channel = voice.getChannel();
-			final int duration = noteEvent.getDuration();
-			final int note = NOTE_NUMBERS.get(noteEvent.getNote()) + (12 * (octave + noteEvent.getOctaveOffset()))
-					+ voice.getTranspose();
- 
-			song.getChannels().get(channel).addNoteEvent(tick, new NoteEvent(note, duration));
+			NoteEvent noteEvent = new NoteEvent(
+					parsedNote.getNote(),
+					parsedNote.getDuration(),
+					this.octave + parsedNote.getOctaveOffset(),
+					voice.getTranspose());
+			
+			song.getChannels().get(channel++).addNoteEvent(tick, noteEvent);
 		}
 		++tick;
 	}

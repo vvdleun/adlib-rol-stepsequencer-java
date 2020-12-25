@@ -13,13 +13,16 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.Instrume
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
 
 public class ChannelTests {
 	private static final int CHANNEL = 0;
-	private static final int SOME_NOTE = 100;
-	private static final int OTHER_NOTE = 200;
-	private static NoteEvent SOME_NOTE_EVENT = new NoteEvent(SOME_NOTE, 1);
-	private static NoteEvent OTHER_NOTE_EVENT = new NoteEvent(OTHER_NOTE, 1);
+	private static final NoteValue SOME_NOTE = NoteValue.B;
+	private static final NoteValue OTHER_NOTE = NoteValue.C;
+	private static final int SOME_OCTAVE = 4;
+	private static final int NO_TRANSPOSE = 0;
+	private static NoteEvent SOME_NOTE_EVENT = new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE);
+	private static NoteEvent OTHER_NOTE_EVENT = new NoteEvent(OTHER_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE);
 	
 	private final Channel channel = new Channel(CHANNEL);
 
@@ -80,7 +83,7 @@ public class ChannelTests {
 	
 	@Test
 	public void shouldOnlyReturnNoteEventIfNoteStartsAtSpecifiedTick() {
-		channel.addNoteEvent(0, new NoteEvent(100, 10)); // 0..9
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 10, SOME_OCTAVE, NO_TRANSPOSE)); // 0..9
 		
 		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
 		
@@ -90,9 +93,9 @@ public class ChannelTests {
 
 	@Test
 	public void shouldAddNonOverlappingNotes() {
-		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 1)); // Spans tick 0
-		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 2)); // Spans tick 1 and 2
-		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 3)); // Spans tick 3, 4 and 5
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE)); // Spans tick 0
+		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 2, SOME_OCTAVE, NO_TRANSPOSE)); // Spans tick 1 and 2
+		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 3, SOME_OCTAVE, NO_TRANSPOSE)); // Spans tick 3, 4 and 5
 		
 		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
 		ChannelEvents channelEventsAtTick1 = channel.getEventsAtTick(1);
@@ -117,8 +120,8 @@ public class ChannelTests {
 	
 	@Test
 	public void shouldShortenOverlappingNotePrecedingAddedNote() {
-		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans tick 0, 1, 2
-		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1));
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3, SOME_OCTAVE, NO_TRANSPOSE)); // Spans tick 0, 1, 2
+		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
 
 		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
 		ChannelEvents channelEventsAtTick2 = channel.getEventsAtTick(2);
@@ -138,12 +141,12 @@ public class ChannelTests {
 	
 	@Test
 	public void shouldDeleteOverlappingNotesFollowingIt() {
-		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 1));
-		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 1));
-		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1));
-		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 1));
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
+		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
+		channel.addNoteEvent(2, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
+		channel.addNoteEvent(3, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
 		
-		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3)); // Spans ticks 0, 1 and 2
+		channel.addNoteEvent(0, new NoteEvent(SOME_NOTE, 3, SOME_OCTAVE, NO_TRANSPOSE)); // Spans ticks 0, 1 and 2
 
 		ChannelEvents channelEventsAtTick0 = channel.getEventsAtTick(0);
 		ChannelEvents channelEventsAtTick3 = channel.getEventsAtTick(3);
@@ -163,30 +166,30 @@ public class ChannelTests {
 	@Test
 	public void shouldThrowWhenAddingNotesWithNoDuration() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			channel.addNoteEvent(30, new NoteEvent(SOME_NOTE, 0));
+			channel.addNoteEvent(30, new NoteEvent(SOME_NOTE, 0, SOME_OCTAVE, NO_TRANSPOSE));
 		});
 	}
 
 	@Test
 	public void shouldThrowWhenAddingNotesOnTickSmallerThanZero() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			channel.addNoteEvent(-1, new NoteEvent(SOME_NOTE, 10));
+			channel.addNoteEvent(-1, new NoteEvent(SOME_NOTE, 10, SOME_OCTAVE, NO_TRANSPOSE));
 		});
 	}
 	
 	@Test
 	public void shouldListAllAddedEventsInSortedOrder() {
 		// Tick 1
-		channel.addNoteEvent(1, SOME_NOTE_EVENT);
+		channel.addNoteEvent(1, new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
 		// Tick 0
 		channel.addInstrumentEvent(0, new InstrumentEvent("PIANO1"));
 		// Tick 3
-		channel.addNoteEvent(3, OTHER_NOTE_EVENT);
+		channel.addNoteEvent(3, new NoteEvent(OTHER_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
 		channel.addInstrumentEvent(3, new InstrumentEvent("PIANO2"));
 		channel.addVolumeEvent(3, new VolumeMultiplierEvent(0.75f));
 		channel.addPitchEvent(3, new PitchMultiplierEvent(2.0f));
 		// Tick 2
-		channel.addNoteEvent(2, OTHER_NOTE_EVENT);
+		channel.addNoteEvent(2, new NoteEvent(OTHER_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE));
 		channel.addVolumeEvent(2, new VolumeMultiplierEvent(1.0f));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
