@@ -1,14 +1,14 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song;
 
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class NormalizedEvents<T extends Comparable<T>> {
+public class NormalizedEventMap<T extends Comparable<T>> {
 	private final NavigableMap<Integer, T> events;
 	
-	public NormalizedEvents() {
+	public NormalizedEventMap() {
 		this.events = new TreeMap<>();
 	}
 	
@@ -40,7 +40,7 @@ public class NormalizedEvents<T extends Comparable<T>> {
 		return addedEvent.compareTo(otherEvent) == 0;	
 	}
 	
-	SortedMap<Integer, T> getMap() {
+	public SortedMap<Integer, T> getMap() {
 		return events;
 	}
 }

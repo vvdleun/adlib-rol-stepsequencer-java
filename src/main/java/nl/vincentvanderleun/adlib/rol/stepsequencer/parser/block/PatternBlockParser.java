@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Supplier;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.BlockFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Hold;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Note;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteValue;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;

@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -9,9 +9,10 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.Channel;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.ChannelEvents;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.NoteEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.InstrumentEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
 
 public class ChannelTests {
 	private static final int CHANNEL = 0;
@@ -48,9 +49,9 @@ public class ChannelTests {
 
 	@Test
 	public void shouldAddOtherEventsToATick() {
-		channel.addInstrumentEvent(0, "PIANO1");
-		channel.addPitchEvent(0, 1.0f);
-		channel.addVolumeEvent(0, 0.75f);
+		channel.addInstrumentEvent(0, new InstrumentEvent("PIANO1"));
+		channel.addPitchEvent(0, new PitchMultiplierEvent(1.0f));
+		channel.addVolumeEvent(0, new VolumeMultiplierEvent(0.75f));
 		
 		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
@@ -64,9 +65,9 @@ public class ChannelTests {
 	@Test
 	public void shouldAddAllEventsAddedToSameTick() {
 		channel.addNoteEvent(0, SOME_NOTE_EVENT);
-		channel.addInstrumentEvent(0, "PIANO1");
-		channel.addPitchEvent(0, 1.0f);
-		channel.addVolumeEvent(0, 0.75f);
+		channel.addInstrumentEvent(0, new InstrumentEvent("PIANO1"));
+		channel.addPitchEvent(0, new PitchMultiplierEvent(1.0f));
+		channel.addVolumeEvent(0, new VolumeMultiplierEvent(0.75f));
 		
 		ChannelEvents channelEvents = channel.getEventsAtTick(0);
 		
@@ -178,15 +179,15 @@ public class ChannelTests {
 		// Tick 1
 		channel.addNoteEvent(1, SOME_NOTE_EVENT);
 		// Tick 0
-		channel.addInstrumentEvent(0, "PIANO1");
+		channel.addInstrumentEvent(0, new InstrumentEvent("PIANO1"));
 		// Tick 3
 		channel.addNoteEvent(3, OTHER_NOTE_EVENT);
-		channel.addInstrumentEvent(3, "PIANO2");
-		channel.addVolumeEvent(3, 0.75f);
-		channel.addPitchEvent(3, 2.0f);
+		channel.addInstrumentEvent(3, new InstrumentEvent("PIANO2"));
+		channel.addVolumeEvent(3, new VolumeMultiplierEvent(0.75f));
+		channel.addPitchEvent(3, new PitchMultiplierEvent(2.0f));
 		// Tick 2
 		channel.addNoteEvent(2, OTHER_NOTE_EVENT);
-		channel.addVolumeEvent(2, 1.0f);
+		channel.addVolumeEvent(2, new VolumeMultiplierEvent(1.0f));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
@@ -202,8 +203,8 @@ public class ChannelTests {
 	
 	@Test
 	public void shouldNormalizeInstrumentEventsWhenAddingTwoDuplicateOnesAfterEachOther() {
-		channel.addInstrumentEvent(10, "PIANO1");
-		channel.addInstrumentEvent(30, "PIANO1");
+		channel.addInstrumentEvent(10, new InstrumentEvent("PIANO1"));
+		channel.addInstrumentEvent(30, new InstrumentEvent("PIANO1"));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
@@ -214,8 +215,8 @@ public class ChannelTests {
 
 	@Test
 	public void shouldNormalizeInstrumentEventsWhenAddingDuplicateEventBeforeOther() {
-		channel.addInstrumentEvent(30, "PIANO1");
-		channel.addInstrumentEvent(10, "PIANO1");
+		channel.addInstrumentEvent(30, new InstrumentEvent("PIANO1"));
+		channel.addInstrumentEvent(10, new InstrumentEvent("PIANO1"));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
@@ -226,8 +227,8 @@ public class ChannelTests {
 
 	@Test
 	public void shouldNormalizeVolumeEventsWhenAddingTwoDuplicateOnesAfterEachOther() {
-		channel.addVolumeEvent(10, 1.23f);
-		channel.addVolumeEvent(30, 1.23f);
+		channel.addVolumeEvent(10, new VolumeMultiplierEvent(1.23f));
+		channel.addVolumeEvent(30, new VolumeMultiplierEvent(1.23f));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
@@ -238,8 +239,8 @@ public class ChannelTests {
 
 	@Test
 	public void shouldNormalizeVolumeEventsWhenAddingDuplicateEventBeforeOther() {
-		channel.addVolumeEvent(30, 1.23f);
-		channel.addVolumeEvent(10, 1.23f);
+		channel.addVolumeEvent(30, new VolumeMultiplierEvent(1.23f));
+		channel.addVolumeEvent(10, new VolumeMultiplierEvent(1.23f));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
@@ -250,8 +251,8 @@ public class ChannelTests {
 
 	@Test
 	public void shouldNormalizePitchEventsWhenAddingTwoDuplicateOnesAfterEachOther() {
-		channel.addPitchEvent(10, 13.37f);
-		channel.addPitchEvent(30, 13.37f);
+		channel.addPitchEvent(10, new PitchMultiplierEvent(13.37f));
+		channel.addPitchEvent(30, new PitchMultiplierEvent(13.37f));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 
@@ -262,8 +263,8 @@ public class ChannelTests {
 
 	@Test
 	public void shouldNormalizePitchEventsWhenAddingDuplicateEventBeforeOther() {
-		channel.addPitchEvent(30, 13.37f);
-		channel.addPitchEvent(10, 13.37f);
+		channel.addPitchEvent(30, new PitchMultiplierEvent(13.37f));
+		channel.addPitchEvent(10, new PitchMultiplierEvent(13.37f));
 
 		Set<ChannelEvents> allEventsSet = channel.getAllEvents();
 

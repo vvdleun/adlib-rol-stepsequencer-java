@@ -1,5 +1,8 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.SongMode;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Target;
+
 /**
  * Represents a parsed [SONG] header block from the input file.
  *

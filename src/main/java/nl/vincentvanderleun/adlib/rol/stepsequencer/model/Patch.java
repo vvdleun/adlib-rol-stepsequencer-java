@@ -1,9 +1,9 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.model;
 
 import java.util.List;
 
 /**
- * Represents a parsed [PATCH <patchname>] block from the input file.
+ * Represents a high-level patch, which consists of a collection of individual mono voices.
  *
  * @author Vincent
  */

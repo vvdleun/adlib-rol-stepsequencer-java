@@ -1,7 +1,7 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.model;
 
 /**
- * Represents a parsed voice, parsed while parsing [PATCH] blocks, from the input file.
+ * Represents a voice of a patch.
  *
  * @author Vincent
  */

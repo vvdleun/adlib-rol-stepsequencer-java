@@ -1,5 +1,7 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
+
 /**
  * The "Note" event represents a note and duration. An individual
  * note can also overrule the current octave if it specifies an octave offset.

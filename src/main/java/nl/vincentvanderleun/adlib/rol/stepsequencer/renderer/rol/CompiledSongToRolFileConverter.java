@@ -3,28 +3,27 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol;
 import java.io.IOException;
 import java.util.Map;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Song;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongMode;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.Channel;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.ChannelEvents;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.Tracks;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.writer.AdLibRolFile;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.writer.AdLibRolFileBuilder;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Channel;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.ChannelEvents;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.SongMode;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFileBuilder;
 
-public class NormalizedRolEventsToRolFileConverter {
+public class CompiledSongToRolFileConverter {
 	private static final int SILENCE = 0;
 	
-	public AdLibRolFile convertToAdLibRolFile(Song song, Tracks normalizedEvents) throws IOException {
-		AdLibRolFileBuilder builder = buildRolBuilder(song.getHeader().getMode())
-				.withTicksPerBeat(song.getHeader().getTicksPerBeat())
-				.withBeatsPerMeasure(song.getHeader().getBeatsPerMeasure())
-				.withMainTempo(song.getHeader().getTempo());
+	public AdLibRolFile convertToAdLibRolFile(CompiledSong song) throws IOException {
+		AdLibRolFileBuilder builder = buildRolBuilder(song.getSongMode())
+				.withTicksPerBeat(song.getTicksPerBeat())
+				.withBeatsPerMeasure(song.getBeatsPerMeasure())
+				.withMainTempo(song.getTempo());
 		
-		for(Map.Entry<Integer, Float> tempoEvent : normalizedEvents.getTempoEvents().entrySet()) {
+		for(Map.Entry<Integer, Float> tempoEvent : song.getTempoEvents().entrySet()) {
 			builder.addTempoMultiplierEvent(tempoEvent.getKey(), tempoEvent.getValue());
 		}
 
-		for(Channel channel : normalizedEvents.getChannels()) {
+		for(Channel channel : song.getChannels()) {
 			int lastNoteTick = 0;
 			for(ChannelEvents events : channel.getAllEvents()) {
 				if(events.getNote() != null) {

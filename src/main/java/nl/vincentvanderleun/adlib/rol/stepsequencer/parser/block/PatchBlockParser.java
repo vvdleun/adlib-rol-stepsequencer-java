@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.BlockLine;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Patch;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Voice;
 
 public class PatchBlockParser extends BlockParser<Patch> {
 	private final String patchName;

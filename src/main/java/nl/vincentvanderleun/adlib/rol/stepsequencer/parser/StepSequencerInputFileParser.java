@@ -6,22 +6,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.SongMode;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Target;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.PatchBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.PatternBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.SequencerBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.SongHeaderBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.StructureParser;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Patch;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Song;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongMode;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Target;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
 
-public class MonoSynthInputFileParser {
+public class StepSequencerInputFileParser {
 	private final LineParser lineParser;
 	private final StructureParser structureParser;
 
@@ -30,19 +30,19 @@ public class MonoSynthInputFileParser {
 	private final List<Pattern> patterns = new ArrayList<>();
 	private Sequencer sequencer;
 	
-	public static final Song parse(String path) throws IOException {
+	public static final ParsedSong parse(String path) throws IOException {
 		try(var reader = new BufferedReader(new FileReader(path))) {
-			var parser = new MonoSynthInputFileParser(reader);
+			var parser = new StepSequencerInputFileParser(reader);
 			return parser.parse();
 		}
 	}
 
-	private MonoSynthInputFileParser(BufferedReader reader) {
+	private StepSequencerInputFileParser(BufferedReader reader) {
 		this.lineParser = new LineParser(reader);
 		this.structureParser = new StructureParser(lineParser);
 	}
 
-	private Song parse() throws IOException {
+	private ParsedSong parse() throws IOException {
 		parseSongHeader();
 		
 		while(!lineParser.isEndOfFileReached()) {
@@ -65,13 +65,13 @@ public class MonoSynthInputFileParser {
 			}
 		}
 		
-		Song song = new Song();
-		song.setHeader(header);
-		song.setPatches(patches);
-		song.setPatterns(patterns);
-		song.setSequencer(sequencer);
+		ParsedSong parsedSong = new ParsedSong();
+		parsedSong.setHeader(header);
+		parsedSong.setPatches(patches);
+		parsedSong.setPatterns(patterns);
+		parsedSong.setSequencer(sequencer);
 		
-		return song;
+		return parsedSong;
 	}
 
 	private void parseSongHeader() throws IOException {

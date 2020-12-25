@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.writer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format;
 
 import java.util.List;
 
@@ -98,36 +98,6 @@ public class AdLibRolFile {
 		}
 	}
 
-	// - tracks
-	
-	public static class TempoTrack {
-		private final String trackName;
-		private final float tempo;
-		private final List<Tempo> tempoMultiplierEvents;
-		
-		public TempoTrack(String trackName, float tempo, List<Tempo> tempoMultipliers) {
-			this.trackName = trackName;
-			this.tempo = tempo;
-			this.tempoMultiplierEvents = tempoMultipliers;
-		}
-
-		public String getTrackName() {
-			return trackName;
-		}
-
-		public float getTempo() {
-			return tempo;
-		}
-
-		public List<Tempo> getTempoMultiplierEvents() {
-			return tempoMultiplierEvents;
-		}
-	}
-
-	// Channel-based structures
-
-	// - events
-	
 	public static class Note {
 		private final int note;
 		private final int duration;
@@ -197,6 +167,32 @@ public class AdLibRolFile {
 	public static class Pitch extends FloatBasedEvent {
 		public Pitch(int tick, float pitchMultiplier) {
 			super(tick, pitchMultiplier);
+		}
+	}
+
+	// - tracks
+	
+	public static class TempoTrack {
+		private final String trackName;
+		private final float tempo;
+		private final List<Tempo> tempoMultiplierEvents;
+		
+		public TempoTrack(String trackName, float tempo, List<Tempo> tempoMultipliers) {
+			this.trackName = trackName;
+			this.tempo = tempo;
+			this.tempoMultiplierEvents = tempoMultipliers;
+		}
+
+		public String getTrackName() {
+			return trackName;
+		}
+
+		public float getTempo() {
+			return tempo;
+		}
+
+		public List<Tempo> getTempoMultiplierEvents() {
+			return tempoMultiplierEvents;
 		}
 	}
 

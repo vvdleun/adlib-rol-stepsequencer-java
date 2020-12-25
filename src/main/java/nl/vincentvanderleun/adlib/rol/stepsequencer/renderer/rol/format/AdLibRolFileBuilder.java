@@ -1,9 +1,22 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.writer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Channel;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Header;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Note;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Pitch;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.PitchTrack;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Tempo;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.TempoTrack;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Timbre;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.TimbreTrack;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.VoiceTrack;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.Volume;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile.VolumeTrack;
 
 /**
  * This builder (one of the most boring to write...) builds the Ad Lib ROL file using most

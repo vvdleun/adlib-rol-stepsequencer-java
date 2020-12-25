@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song;
 
 import java.util.NavigableMap;
 import java.util.Objects;
@@ -10,8 +10,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.Event;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.InstrumentEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
+
 /**
- * This class aims to make it convenient to work with channel-based ROL events. It tries to automatically fix conflicting
+ * This class aims to make it convenient to work with monophonic channels. It tries to automatically fix conflicting
  * events (for example: when placing a note that overlaps with other notes, it will shorten the note that preceded the note
  * and delete conflicting notes that succeed it). For non-note events, it won't add events if it sees that exactly the same
  * event preceded it and/or will delete the event succeeding it, if it were duplicates. It tries hard to create normalized
@@ -24,16 +30,16 @@ import java.util.stream.Stream;
 public class Channel {
 	private final int channel;
 	private final NavigableMap<Integer, NoteEvent> notes;
-	private final NormalizedEvents<String> instruments;
-	private final NormalizedEvents<Float> volumes;
-	private final NormalizedEvents<Float> pitches;
+	private final NormalizedEventMap<InstrumentEvent> instruments;
+	private final NormalizedEventMap<VolumeMultiplierEvent> volumes;
+	private final NormalizedEventMap<PitchMultiplierEvent> pitches;
 	
 	public Channel(int channel) {
 		this.channel = channel;
 		this.notes = new TreeMap<>();
-		this.instruments = new NormalizedEvents<>();
-		this.volumes = new NormalizedEvents<>();
-		this.pitches = new NormalizedEvents<>();
+		this.instruments = new NormalizedEventMap<>();
+		this.volumes = new NormalizedEventMap<>();
+		this.pitches = new NormalizedEventMap<>();
 	}
 
 	public void addNoteEvent(int tick, NoteEvent note) {
@@ -67,22 +73,42 @@ public class Channel {
 		return noteStart.getKey() + noteStart.getValue().getDuration() - 1;
 	}
 
-	public void addInstrumentEvent(int tick, String instrument) {
+	public void addEvent(int tick, Event event) {
+		switch(event.getEventType()) {
+			case INSTRUMENT:
+				addInstrumentEvent(tick, (InstrumentEvent)event);
+				break;
+			case NOTE:
+				addNoteEvent(tick, (NoteEvent)event);
+				break;
+			case PITCH:
+				addPitchEvent(tick, (PitchMultiplierEvent)event);
+				break;
+			case VOLUME:
+				addVolumeEvent(tick, (VolumeMultiplierEvent)event);
+				break;
+			case TEMPO:
+			default:
+				throw new IllegalStateException("Internal error: event " + event + " not supported for channels by compiler");
+		}
+	}
+	
+	public void addInstrumentEvent(int tick, InstrumentEvent event) {
 		validateTick(tick);
 
-		instruments.add(tick, instrument);
+		instruments.add(tick, event);
 	}
 
-	public void addVolumeEvent(int tick, float volume) {
+	public void addVolumeEvent(int tick, VolumeMultiplierEvent event) {
 		validateTick(tick);
 
-		volumes.add(tick,  volume);
+		volumes.add(tick,  event);
 	}
 
-	public void addPitchEvent(int tick, float pitch) {
+	public void addPitchEvent(int tick, PitchMultiplierEvent event) {
 		validateTick(tick);
 
-		pitches.add(tick, pitch);
+		pitches.add(tick, event);
 	}
 
 	private void validateTick(int tick) {
@@ -93,9 +119,9 @@ public class Channel {
 
 	public ChannelEvents getEventsAtTick(int tick) {
 		final NoteEvent noteEvent = notes.get(tick);
-		final String instrument = instruments.get(tick);
-		final Float volume = volumes.get(tick);
-		final Float pitch = pitches.get(tick);
+		final String instrument = instruments.get(tick) != null ? instruments.get(tick).getInstrument() : null;
+		final Float volume = volumes.get(tick) != null ? volumes.get(tick).getMulitplier() : null;
+		final Float pitch = pitches.get(tick) != null ? pitches.get(tick).getMulitplier() : null;
 
 		return ChannelEvents.fromAllEvents(channel, tick, noteEvent, instrument, volume, pitch);
 	}
@@ -105,13 +131,13 @@ public class Channel {
 				.map((entry) -> ChannelEvents.fromNoteEvenOnly(channel, entry.getKey(), entry.getValue()));
 
 		Stream<ChannelEvents> streamInstrumentEvents = instruments.getMap().entrySet().stream()
-				.map((entry) -> ChannelEvents.fromInstrumentOnly(channel, entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromInstrumentOnly(channel, entry.getKey(), entry.getValue().getInstrument()));
 
 		Stream<ChannelEvents> streamVolumeEvents = volumes.getMap().entrySet().stream()
-				.map((entry) -> ChannelEvents.fromVolumeOnly(channel, entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromVolumeOnly(channel, entry.getKey(), entry.getValue().getMulitplier()));
 
 		Stream<ChannelEvents> streamPitchEvents = pitches.getMap().entrySet().stream()
-				.map((entry) -> ChannelEvents.fromPitchOnly(channel, entry.getKey(), entry.getValue()));
+				.map((entry) -> ChannelEvents.fromPitchOnly(channel, entry.getKey(), entry.getValue().getMulitplier()));
 		
 		return Stream.of(
 						streamNoteEvents,

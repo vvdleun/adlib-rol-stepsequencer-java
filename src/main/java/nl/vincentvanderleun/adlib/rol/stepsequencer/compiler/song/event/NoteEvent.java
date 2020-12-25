@@ -1,12 +1,13 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event;
 
 import java.util.Objects;
 
-public class NoteEvent {
+public class NoteEvent extends Event {
 	private int note;
 	private int duration;
 	
 	public NoteEvent(int note, int duration) {
+		super(EventType.NOTE);
 		this.note = note;
 		this.duration = duration;
 	}

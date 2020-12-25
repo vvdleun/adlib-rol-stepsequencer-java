@@ -5,10 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.SongMode;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongMode;
 
 public class SongHeaderBlockParser extends BlockParser<SongHeader> {
 	private static final String MISSING_SONG_HEADER_TEXT = "The file must start with a \"[SONG]\" block with \"version=1\" key/value";
@@ -71,7 +71,7 @@ public class SongHeaderBlockParser extends BlockParser<SongHeader> {
 			case "PERCUSSIVE":
 				return SongMode.PERCUSSIVE;
 			default:
-				throw new ParseException("Song mode '" + value + "' is not supported inside the [SONG] block at line " + lineParser.getLineNumber());
+				throw new ParseException("ParsedSong mode '" + value + "' is not supported inside the [SONG] block at line " + lineParser.getLineNumber());
 		}
 	}
 	

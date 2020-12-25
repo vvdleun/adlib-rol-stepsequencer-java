@@ -1,6 +1,8 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song;
 
 import java.util.Objects;
+
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 
 public class ChannelEvents implements Comparable<ChannelEvents> {
 	private final int tick;

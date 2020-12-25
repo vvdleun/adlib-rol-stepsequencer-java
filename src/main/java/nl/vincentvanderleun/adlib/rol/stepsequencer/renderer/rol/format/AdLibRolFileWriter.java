@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.writer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,7 +34,7 @@ public class AdLibRolFileWriter {
 		writer.writeWord(header.getScaleX());
 		// Reserved
 		writer.writeUnsignedByte(0);
-		// Song mode
+		// ParsedSong mode
 		writer.writeUnsignedByte(header.getSongMode());
 		// Counters
 		for(int i = 0; i < header.getCounters().length; i++) {
