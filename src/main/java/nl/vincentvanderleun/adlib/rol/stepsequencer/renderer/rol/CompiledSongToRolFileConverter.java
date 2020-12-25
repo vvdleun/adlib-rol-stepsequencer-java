@@ -8,29 +8,29 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Channel;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.ChannelEvents;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.SongMode;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFile;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRolFileBuilder;
 
 public class CompiledSongToRolFileConverter {
 	private static final int SILENCE = 0;
-	private static final Map<NoteValue, Integer> NOTE_NUMBERS;
+	private static final Map<Note, Integer> NOTE_NUMBERS;
 
 	static {
 		NOTE_NUMBERS = new HashMap<>(12);
-		NOTE_NUMBERS.put(NoteValue.C, 12);
-		NOTE_NUMBERS.put(NoteValue.C_SHARP, 13);
-		NOTE_NUMBERS.put(NoteValue.D, 14);
-		NOTE_NUMBERS.put(NoteValue.D_SHARP, 15);
-		NOTE_NUMBERS.put(NoteValue.E, 16);
-		NOTE_NUMBERS.put(NoteValue.F, 17);
-		NOTE_NUMBERS.put(NoteValue.F_SHARP, 18);
-		NOTE_NUMBERS.put(NoteValue.G, 19);
-		NOTE_NUMBERS.put(NoteValue.G_SHARP, 20);
-		NOTE_NUMBERS.put(NoteValue.A, 21);
-		NOTE_NUMBERS.put(NoteValue.A_SHARP, 22);
-		NOTE_NUMBERS.put(NoteValue.B, 23);
+		NOTE_NUMBERS.put(Note.C, 12);
+		NOTE_NUMBERS.put(Note.C_SHARP, 13);
+		NOTE_NUMBERS.put(Note.D, 14);
+		NOTE_NUMBERS.put(Note.D_SHARP, 15);
+		NOTE_NUMBERS.put(Note.E, 16);
+		NOTE_NUMBERS.put(Note.F, 17);
+		NOTE_NUMBERS.put(Note.F_SHARP, 18);
+		NOTE_NUMBERS.put(Note.G, 19);
+		NOTE_NUMBERS.put(Note.G_SHARP, 20);
+		NOTE_NUMBERS.put(Note.A, 21);
+		NOTE_NUMBERS.put(Note.A_SHARP, 22);
+		NOTE_NUMBERS.put(Note.B, 23);
 	}
 	
 	public AdLibRolFile convertToAdLibRolFile(CompiledSong song) throws IOException {

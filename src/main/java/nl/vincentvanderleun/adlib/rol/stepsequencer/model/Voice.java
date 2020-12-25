@@ -11,7 +11,6 @@ public class Voice {
 	private float pitch;
 	private int transpose;
 	private float volume;
-	private int channel;
 	
 	public String getName() {
 		return name;
@@ -51,13 +50,5 @@ public class Voice {
 
 	public void setVolume(float volume) {
 		this.volume = volume;
-	}
-
-	public int getChannel() {
-		return channel;
-	}
-
-	public void setChannel(int channel) {
-		this.channel = channel;
 	}
 }

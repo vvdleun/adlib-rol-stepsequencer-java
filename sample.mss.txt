@@ -2,7 +2,7 @@
 version = 0
 target = ROL
 tempo = 100.0
-ticksPerBeat = 4
+ticksPerBeat = 3
 beatsPerMeasure = 4
 mode = MELODIC
 

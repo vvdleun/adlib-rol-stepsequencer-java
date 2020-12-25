@@ -4,7 +4,7 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
  * Changes the current octave. The following notes (which do not overrule the current
  * octave) will use this octave.
  * 
- * Note that individual voices can overrule this with their "transpose" setting.
+ * NoteEvent that individual voices can overrule this with their "transpose" setting.
  *
  * @author Vincent
  */

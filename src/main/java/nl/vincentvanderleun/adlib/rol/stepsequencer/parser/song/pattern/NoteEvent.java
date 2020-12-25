@@ -1,19 +1,19 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
 
 /**
- * The "Note" event represents a note and duration. An individual
+ * The "NoteEvent" event represents a note and duration. An individual
  * note can also overrule the current octave if it specifies an octave offset.
  *
  * @author Vincent
  */
-public class Note extends Event {
-	private final NoteValue note;
+public class NoteEvent extends Event {
+	private final Note note;
 	private final int duration;
 	private final int octaveOffset;
 	
-	public Note(NoteValue note, int duration, int octaveOffset) {
+	public NoteEvent(Note note, int duration, int octaveOffset) {
 		super(EventType.NOTE);
 
 		this.note = note;
@@ -21,7 +21,7 @@ public class Note extends Event {
 		this.octaveOffset = octaveOffset;
 	}
 
-	public NoteValue getNote() {
+	public Note getNote() {
 		return note;
 	}
 
@@ -35,6 +35,6 @@ public class Note extends Event {
 
 	@Override
 	public String toString() {
-		return "Note [note=" + note + ", duration=" + duration + ", octaveOffset=" + octaveOffset + "]";
+		return "NoteEvent [note=" + note + ", duration=" + duration + ", octaveOffset=" + octaveOffset + "]";
 	}
 }

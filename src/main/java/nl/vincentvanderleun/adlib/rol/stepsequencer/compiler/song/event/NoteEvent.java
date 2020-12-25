@@ -2,15 +2,15 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event;
 
 import java.util.Objects;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
 
 public class NoteEvent extends Event {
-	private NoteValue note;
+	private Note note;
 	private int duration;
 	private int octave;
 	private int transpose;
 	
-	public NoteEvent(NoteValue note, int duration, int octave, int transpose) {
+	public NoteEvent(Note note, int duration, int octave, int transpose) {
 		super(EventType.NOTE);
 		this.note = note;
 		this.duration = duration;
@@ -18,11 +18,11 @@ public class NoteEvent extends Event {
 		this.transpose = transpose;
 	}
 
-	public NoteValue getNote() {
+	public Note getNote() {
 		return note;
 	}
 	
-	public void setNote(NoteValue note) {
+	public void setNote(Note note) {
 		this.note = note;
 	}
 	

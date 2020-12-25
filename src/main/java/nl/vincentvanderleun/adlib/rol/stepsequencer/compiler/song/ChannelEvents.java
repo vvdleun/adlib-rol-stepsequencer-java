@@ -20,7 +20,7 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 		return new ChannelEvents(
 				channel,
 				tick,						// Tick
-				noteEvent,					// Note event
+				noteEvent,					// NoteEvent event
 				null,						// Instrument
 				null,						// Volume
 				null);						// Pitch
@@ -30,7 +30,7 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 		return new ChannelEvents(
 				channel,
 				tick,						// Tick
-				null,						// Note event
+				null,						// NoteEvent event
 				instrument,					// Instrument
 				null,						// Volume
 				null);						// Pitch		
@@ -40,7 +40,7 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 		return new ChannelEvents(
 				channel,
 				tick,						// Tick
-				null,						// Note event
+				null,						// NoteEvent event
 				null,						// Instrument
 				volume,						// Volume
 				null);						// Pitch		
@@ -50,7 +50,7 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 		return new ChannelEvents(
 				channel,
 				tick,						// Tick
-				null,						// Note event
+				null,						// NoteEvent event
 				null,						// Instrument
 				null,						// Volume
 				pitch);						// Pitch		

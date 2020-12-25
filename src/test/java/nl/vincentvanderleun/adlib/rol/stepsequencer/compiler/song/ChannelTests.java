@@ -13,12 +13,12 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.Instrume
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.model.NoteValue;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
 
 public class ChannelTests {
 	private static final int CHANNEL = 0;
-	private static final NoteValue SOME_NOTE = NoteValue.B;
-	private static final NoteValue OTHER_NOTE = NoteValue.C;
+	private static final Note SOME_NOTE = Note.B;
+	private static final Note OTHER_NOTE = Note.C;
 	private static final int SOME_OCTAVE = 4;
 	private static final int NO_TRANSPOSE = 0;
 	private static NoteEvent SOME_NOTE_EVENT = new NoteEvent(SOME_NOTE, 1, SOME_OCTAVE, NO_TRANSPOSE);
@@ -131,7 +131,7 @@ public class ChannelTests {
 		
 		assertEquals(0, channelEventsAtTick0.getTick());
 		assertEquals(SOME_NOTE, noteEventAtTick0.getNote());
-		// Note should be shortened from 3 to 2, to make room for the new note
+		// NoteEvent should be shortened from 3 to 2, to make room for the new note
 		assertEquals(2, noteEventAtTick0.getDuration());
 
 		assertEquals(2, channelEventsAtTick2.getTick());

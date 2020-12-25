@@ -21,7 +21,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
 
-public class StepSequencerInputFileParser {
+public class SongParser {
 	private final LineParser lineParser;
 	private final StructureParser structureParser;
 
@@ -32,12 +32,12 @@ public class StepSequencerInputFileParser {
 	
 	public static final ParsedSong parse(String path) throws IOException {
 		try(var reader = new BufferedReader(new FileReader(path))) {
-			var parser = new StepSequencerInputFileParser(reader);
+			var parser = new SongParser(reader);
 			return parser.parse();
 		}
 	}
 
-	private StepSequencerInputFileParser(BufferedReader reader) {
+	private SongParser(BufferedReader reader) {
 		this.lineParser = new LineParser(reader);
 		this.structureParser = new StructureParser(lineParser);
 	}

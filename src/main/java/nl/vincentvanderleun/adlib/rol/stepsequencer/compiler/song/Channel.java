@@ -46,10 +46,10 @@ public class Channel {
 		// Some sanity checks
 		validateTick(tick);
 		if(note == null) {
-			throw new NullPointerException("Note event cannot be null");
+			throw new NullPointerException("NoteEvent event cannot be null");
 		}
 		if(note.getDuration() == 0) {
-			throw new IllegalArgumentException("Note duration must be > 0");
+			throw new IllegalArgumentException("NoteEvent duration must be > 0");
 		}
 		
 		// Overlapping with an earlier note? That note will be shortened then.

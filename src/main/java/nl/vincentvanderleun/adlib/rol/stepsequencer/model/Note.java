@@ -5,7 +5,7 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.model;
  *
  * @author Vincent
  */
- public enum NoteValue {
+ public enum Note {
 	C,
 	C_SHARP,
 	D,

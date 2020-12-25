@@ -13,14 +13,13 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Note;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.RenderException;
 
-public class ParsedSongCompiler {
+public class SongCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
 	
 	private final ParsedSong parsedSong;
@@ -31,7 +30,7 @@ public class ParsedSongCompiler {
 	private int tick;
 	private Patch patch;
 
-	public ParsedSongCompiler(ParsedSong parsedSong) {
+	public SongCompiler(ParsedSong parsedSong) {
 		this.tick = 0;
 		this.octave = DEFAULT_OCTAVE;
 		this.parsedSong = parsedSong;
@@ -83,7 +82,7 @@ public class ParsedSongCompiler {
 					convertPatch((PatchChange)event, song);
 					break; 
 				case NOTE:
-					convertNote((Note)event, song);
+					convertNote((nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, song);
 					break;
 				case REST:
 					// Silence notes are added during rendering. Just skip the ticks.
@@ -104,16 +103,17 @@ public class ParsedSongCompiler {
 
 		this.patch = patches.get(patchName);
 
-		patch.getVoices().forEach(voice -> {
-			int voiceChannel = voice.getChannel();
-			Channel channel = song.getChannels().get(voiceChannel);
+		for(int voiceIndex = 0; voiceIndex < patch.getVoices().size(); voiceIndex++) {
+			Voice voice = patch.getVoices().get(voiceIndex);
+
+			Channel channel = song.getChannels().get(voiceIndex);
 			channel.addInstrumentEvent(tick, new InstrumentEvent(voice.getInstrument()));
 			channel.addPitchEvent(tick, new PitchMultiplierEvent(voice.getPitch()));
 			channel.addVolumeEvent(tick, new VolumeMultiplierEvent(voice.getVolume()));
-		});
+		};
 	}
 
-	private void convertNote(Note parsedNote, CompiledSong song) throws RenderException {
+	private void convertNote(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompiledSong song) throws RenderException {
 		int channel = 0;
 		for(Voice voice : patch.getVoices()) {
 			NoteEvent noteEvent = new NoteEvent(

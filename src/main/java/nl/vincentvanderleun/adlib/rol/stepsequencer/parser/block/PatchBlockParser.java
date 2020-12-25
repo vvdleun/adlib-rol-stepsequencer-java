@@ -44,7 +44,6 @@ public class PatchBlockParser extends BlockParser<Patch> {
 				
 				final Voice voice = defaultVoiceSupplier.get();
 				voice.setName(voiceName);
-				voice.setChannel(voices.size());
 
 				voices.add(voice);
 				
@@ -86,10 +85,6 @@ public class PatchBlockParser extends BlockParser<Patch> {
 			case "volume":
 				float volume = line.parseValueAsFloat();
 				voice.setVolume(volume);
-				break;
-			case "channel":
-				int channel = line.parseValueAsInteger();
-				voice.setChannel(channel);
 				break;
 			default:
 				throw new ParseException("Unsupported voice key \"" + key + "\" encountered on line " + lineParser.getLineNumber());	
