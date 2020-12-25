@@ -1,10 +1,10 @@
-package nl.vincentvanderleun.adlib.rol.monosynth;
+package nl.vincentvanderleun.adlib.rol.stepsequencer;
 
 import java.io.IOException;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.MonoSynthInputFileParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Song;
-import nl.vincentvanderleun.adlib.rol.monosynth.renderer.OutputFileRenderer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.MonoSynthInputFileParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Song;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.OutputFileRenderer;
 
 public class App {
     public static void main(String[] args) throws IOException {

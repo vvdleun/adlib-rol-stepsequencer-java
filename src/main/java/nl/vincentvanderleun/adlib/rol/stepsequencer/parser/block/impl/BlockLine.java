@@ -1,6 +1,6 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 
 public class BlockLine {
 	private final String line;

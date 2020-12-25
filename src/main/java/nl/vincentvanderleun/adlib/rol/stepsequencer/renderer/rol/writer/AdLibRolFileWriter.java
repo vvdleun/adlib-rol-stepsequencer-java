@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.writer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.writer;
 
 import java.io.IOException;
 import java.io.OutputStream;

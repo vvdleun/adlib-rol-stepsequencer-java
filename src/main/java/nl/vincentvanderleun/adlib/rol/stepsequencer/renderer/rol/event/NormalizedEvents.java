@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event;
 
 import java.util.Map.Entry;
 import java.util.NavigableMap;

@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,17 +8,17 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Supplier;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.BlockFunction;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Hold;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Note;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.NoteValue;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.OctaveChange;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.PatchChange;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Rest;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.BlockFunction;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Hold;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Note;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteValue;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
 
 public class PatternBlockParser extends BlockParser<Pattern> {
 	private static final Map<String, NoteValue> NOTES = new HashMap<>(12);

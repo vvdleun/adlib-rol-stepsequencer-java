@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.song;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song;
 
 /**
  * Represents supported values for the "target" field in the [HEADER] block.

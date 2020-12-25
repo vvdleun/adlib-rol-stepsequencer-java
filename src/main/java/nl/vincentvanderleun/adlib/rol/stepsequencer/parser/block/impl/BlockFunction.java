@@ -1,8 +1,8 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl;
 
 import java.util.Arrays;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 
 public class BlockFunction {
 	private final String name;

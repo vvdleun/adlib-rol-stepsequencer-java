@@ -1,10 +1,10 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block;
 
 import java.io.IOException;
 import java.util.function.Supplier;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.StructureParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.StructureParser;
 
 abstract class BlockParser<T> {
 	protected final LineParser lineParser;

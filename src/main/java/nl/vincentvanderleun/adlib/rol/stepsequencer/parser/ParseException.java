@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser;
 
 import java.io.IOException;
 

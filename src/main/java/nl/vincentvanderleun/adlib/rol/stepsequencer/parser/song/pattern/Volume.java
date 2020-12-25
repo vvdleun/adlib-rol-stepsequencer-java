@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
 /**
  * Overrules the current patch' voice's volumes, while trying to keep the voice's volume offset ratio in mind (if possible).

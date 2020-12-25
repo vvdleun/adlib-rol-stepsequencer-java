@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,20 +6,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.PatchBlockParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.PatternBlockParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.SequencerBlockParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.SongHeaderBlockParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.StructureParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Patch;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Song;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.SongHeader;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.SongMode;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Target;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Voice;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.PatchBlockParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.PatternBlockParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.SequencerBlockParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.SongHeaderBlockParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.StructureParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Patch;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Song;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongMode;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Target;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Voice;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
 
 public class MonoSynthInputFileParser {
 	private final LineParser lineParser;

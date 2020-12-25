@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
 /**
  * The 12 notes in an octave.

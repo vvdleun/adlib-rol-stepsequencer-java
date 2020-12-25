@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.NormalizedEvents;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.NormalizedEvents;
 
 public class NormalizedEventsTests {
 	private NormalizedEvents<Integer> normalizedEvents = new NormalizedEvents<>();

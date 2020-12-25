@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.song;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song;
 
 /**
  * Represents a parsed voice, parsed while parsing [PATCH] blocks, from the input file.

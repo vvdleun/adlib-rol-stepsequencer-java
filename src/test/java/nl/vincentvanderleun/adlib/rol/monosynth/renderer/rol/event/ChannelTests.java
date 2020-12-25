@@ -9,7 +9,9 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.event.Channel;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.Channel;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.ChannelEvents;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.event.NoteEvent;
 
 public class ChannelTests {
 	private static final int CHANNEL = 0;

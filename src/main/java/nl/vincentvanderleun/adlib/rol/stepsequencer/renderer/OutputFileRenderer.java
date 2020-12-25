@@ -1,11 +1,11 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.renderer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.renderer;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.Song;
-import nl.vincentvanderleun.adlib.rol.monosynth.renderer.rol.AdLibRolSongRenderer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.Song;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.AdLibRolSongRenderer;
 
 public class OutputFileRenderer {
 	

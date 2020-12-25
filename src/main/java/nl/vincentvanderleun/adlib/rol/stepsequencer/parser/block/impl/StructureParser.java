@@ -1,9 +1,9 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 
 public class StructureParser {
 	private static final String EXPECTED_START_LIST = "Expected line with \"- key value\" to start a list at line ";

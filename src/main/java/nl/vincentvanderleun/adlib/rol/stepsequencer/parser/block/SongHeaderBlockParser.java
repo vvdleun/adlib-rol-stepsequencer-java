@@ -1,14 +1,14 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.SongHeader;
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.song.SongMode;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongMode;
 
 public class SongHeaderBlockParser extends BlockParser<SongHeader> {
 	private static final String MISSING_SONG_HEADER_TEXT = "The file must start with a \"[SONG]\" block with \"version=1\" key/value";

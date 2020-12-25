@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.song.pattern;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
 /**
  * Changes the current octave. The following notes (which do not overrule the current

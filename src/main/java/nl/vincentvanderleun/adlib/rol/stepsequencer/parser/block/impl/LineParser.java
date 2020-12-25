@@ -1,9 +1,9 @@
-package nl.vincentvanderleun.adlib.rol.monosynth.parser.block.impl;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import nl.vincentvanderleun.adlib.rol.monosynth.parser.ParseException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 
 public class LineParser {
 	private final BufferedReader reader;
