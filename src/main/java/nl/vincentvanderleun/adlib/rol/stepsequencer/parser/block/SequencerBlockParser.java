@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.EventType;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
 
@@ -26,16 +27,18 @@ public class SequencerBlockParser extends BlockParser<Sequencer> {
 			while(scanner.hasNext()) {
 				final String inputToken = scanner.next();
 
-				final SequencerTokenType tokenType = determineTypeOfToken(inputToken);
+				final EventType eventType = determineEventType(inputToken);
 
-				switch(tokenType) {
-					case PATTERN:
+				switch(eventType) {
+					case PLAY_PATTERN:
 						PlayPattern playPattern = new PlayPattern(inputToken);
 						events.add(playPattern);
 						break;
+					case FUNCTION:
+						System.out.println("Sequencer event ignored during parsing for now: " + eventType);
+						break;
 					default:
-						System.out.println("Not supported yet, ignored: " + tokenType);
-						// throw new IllegalStateException("Sequencer token not supported by compiler: " + tokenType);
+						throw new IllegalStateException("Sequencer token not supported by compiler: " + eventType);
 				}
 			}
 		});
@@ -46,15 +49,10 @@ public class SequencerBlockParser extends BlockParser<Sequencer> {
 		return sequencer;
 	}
 
-	private SequencerTokenType determineTypeOfToken(String inputToken) {
+	private EventType determineEventType(String inputToken) {
 		if(structureParser.isFunction(inputToken)) {
-			return SequencerTokenType.FUNCTION;
+			return EventType.FUNCTION;
 		}
-		return SequencerTokenType.PATTERN;
-	}
-	
-	private enum SequencerTokenType {
-		PATTERN,
-		FUNCTION
+		return EventType.PLAY_PATTERN;
 	}
 }
