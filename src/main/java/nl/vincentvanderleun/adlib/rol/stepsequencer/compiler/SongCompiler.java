@@ -30,8 +30,14 @@ public class SongCompiler {
 	private Patch patch;
 
 	public static CompiledSong compile(ParsedSong parsedSong) throws CompileException {
+		int eventsPreProcessed = PreProcessor.process(parsedSong);
+		System.out.println(eventsPreProcessed + " event(s) pre-processed...");
+		
 		var compiler = new SongCompiler(parsedSong);
-		return compiler.compile();
+
+		CompiledSong compiledSong = compiler.compile();
+	
+		return compiledSong;
 	}
 	
 	private SongCompiler(ParsedSong parsedSong) {
@@ -89,11 +95,8 @@ public class SongCompiler {
 					convertNote((nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, song);
 					break;
 				case REST:
-					// Silence notes are added during rendering. Just skip the ticks.
+					// Silence notes are handled during rendering. Just skip the ticks.
 					++tick;
-					break;
-				case HOLD:
-					System.out.println("- SKipped for now");
 					break;
 				default:
 					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
@@ -119,6 +122,7 @@ public class SongCompiler {
 
 	private void convertNote(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompiledSong song) throws CompileException {
 		int channel = 0;
+
 		for(Voice voice : patch.getVoices()) {
 			NoteEvent noteEvent = new NoteEvent(
 					parsedNote.getNote(),
@@ -128,6 +132,6 @@ public class SongCompiler {
 			
 			song.getChannels().get(channel++).addNoteEvent(tick, noteEvent);
 		}
-		++tick;
+		tick += parsedNote.getDuration();
 	}
 }

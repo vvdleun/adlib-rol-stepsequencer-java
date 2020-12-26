@@ -56,6 +56,7 @@ public class Channel {
 		final Entry<Integer, NoteEvent> lowerEntry = notes.lowerEntry(tick);
 		if(lowerEntry != null && getNoteEnd(lowerEntry) >= tick) {
 			int newDuration = tick - lowerEntry.getKey();
+			System.out.println("Shortening note from " + lowerEntry.getValue().getDuration() + " to " + newDuration);
 			lowerEntry.getValue().setDuration(newDuration);
 		}
 		

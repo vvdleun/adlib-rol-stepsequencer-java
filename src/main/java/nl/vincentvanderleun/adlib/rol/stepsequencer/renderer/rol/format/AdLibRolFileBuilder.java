@@ -96,7 +96,7 @@ public class AdLibRolFileBuilder {
 	}
 
 	public void addNoteEvent(int channel, int note, int duration) {
-		var noteEvent = new AdLibRolFile.Note(note,duration);
+		var noteEvent = new AdLibRolFile.Note(note, duration);
 		channels[channel].noteEvents.add(noteEvent);
 	}
 	

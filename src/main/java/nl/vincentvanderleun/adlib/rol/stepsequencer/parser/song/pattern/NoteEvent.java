@@ -10,9 +10,10 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
  */
 public class NoteEvent extends Event {
 	private final Note note;
-	private final int duration;
 	private final int octaveOffset;
-	
+	// Sometimes you have to be practical in life...
+	private int duration;
+
 	public NoteEvent(Note note, int duration, int octaveOffset) {
 		super(EventType.NOTE);
 
@@ -31,6 +32,10 @@ public class NoteEvent extends Event {
 	
 	public int getOctaveOffset() {
 		return octaveOffset;
+	}
+	
+	public void increaseDuration(int ticks) {
+		this.duration += ticks;
 	}
 
 	@Override

@@ -47,7 +47,6 @@ public class CompiledSongToRolFileConverter {
 			int lastNoteTick = 0;
 			for(ChannelEvents events : channel.getAllEvents()) {
 				if(events.getNote() != null) {
-					// System.out.println(events.getTick());
 					if(events.getTick() > lastNoteTick) {
 						// Add rest
 						int restDuration = events.getTick() - lastNoteTick;
