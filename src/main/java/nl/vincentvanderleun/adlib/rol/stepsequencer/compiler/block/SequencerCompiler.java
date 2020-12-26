@@ -31,6 +31,9 @@ public class SequencerCompiler {
 	}
 	
 	public void compile() throws CompileException {
+		// For now each and every sequence starts on the start of the song
+		context.tick = 0;
+
 		PatternCompiler patternCompiler = new PatternCompiler(parsedSong, compiledSong);
 		
 		for(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event event : parsedSong.getSequencer().getEvents()) {
@@ -41,7 +44,8 @@ public class SequencerCompiler {
 					patternCompiler.compile(pattern, context);
 					break;
 				default:
-					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
+					System.out.println("Not supported yet: " + event.getEventType());
+					// throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
 			}
 		}
 	}

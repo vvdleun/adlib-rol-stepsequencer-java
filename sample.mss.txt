@@ -17,13 +17,13 @@ mode = MELODIC
   transpose = 12
   instrument = moogsynt
   volume = 1.0
-  offset = 1
+  offset = 4
 - VOICE 3
   pitch = 0.5
   transpose = -12
   instrument = moogsynt
   volume = 0.9
-  offset = -1
+  offset = 2
 
 [PATTERN one]
  patch(lead)    octave(3)   C D E F - G h -G ++G-8

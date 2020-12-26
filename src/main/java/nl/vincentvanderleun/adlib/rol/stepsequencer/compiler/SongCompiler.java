@@ -9,8 +9,7 @@ public class SongCompiler {
 	private final ParsedSong parsedSong;
 	
 	public static CompiledSong compile(ParsedSong parsedSong) throws CompileException {
-		int eventsPreProcessed = PreProcessor.process(parsedSong);
-		System.out.println(eventsPreProcessed + " event(s) pre-processed...");
+		PreProcessor.process(parsedSong);
 		
 		var compiler = new SongCompiler(parsedSong);
 
@@ -28,7 +27,6 @@ public class SongCompiler {
 		CompiledSong compiledSong = initializeCompiledSong(parsedSong);
 
 		CompilerContext context = new CompilerContext();
-		context.tick = 0;
 
 		SequencerCompiler.compile(parsedSong, compiledSong, context);
 

@@ -34,8 +34,8 @@ public class SequencerBlockParser extends BlockParser<Sequencer> {
 						events.add(playPattern);
 						break;
 					default:
-						System.out.println("IGNORED, NOT IMPLEMENTED YET: " + inputToken);
-						break;
+						System.out.println("Not supported yet, ignored: " + tokenType);
+						// throw new IllegalStateException("Sequencer token not supported by compiler: " + tokenType);
 				}
 			}
 		});

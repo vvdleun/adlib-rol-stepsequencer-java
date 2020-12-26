@@ -103,5 +103,4 @@ public class PatternCompiler {
 		
 		context.tick += parsedNote.getDuration();
 	}
-
 }

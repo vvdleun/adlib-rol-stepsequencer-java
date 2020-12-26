@@ -24,12 +24,12 @@ public class PreProcessor {
 
 	private int processedEvents;
 	
-	static int process(ParsedSong parsedSong) throws CompileException {
+	static void process(ParsedSong parsedSong) throws CompileException {
 		PreProcessor preProcessor = new PreProcessor(parsedSong);
 		
 		preProcessor.process();
 		
-		return preProcessor.processedEvents;
+		System.out.println(preProcessor.processedEvents + " event(s) pre-processed...");
 	}
 	
 	private PreProcessor(ParsedSong parsedSong) {
