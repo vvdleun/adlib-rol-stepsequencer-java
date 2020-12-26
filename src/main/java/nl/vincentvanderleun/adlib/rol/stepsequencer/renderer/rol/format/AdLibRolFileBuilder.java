@@ -21,8 +21,8 @@ public class AdLibRolFileBuilder {
 	private static final int PERCUSSIVE_SONG_MODE = 0;
 	private static final int MELODIC_SONG_MODE = 1;
 	private static final String SIGNATURE = "\\roll\\default";
-	private static final int SCALE_Y = 0x48;
-	private static final int SCALE_X = 0x45;
+	private static final int SCALE_Y = 0x1D;					// Visual Composer "Large Grid" view
+	private static final int SCALE_X = 0x28;					// Handy during debugging :-)
 	private static final int CHANNELS = 11;
 	private static final int UNKNOWN_INSTUMENT_BYTE = 0;
 	private static final String TEMPO_TRACK_NAME = "Tempo";

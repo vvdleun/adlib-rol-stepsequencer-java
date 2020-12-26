@@ -1,13 +1,8 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.NavigableSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
