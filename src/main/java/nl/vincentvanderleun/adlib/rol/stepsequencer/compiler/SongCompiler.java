@@ -98,6 +98,9 @@ public class SongCompiler {
 					// Silence notes are handled during rendering. Just skip the ticks.
 					++tick;
 					break;
+				case FUNCTION:
+				case HOLD:
+					throw new CompileException("Internal error: event " + event.getEventType() + " was supposed to be handled by pre-processor");
 				default:
 					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
 			}
@@ -124,13 +127,19 @@ public class SongCompiler {
 		int channel = 0;
 
 		for(Voice voice : patch.getVoices()) {
-			NoteEvent noteEvent = new NoteEvent(
+			final NoteEvent noteEvent = new NoteEvent(
 					parsedNote.getNote(),
 					parsedNote.getDuration(),
 					this.octave + parsedNote.getOctaveOffset(),
 					voice.getTranspose());
 			
-			song.getChannels().get(channel++).addNoteEvent(tick, noteEvent);
+			final int noteTick = tick + voice.getOffset();
+			
+			if(noteTick >= 0) {
+				song.getChannels().get(channel++).addNoteEvent(noteTick, noteEvent);
+			} else {
+				System.out.println("Warning: Discarded note on voice \"" + voice.getName() + "\" of patch \"" + patch.getName() + "\", because calculated tick was < 0");
+			}
 		}
 		tick += parsedNote.getDuration();
 	}

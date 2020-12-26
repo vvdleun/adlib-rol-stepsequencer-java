@@ -86,6 +86,10 @@ public class PatchBlockParser extends BlockParser<Patch> {
 				float volume = line.parseValueAsFloat();
 				voice.setVolume(volume);
 				break;
+			case "offset":
+				int offset = line.parseValueAsInteger();
+				voice.setOffset(offset);
+				break;
 			default:
 				throw new ParseException("Unsupported voice key \"" + key + "\" encountered on line " + lineParser.getLineNumber());	
 		}
