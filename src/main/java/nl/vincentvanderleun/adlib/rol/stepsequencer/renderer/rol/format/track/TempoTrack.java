@@ -4,26 +4,15 @@ import java.util.List;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.event.Tempo;
 
-public class TempoTrack {
-	private final String trackName;
+public class TempoTrack extends Track<Tempo> {
 	private final float tempo;
-	private final List<Tempo> tempoMultiplierEvents;
 	
 	public TempoTrack(String trackName, float tempo, List<Tempo> tempoMultipliers) {
-		this.trackName = trackName;
+		super(trackName, tempoMultipliers);
 		this.tempo = tempo;
-		this.tempoMultiplierEvents = tempoMultipliers;
-	}
-
-	public String getTrackName() {
-		return trackName;
 	}
 
 	public float getTempo() {
 		return tempo;
-	}
-
-	public List<Tempo> getTempoMultiplierEvents() {
-		return tempoMultiplierEvents;
 	}
 }

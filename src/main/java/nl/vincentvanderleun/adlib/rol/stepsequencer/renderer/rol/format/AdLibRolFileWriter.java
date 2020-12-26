@@ -62,9 +62,9 @@ public class AdLibRolFileWriter {
 		// Main tempo
 		writer.writeFloat(track.getTempo());
 		// Number of events
-		writer.writeWord(track.getTempoMultiplierEvents().size());
+		writer.writeWord(track.getEvents().size());
 		
-		for (Tempo tempo : track.getTempoMultiplierEvents()) {
+		for (Tempo tempo : track.getEvents()) {
 			writer.writeWord(tempo.getTick());
 			writer.writeFloat(tempo.getTempoMultiplier());
 		}
@@ -85,7 +85,7 @@ public class AdLibRolFileWriter {
 		writer.writeZeroTerminatedAsciiString(voiceTrack.getTrackName(), 15);
 		writer.writeWord(voiceTrack.getTotalTicks());
 		
-		for(Note note : voiceTrack.getNotes()) {
+		for(Note note : voiceTrack.getEvents()) {
 			writer.writeWord(note.getNote());
 			writer.writeWord(note.getDuration());
 		}
