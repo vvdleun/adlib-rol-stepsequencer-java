@@ -30,7 +30,7 @@ public class PreProcessor {
 		
 		preProcessor.process();
 		
-		System.out.println(preProcessor.processedEvents + " event(s) pre-processed...");
+		System.out.println(preProcessor.processedEvents + " event(s) processed by pre-processor");
 	}
 	
 	private PreProcessor(ParsedSong parsedSong) {
@@ -59,13 +59,11 @@ public class PreProcessor {
 		}
 
 		eventsToReplace.entrySet().forEach((entry) -> {
-			System.out.println("Replacing event  " + pattern.getEvents().get((int)entry.getKey()) + " with " + entry.getValue());
 			pattern.getEvents().remove((int)entry.getKey());
 			pattern.getEvents().add(entry.getKey(), entry.getValue());
 		});
 		
 		eventsToDelete.descendingSet().forEach(index -> {
-			System.out.println("Removing event " + pattern.getEvents().get((int)index));
 			pattern.getEvents().remove((int)index);
 		});
 	}
@@ -85,7 +83,6 @@ public class PreProcessor {
 			final Event earlierEvent = pattern.getEvents().get(i);
 			if(earlierEvent.getEventType() == EventType.NOTE) {
 				found = true;
-				System.out.println("Increasing duration of: " + earlierEvent + " to duration +1");
 				((NoteEvent)earlierEvent).increaseDuration(1);
 				break;
 			}

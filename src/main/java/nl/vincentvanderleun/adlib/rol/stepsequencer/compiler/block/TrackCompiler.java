@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.track.FadeInFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
@@ -42,7 +43,8 @@ public class TrackCompiler {
 	public void compile() throws CompileException {
 		Track track = new Track(compiledSong, channelManager);
 		
-		// For now each and every Track starts on the start of the song
+		// For now each and every Track starts on the start of the song.
+		// Initialize context with all track-related properties.
 		context.tick = 0;
 
 		PatternCompiler patternCompiler = new PatternCompiler(track, parsedSong, compiledSong);
@@ -67,14 +69,18 @@ public class TrackCompiler {
 		// Now that all events are generated, execute the function calls
 		for (ContextAwareFunctionCall call : functionCalls) {
 			// Stupid checked exceptions handling in forEach lambdas in Java...
-			compileFunctionCall(call.getTick(), call.getFunctionCall());
+			compileFunctionCall(track, call.getTick(), call.getFunctionCall());
 		}
 	}
 	
-	private void compileFunctionCall(int tick, FunctionCall functionCall) throws CompileException {
+	private void compileFunctionCall(Track track, int tick, FunctionCall functionCall) throws CompileException {
+		List<Object> convertedArguments = new ArrayList<>();
+
 		switch(functionCall.getFunctionName()) {
 			case "fade-in":
-				executeFadeIn(tick, functionCall.getArguments());
+				FadeInFunction fadeInFunction = new FadeInFunction();
+				convertedArguments.add(Integer.parseInt(functionCall.getArguments().get(0)));
+				fadeInFunction.execute(track, tick, convertedArguments);
 				break;
 			default:
 				throw new CompileException("Unknown function: " + functionCall.getFunctionName());
@@ -82,9 +88,6 @@ public class TrackCompiler {
 		
 	}
 
-	private void executeFadeIn(int tick, List<String> arguments) {
-	}
-	
 	private static class ContextAwareFunctionCall {
 		private final FunctionCall functionCall;
 		private final int tick;

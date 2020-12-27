@@ -7,18 +7,18 @@ beatsPerMeasure = 4
 mode = MELODIC
 
 [PATCH lead]
-- VOICE 1
-  pitch = 1.0
+- VOICE one
+  pitch = 0.90
   transpose = 0
   instrument = moogsynt
-  volume = 1.0
-- VOICE 2
+  volume = 0.99
+- VOICE two
   pitch = 1.5 
   transpose = 12
   instrument = moogsynt
   volume = 0.9
   offset = 1
-- VOICE 3
+- VOICE three
   pitch = 0.5
   transpose = -12
   instrument = moogsynt
@@ -28,5 +28,5 @@ mode = MELODIC
 [PATTERN one]
  patch(lead)    octave(3)   C D E F - G h -G ++G-8 
  
-[TRACK]
-fade-in(16) one one one
+[TRACK one]
+fade-in(32) one one one

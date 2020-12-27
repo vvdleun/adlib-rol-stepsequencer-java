@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -120,11 +121,35 @@ public class Channel {
 
 	public ChannelEvents getEventsAtTick(int tick) {
 		final NoteEvent noteEvent = notes.get(tick);
-		final String instrument = instruments.get(tick) != null ? instruments.get(tick).getInstrument() : null;
-		final Float volume = volumes.get(tick) != null ? volumes.get(tick).getMulitplier() : null;
-		final Float pitch = pitches.get(tick) != null ? pitches.get(tick).getMulitplier() : null;
+		final InstrumentEvent instrument = instruments.get(tick);
+		final VolumeMultiplierEvent volume = volumes.get(tick);
+		final PitchMultiplierEvent pitch = pitches.get(tick);
 
-		return ChannelEvents.fromAllEvents(channel, tick, noteEvent, instrument, volume, pitch);
+		return createChannelEvents(channel, tick, noteEvent, instrument, volume, pitch);
+	}
+	
+	public ChannelEvents getEventsAtOrBeforeTick(int tick) {
+		// Java can be so... Java.... providing a floorEntry(), floorKey(), but no floorValue() :-/
+		final Map.Entry<Integer, NoteEvent> noteEventEntry = notes.floorEntry(tick);
+		final Map.Entry<Integer, InstrumentEvent> instrumentEntry = instruments.getMap().floorEntry(tick);
+		final Map.Entry<Integer, VolumeMultiplierEvent> volumeEntry = volumes.getMap().floorEntry(tick);
+		final Map.Entry<Integer, PitchMultiplierEvent> pitchEntry = pitches.getMap().floorEntry(tick);
+
+		return createChannelEvents(
+				channel, 
+				null,
+				noteEventEntry != null ? noteEventEntry.getValue() : null,
+				instrumentEntry != null ? instrumentEntry.getValue() : null,
+				volumeEntry != null ? volumeEntry.getValue() : null,
+				pitchEntry != null ? pitchEntry.getValue() : null);
+	}
+
+	private ChannelEvents createChannelEvents(int channel, Integer tick, NoteEvent noteEvent, InstrumentEvent instrument, VolumeMultiplierEvent volume, PitchMultiplierEvent pitch) {
+		String instrumentName = instrument != null ? instrument.getInstrument() : null;
+		Float volumeValue = volume != null ? volume.getMulitplier() : null;
+		Float pitchValue = pitch != null ? pitch.getMulitplier() : null;
+
+		return ChannelEvents.fromAllEvents(channel, tick, noteEvent, instrumentName, volumeValue, pitchValue);
 	}
 
 	public Set<ChannelEvents> getAllEvents() {

@@ -40,8 +40,8 @@ public class Track {
 	}
 
 	public void claimTickOnChannels(int tick) {
-		// Not possible right now, as all tracks start at tick 0.
 		if(tick < startTick) {
+			// Not possible right now, as all tracks start at tick 0.
 			startTick = tick;
 		}
 		if(tick > endTick) {
@@ -56,6 +56,10 @@ public class Track {
 		for (int i = number - claimedChannels.size(); i > 0; i--) {
 			claimNextChannel();
 		}
+		return toChannelList(claimedChannels);
+	}
+	
+	public List<Channel> getChannels() {
 		return toChannelList(claimedChannels);
 	}
 	

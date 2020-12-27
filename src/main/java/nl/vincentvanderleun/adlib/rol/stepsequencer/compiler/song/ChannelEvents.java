@@ -5,14 +5,14 @@ import java.util.Objects;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 
 public class ChannelEvents implements Comparable<ChannelEvents> {
-	private final int tick;
+	private final Integer tick;
 	private final Integer channel;
 	private final NoteEvent note;
 	private final String instrument;
 	private final Float volume;
 	private final Float pitch;
 
-	public static ChannelEvents fromAllEvents(int channel, int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+	public static ChannelEvents fromAllEvents(int channel, Integer tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
 		return new ChannelEvents(channel, tick, noteEvent, instrument, volume, pitch);
 	}
 	
@@ -56,7 +56,7 @@ public class ChannelEvents implements Comparable<ChannelEvents> {
 				pitch);						// Pitch		
 	}
 
-	private ChannelEvents(int channel, int tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
+	private ChannelEvents(int channel, Integer tick, NoteEvent noteEvent, String instrument, Float volume, Float pitch) {
 		this.channel = channel;
 		this.tick = tick;
 		this.note = noteEvent;
