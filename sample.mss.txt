@@ -16,17 +16,17 @@ mode = MELODIC
   pitch = 1.5 
   transpose = 12
   instrument = moogsynt
-  volume = 1.0
-  offset = 4
+  volume = 0.9
+  offset = 1
 - VOICE 3
   pitch = 0.5
   transpose = -12
   instrument = moogsynt
-  volume = 0.9
+  volume = 0.75
   offset = 2
 
 [PATTERN one]
- patch(lead)    octave(3)   C D E F - G h -G ++G-8
+ patch(lead)    octave(3)   C D E F - G h -G ++G-8 
  
 [SEQUENCER]
 fade-in(16) one one one

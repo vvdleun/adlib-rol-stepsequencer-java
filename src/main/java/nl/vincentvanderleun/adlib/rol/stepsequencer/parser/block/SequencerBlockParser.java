@@ -2,13 +2,16 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.EventType;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.FunctionCall;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
 
@@ -31,11 +34,12 @@ public class SequencerBlockParser extends BlockParser<Sequencer> {
 
 				switch(eventType) {
 					case PLAY_PATTERN:
-						PlayPattern playPattern = new PlayPattern(inputToken);
+						var playPattern = new PlayPattern(inputToken);
 						events.add(playPattern);
 						break;
-					case FUNCTION:
-						System.out.println("Sequencer event ignored during parsing for now: " + eventType);
+					case FUNCTION_CALL:
+						FunctionCall functionCall = parseFunctionCall(inputToken);
+						events.add(functionCall);
 						break;
 					default:
 						throw new IllegalStateException("Sequencer token not supported by compiler: " + eventType);
@@ -49,9 +53,19 @@ public class SequencerBlockParser extends BlockParser<Sequencer> {
 		return sequencer;
 	}
 
+	private FunctionCall parseFunctionCall(String inputToken) {
+		final int startArgumentsIndex = inputToken.indexOf('(');
+		final String functionName = inputToken.substring(0, startArgumentsIndex);
+		final String argumentsString = inputToken.substring(startArgumentsIndex + 1, inputToken.length() - 1);
+		
+		final List<String> arguments = Arrays.asList(argumentsString.split(Pattern.quote(",")));
+		
+		return new FunctionCall(functionName, arguments);
+	}
+	
 	private EventType determineEventType(String inputToken) {
 		if(structureParser.isFunction(inputToken)) {
-			return EventType.FUNCTION;
+			return EventType.FUNCTION_CALL;
 		}
 		return EventType.PLAY_PATTERN;
 	}

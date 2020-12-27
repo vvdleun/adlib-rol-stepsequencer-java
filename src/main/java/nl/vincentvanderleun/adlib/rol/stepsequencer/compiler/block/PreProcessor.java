@@ -1,10 +1,11 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.block;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableSet;
 import java.util.TreeSet;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.EventType;
@@ -24,7 +25,7 @@ public class PreProcessor {
 
 	private int processedEvents;
 	
-	static void process(ParsedSong parsedSong) throws CompileException {
+	public static void process(ParsedSong parsedSong) throws CompileException {
 		PreProcessor preProcessor = new PreProcessor(parsedSong);
 		
 		preProcessor.process();

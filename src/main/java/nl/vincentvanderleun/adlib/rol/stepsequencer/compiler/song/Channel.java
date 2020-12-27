@@ -165,6 +165,10 @@ public class Channel {
 				event1.getPitch() != null ? event1.getPitch() : event2.getPitch());
 	}
 
+	public int getChannelNumber() {
+		return channel;
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(instruments, notes, pitches, volumes);

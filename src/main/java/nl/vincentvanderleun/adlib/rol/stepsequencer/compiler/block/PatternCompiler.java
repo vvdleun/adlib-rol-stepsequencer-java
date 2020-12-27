@@ -1,11 +1,14 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.block;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Channel;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Sequence;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.InstrumentEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
@@ -21,11 +24,13 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 public class PatternCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
 
+	private final Sequence sequence;
 	private final ParsedSong parsedSong;
 	private final CompiledSong compiledSong;
 	private final Map<String, Patch> patches;
 	
-	public PatternCompiler(ParsedSong parsedSong, CompiledSong compiledSong) {
+	public PatternCompiler(Sequence sequence, ParsedSong parsedSong, CompiledSong compiledSong) {
+		this.sequence = sequence;
 		this.parsedSong = parsedSong;
 		this.compiledSong = compiledSong;
 		
@@ -65,17 +70,19 @@ public class PatternCompiler {
 	private void convertPatch(PatchChange patchEvent, CompilerContext context) throws CompileException {
 		final String patchName = patchEvent.getPatchName();
 		final Patch patch = patches.get(patchName);
-		
-		for(int voiceIndex = 0; voiceIndex < patch.getVoices().size(); voiceIndex++) {
-			Voice voice = patch.getVoices().get(voiceIndex);
 
+		final List<Channel> patchChannels = sequence.claimChannels(patch.getVoices().size());
+	
+		for(int voiceIndex = 0; voiceIndex < patch.getVoices().size(); voiceIndex++) {
+			final Voice voice = patch.getVoices().get(voiceIndex);
+		
 			int tick = context.tick + voice.getOffset();
 			if(tick < 0) {
 				System.out.println("Warning: voice offset of patch makes instrument change on tick < 0. Setting on tick 0 instead.");
 				tick = 0;
 			}
-			
-			Channel channel = compiledSong.getChannels().get(voiceIndex);
+
+			Channel channel = patchChannels.get(voiceIndex);
 			channel.addInstrumentEvent(tick, new InstrumentEvent(voice.getInstrument()));
 			channel.addPitchEvent(tick, new PitchMultiplierEvent(voice.getPitch()));
 			channel.addVolumeEvent(tick, new VolumeMultiplierEvent(voice.getVolume()));
@@ -91,16 +98,20 @@ public class PatternCompiler {
 					parsedNote.getDuration(),
 					context.octave + parsedNote.getOctaveOffset(),
 					voice.getTranspose());
-			
+
 			final int noteTick = context.tick + voice.getOffset();
 			
+			// Claim start/end ticks for the sequence
+			sequence.claimTickOnChannels(noteTick);
+			sequence.claimTickOnChannels(noteTick + noteEvent.getDuration() - 1);
+
 			if(noteTick >= 0) {
 				compiledSong.getChannels().get(channel++).addNoteEvent(noteTick, noteEvent);
 			} else {
 				System.out.println("Warning: Discarded note on voice \"" + voice.getName() + "\" of patch \"" + context.patch.getName() + "\", because calculated tick was < 0");
 			}
 		}
-		
+
 		context.tick += parsedNote.getDuration();
 	}
 }
