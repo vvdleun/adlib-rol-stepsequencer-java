@@ -8,10 +8,10 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
 
 /**
- * A sequence is a independent track of music, that "owns" one or more channels
+ * A track is a independent track of music, that "owns" one or more channels
  * of a ROL file. The patch with the largest number of voices, that is played in
- * the sequencer's patterns, determine how many channels of the ROL file are reserved
- * for a sequence.
+ * the track's patterns, determine how many channels of the ROL file are reserved
+ * for this track.
  * 
  * Maybe a smarter algorithm for managing channels can be implemented later, where
  * channels that are finished can be returned for potential re-use.
@@ -19,13 +19,13 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager
  * Because there are only 9 channels (MELODIC mode) or even 6 (+5 percussion sounds, in
  * PERCUSSIVE mode), until that time, careful planning is needed by the user.
  * 
- * It's worth mentioning that at this time the Sequence compiler "compiles" directly
+ * It's worth mentioning that at this time the Track compiler "compiles" directly
  * to the CompiledSong.
  * 
  * @author Vincent
  *
  */
-public class Sequence {
+public class Track {
 	private final CompiledSong compiledSong;
 	private final ChannelManager channelManager;
 	private final List<Integer> claimedChannels;
@@ -33,14 +33,14 @@ public class Sequence {
 	private int startTick = 0;
 	private int endTick = 0;
 	
-	public Sequence(CompiledSong compiledSong, ChannelManager channelManager) {
+	public Track(CompiledSong compiledSong, ChannelManager channelManager) {
 		this.compiledSong = compiledSong;
 		this.channelManager = channelManager;
 		this.claimedChannels = new ArrayList<>();
 	}
 
 	public void claimTickOnChannels(int tick) {
-		// Not possible right now, as all sequences start at tick 0.
+		// Not possible right now, as all tracks start at tick 0.
 		if(tick < startTick) {
 			startTick = tick;
 		}

@@ -12,14 +12,14 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Target;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.PatchBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.PatternBlockParser;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.SequencerBlockParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.TrackBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.SongHeaderBlockParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.StructureParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
 
 public class SongParser {
 	private final LineParser lineParser;
@@ -28,7 +28,7 @@ public class SongParser {
 	private SongHeader header;
 	private final List<Patch> patches = new ArrayList<>();
 	private final List<Pattern> patterns = new ArrayList<>();
-	private Sequencer sequencer;
+	private Track track;
 	
 	public static final ParsedSong parse(String path) throws IOException {
 		try(var reader = new BufferedReader(new FileReader(path))) {
@@ -55,13 +55,13 @@ public class SongParser {
 				case "PATTERN":
 					parseNextPattern(nextHeader[1]);
 					break;
-				case "SEQUENCER":
-					parseSequencer();
+				case "TRACK":
+					parseTrack();
 					break;
 				case "SONG":
 					throw new ParseException("There can only be one \"SONG\" block in the file at line " + lineParser.getLineNumber());
 				default:
-					throw new ParseException("Encountered unsupported \"" + nextHeader[0] + "\" block at line " + lineParser.getLineNumber());
+					throw new ParseException("Encountered unknown \"" + nextHeader[0] + "\" block at line " + lineParser.getLineNumber());
 			}
 		}
 		
@@ -69,7 +69,7 @@ public class SongParser {
 		parsedSong.setHeader(header);
 		parsedSong.setPatches(patches);
 		parsedSong.setPatterns(patterns);
-		parsedSong.setSequencer(sequencer);
+		parsedSong.setTrack(track);
 		
 		return parsedSong;
 	}
@@ -139,17 +139,17 @@ public class SongParser {
 		patterns.add(pattern);
 	}
 
-	private void parseSequencer() throws IOException {
-		if(sequencer != null) {
-			throw new ParseException("Found more than one [SEQUENCER] block at line " + lineParser.getLineNumber());
+	private void parseTrack() throws IOException {
+		if(track != null) {
+			throw new ParseException("Found more than one [TRACK] block at line " + lineParser.getLineNumber());
 		}
 		
-		SequencerBlockParser parser = new SequencerBlockParser(
+		TrackBlockParser parser = new TrackBlockParser(
 				lineParser,
-				() -> new Sequencer());
+				() -> new Track());
 		
-		Sequencer sequencer = parser.parse();
+		Track track = parser.parse();
 		
-		this.sequencer = sequencer;		
+		this.track = track;		
 	}
 }

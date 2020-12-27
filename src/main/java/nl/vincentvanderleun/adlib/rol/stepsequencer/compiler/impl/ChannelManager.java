@@ -13,7 +13,7 @@ public class ChannelManager {
 
 	public int claimChannel() throws CompileException {
 		if(!channelsRemaining()) {
-			throw new CompileException("No spare channels are available for the sequence. All channels are in use.");
+			throw new CompileException("No spare channels are available. All channels are in use.");
 		}
 		return channelsClaimed++;
 	}

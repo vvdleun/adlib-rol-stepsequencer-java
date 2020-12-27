@@ -9,14 +9,14 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Sequence;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Track;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.FunctionCall;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPattern;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Event;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.FunctionCall;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.PlayPattern;
 
-public class SequencerCompiler {
+public class TrackCompiler {
 	private final ParsedSong parsedSong;
 	private final CompiledSong compiledSong;
 	private final ChannelManager channelManager;
@@ -24,11 +24,11 @@ public class SequencerCompiler {
 	private final Map<String, Pattern> patterns;
 	
 	public static void compile(ParsedSong parsedSong, CompiledSong compiledSong, ChannelManager channelManager, CompilerContext context) throws CompileException {
-		SequencerCompiler compiler = new SequencerCompiler(parsedSong, compiledSong, channelManager, context);
+		TrackCompiler compiler = new TrackCompiler(parsedSong, compiledSong, channelManager, context);
 		compiler.compile();
 	}
 	
-	private SequencerCompiler(ParsedSong parsedSong, CompiledSong compiledSong, ChannelManager channelManager, CompilerContext context) {
+	private TrackCompiler(ParsedSong parsedSong, CompiledSong compiledSong, ChannelManager channelManager, CompilerContext context) {
 		this.parsedSong = parsedSong;
 		this.compiledSong = compiledSong;
 		this.channelManager = channelManager;
@@ -40,16 +40,16 @@ public class SequencerCompiler {
 	}
 	
 	public void compile() throws CompileException {
-		Sequence sequence = new Sequence(compiledSong, channelManager);
+		Track track = new Track(compiledSong, channelManager);
 		
-		// For now each and every sequence starts on the start of the song
+		// For now each and every Track starts on the start of the song
 		context.tick = 0;
 
-		PatternCompiler patternCompiler = new PatternCompiler(sequence, parsedSong, compiledSong);
+		PatternCompiler patternCompiler = new PatternCompiler(track, parsedSong, compiledSong);
 		
 		var functionCalls = new ArrayList<ContextAwareFunctionCall>();
 		
-		for(Event event : parsedSong.getSequencer().getEvents()) {
+		for(Event event : parsedSong.getTrack().getEvents()) {
 			switch(event.getEventType() ) {
 				case PLAY_PATTERN:
 					PlayPattern playPattern = (PlayPattern)event;

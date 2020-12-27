@@ -4,7 +4,7 @@ import java.util.List;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
 
 /**
  * Parsed song representation.
@@ -20,7 +20,7 @@ public class ParsedSong {
 	private SongHeader header;
 	private List<Patch> patches;
 	private List<Pattern> patterns;
-	private Sequencer sequencer;
+	private Track track;
 
 	public SongHeader getHeader() {
 		return header;
@@ -46,11 +46,11 @@ public class ParsedSong {
 		this.patterns = patterns;
 	}
 	
-	public Sequencer getSequencer() {
-		return sequencer;
+	public Track getTrack() {
+		return track;
 	}
 	
-	public void setSequencer(Sequencer sequencer) {
-		this.sequencer = sequencer;
+	public void setTrack(Track track) {
+		this.track = track;
 	}
 }

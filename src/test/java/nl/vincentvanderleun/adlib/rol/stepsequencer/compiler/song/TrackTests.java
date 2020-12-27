@@ -1,6 +1,7 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,15 +12,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.SongMode;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Target;
 
-public class SequenceTests {
+public class TrackTests {
 	private static final CompiledSong COMPILED_SONG = new CompiledSong(Target.ADLIB_ROL, 120.0f, 4, 4, SongMode.MELODIC);
-
+	private static final int MAX_CHANNELS = 3; // (See channelManager mock below, it starts throwing on 4th call)
+	
 	private ChannelManager channelManager;
-	private Sequence sequence;
+	private Track track;
 	
 	@BeforeEach
 	public void init() throws Exception {
@@ -28,14 +31,15 @@ public class SequenceTests {
 		when(channelManager.claimChannel())
 			.thenReturn(0)
 			.thenReturn(1)
-			.thenReturn(2);
+			.thenReturn(2)
+			.thenThrow(new CompileException("Claimed more channels than mock provides"));
 		
-		sequence = new Sequence(COMPILED_SONG, channelManager);
+		track = new Track(COMPILED_SONG, channelManager);
 	}
 
 	@Test
 	public void shouldClaimTwoChannels() throws Exception {
-		List<Channel> channels = sequence.claimChannels(2);
+		List<Channel> channels = track.claimChannels(2);
 		
 		assertEquals(2, channels.size());
 
@@ -47,9 +51,9 @@ public class SequenceTests {
 
 	@Test
 	public void shouldNotClaimNewChannelsWhenMoreChannelsWereClaimedPreviously() throws Exception {
-		sequence.claimChannels(2);
+		track.claimChannels(2);
 		
-		List<Channel> channels = sequence.claimChannels(1);
+		List<Channel> channels = track.claimChannels(1);
 
 		assertEquals(1, channels.size());
 
@@ -60,9 +64,9 @@ public class SequenceTests {
 
 	@Test
 	public void shouldNotClaimNewChannelsWhenTheSameAmountOfChannelsWereClaimedPreviously() throws Exception {
-		sequence.claimChannels(2);
+		track.claimChannels(2);
 		
-		List<Channel> channels = sequence.claimChannels(2);
+		List<Channel> channels = track.claimChannels(2);
 
 		assertEquals(2, channels.size());
 
@@ -74,9 +78,9 @@ public class SequenceTests {
 
 	@Test
 	public void shouldClaimNewChannelsWhenNotEnoughChannelsWereClaimedPreviously() throws Exception {
-		sequence.claimChannels(2);
+		track.claimChannels(2);
 		
-		List<Channel> channels = sequence.claimChannels(3);
+		List<Channel> channels = track.claimChannels(3);
 
 		assertEquals(3, channels.size());
 
@@ -87,11 +91,28 @@ public class SequenceTests {
 		verify(channelManager, times(3)).claimChannel();
 	}
 	
+	@Test
+	public void shouldBePossibleToClaimAllChannels() throws Exception {
+		track.claimChannels(MAX_CHANNELS);
+	}
 	
-//	@Test
-//	public void shouldClaimSecondBatchOfChannels() throws Exception {
-//		List<Channel> channels = sequence.claimChannels(2);
-//		
-//		assertEquals(2, channels.size());
-//	}
+	@Test
+	public void shouldThrowWhenClaimingTooManyChannels() throws Exception {
+		assertThrows(CompileException.class, () -> {
+			track.claimChannels(MAX_CHANNELS + 1);
+		});
+	}
+	
+	@Test
+	public void shouldRegisterTicks() {
+		assertEquals(0, track.getStartTick());
+		assertEquals(0, track.getEndTick());
+		
+		track.claimTickOnChannels(2);
+		track.claimTickOnChannels(3);
+		track.claimTickOnChannels(1);
+		
+		assertEquals(0, track.getStartTick());
+		assertEquals(3, track.getEndTick());
+	}
 }

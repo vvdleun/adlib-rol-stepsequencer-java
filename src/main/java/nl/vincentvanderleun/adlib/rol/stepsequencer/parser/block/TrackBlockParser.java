@@ -9,20 +9,20 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.EventType;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.FunctionCall;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.PlayPattern;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer.Sequencer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Event;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.EventType;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.FunctionCall;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.PlayPattern;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
 
-public class SequencerBlockParser extends BlockParser<Sequencer> {
+public class TrackBlockParser extends BlockParser<Track> {
 	
-	public SequencerBlockParser(LineParser lineParser, Supplier<Sequencer> defaultSequencerSupplier) {
-		super(lineParser, defaultSequencerSupplier);
+	public TrackBlockParser(LineParser lineParser, Supplier<Track> defaultTrackSupplier) {
+		super(lineParser, defaultTrackSupplier);
 	}
 
 	@Override
-	public Sequencer parse() throws IOException {
+	public Track parse() throws IOException {
 		final List<Event> events = new ArrayList<>();
 
 		structureParser.readContentOfBlock(line -> {
@@ -42,15 +42,15 @@ public class SequencerBlockParser extends BlockParser<Sequencer> {
 						events.add(functionCall);
 						break;
 					default:
-						throw new IllegalStateException("Sequencer token not supported by compiler: " + eventType);
+						throw new IllegalStateException("Track token not supported by compiler: " + eventType);
 				}
 			}
 		});
 		
-		Sequencer sequencer = defaultValueSupplier.get();
-		sequencer.setEvents(events);
+		Track track = defaultValueSupplier.get();
+		track.setEvents(events);
 		
-		return sequencer;
+		return track;
 	}
 
 	private FunctionCall parseFunctionCall(String inputToken) {

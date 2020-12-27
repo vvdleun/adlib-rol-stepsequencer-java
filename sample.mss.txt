@@ -28,5 +28,5 @@ mode = MELODIC
 [PATTERN one]
  patch(lead)    octave(3)   C D E F - G h -G ++G-8 
  
-[SEQUENCER]
+[TRACK]
 fade-in(16) one one one

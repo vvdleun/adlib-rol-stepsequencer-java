@@ -1,11 +1,11 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track;
 
 import java.util.List;
 
-public class Sequencer {
+public class Track {
 	private List<Event> events;
 	
-	public Sequencer() {
+	public Track() {
 	}
 	
 	public List<Event> getEvents() {

@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.sequencer;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track;
 
 import java.util.List;
 import java.util.Objects;
