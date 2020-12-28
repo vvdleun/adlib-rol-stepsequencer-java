@@ -28,19 +28,30 @@ To me, the ROL file format looks more like an early take on a universal, but muc
 
 If you want to produce the very best songs on the OPL2 chip known to mankind, you're probably better off looking at a dedicated OPL2 (or even better OPL3) "tracker" program, that let the user tweak most FM chip parameters in real-time. The ROL format is too static in nature to make the most out of the OPL2 chip: most chip parameters can only be altered by switching instruments. 
 
-OPL2 instrument definitions are not even stored in the ROL file itself. In typical Ad Lib, Inc. style, the purchase of a separately available commercial add-on program was needed to create new, or edit existing instruments: Ad Lib Instrument Maker. Instrument Maker saved the instrument in external files. First it saved them in individual instrument files. Later, when it turned out that the MS-DOS FAT file system was not efficient for storing hundreds of very small files, a bank file format was introduced. Visual Composer could only import instruments for loading purposes and did not offer any instrument editing feature.
+OPL2 instrument definitions are not even stored in the ROL file itself. In typical Ad Lib, Inc. style, the purchase of a separately available commercial add-on program was necessary to create new, or edit existing instruments: Ad Lib Instrument Maker. Instrument Maker saved the instrument in external files, later in bank files. Visual Composer could only import instrument (bank) files for loading purposes and did not offer any instrument editing feature.
 
 If all this does not scare you away and still like to mess with the technically simple, but rather curious, ROL format, read on...
 
 ## ABOUT THE STEPSEQUENCER
 
-I wondered what would happen if one would approach the ROL format as a simple, monophonic stepsequencer, where multiple voices are stacked and triggered from one track (instead of the usual other way around, where each channel is treated as a single indivdual entity, producing rather thin sounds, especially listening back at it now, literally dozens of years later).
+I wondered what would happen if one would approach the ROL format as a simple, monophonic stepsequencer, where multiple voices are stacked and triggered from one track (instead of the usual other way around, where each channel is treated as a single indivdual entity, producing rather thin  sounds, especially listening back at it now, literally dozens of years later).
 
-This program is not here to be taken seriously, or take the retro world by storm. It's all about having some fun. Just wanted to see what I can bring to the table to this quite obscure retro file format.
+This program is not here to be taken too seriously, or take the retro world by storm. It's all about having some fun. Just wanted to see what I can bring to the table to this quite obscure retro file format.
 
-Another anecdote: Back in the early '00s I bought the rather obscure MAM SQ16 MIDI hardware step-sequencer from the German company Music And More. It had some awesome crazy experimental features. I hope that I can turn this program slowly into something experimental like that, eventually.
+Back in the early '00s I bought the rather obscure MAM SQ16 MIDI hardware step-sequencer from the German company Music And More. It had some awesome crazy experimental features. I used it to try to breath some life into some cheap digital sample-based synthesizers. This is exactly what I now attempt to do with this program and the ROL format.
 
-It's early days however. At this time, it can stack different sounds, produce notes and fade-in/out effects. About the first features I plan to work on are changing pitch and volume changes in patterns, using spare channels for fully configurable delays and some primitive voice/pitch LFO-alike features for individual voices in a patch. I hope DOS-based ROL players will be able to cope with all those events, only one way to find out...
+It's early days however. At this time, the program can stack different sounds, produce notes and generate fade-in/out effects.
+
+Plans for the future include: 
+* Dynamically changing pitch and volume in patterns, easily per tick
+* Using spare channels for fully configurable automatically generated delays
+* Some primitive subtle voice/pitch LFO-alike features for pitch and volume
+* Functions to introduce some randomness in notes, timing and/or pitch and volume settings
+* Make the program multi-timbral (although when stacking instruments, channels are used up quickly)
+* Maybe introduce chord tracks
+* Special track type for percussion mode
+
+I hope DOS-based ROL players will be able to cope with all those events, only one way to find out...
 
 A full manual documenting the input file will be written later. 
 
