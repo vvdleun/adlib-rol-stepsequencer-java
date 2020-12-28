@@ -82,4 +82,8 @@ public class Track {
 	public int getEndTick() {
 		return endTick;
 	}
+	
+	public CompiledSong getSong() {
+		return compiledSong;
+	}
 }

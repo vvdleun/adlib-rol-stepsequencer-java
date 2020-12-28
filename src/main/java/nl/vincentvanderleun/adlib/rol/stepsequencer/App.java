@@ -10,7 +10,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.OutputFileRenderer;
 
 public class App {
     public static void main(String[] args) throws IOException {
-		ParsedSong parsedSong = SongParser.parse("C:\\Users\\Vincent\\eclipse-workspace\\adlib-rol-monosynth-java\\sample.mss.txt");
+ 		ParsedSong parsedSong = SongParser.parse("C:\\Users\\Vincent\\eclipse-workspace\\adlib-rol-stepsequencer-java\\sample.mss.txt");
 
 		CompiledSong compiledSong = SongCompiler.compile(parsedSong);
 

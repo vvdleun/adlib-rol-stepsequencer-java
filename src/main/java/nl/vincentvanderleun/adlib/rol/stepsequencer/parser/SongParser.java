@@ -70,10 +70,10 @@ public class SongParser {
 		parsedSong.setPatches(patches);
 		parsedSong.setPatterns(patterns);
 		parsedSong.setTrack(track);
-		
+
 		return parsedSong;
 	}
-
+	
 	private void parseSongHeader() throws IOException {
 		SongHeaderBlockParser songHeaderParser = new SongHeaderBlockParser(lineParser, () -> {
 			SongHeader defaultSongHeader = new SongHeader();

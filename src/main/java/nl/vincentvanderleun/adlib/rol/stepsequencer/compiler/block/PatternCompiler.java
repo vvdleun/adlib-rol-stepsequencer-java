@@ -78,7 +78,9 @@ public class PatternCompiler {
 		
 			int tick = context.tick + voice.getOffset();
 			if(tick < 0) {
-				System.out.println("Warning: voice offset of patch makes instrument change on tick < 0. Setting on tick 0 instead.");
+				System.out.println("Warning: Moved patch change of voice \"" + voice.getName() 
+						+ "\" of patch \"" + patchEvent.getPatchName() 
+						+ "\" to tick 0, because of its offset the calculated tick was < 0.");
 				tick = 0;
 			}
 

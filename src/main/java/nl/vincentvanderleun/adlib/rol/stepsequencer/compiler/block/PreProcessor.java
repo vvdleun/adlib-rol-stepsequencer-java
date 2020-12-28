@@ -29,8 +29,6 @@ public class PreProcessor {
 		PreProcessor preProcessor = new PreProcessor(parsedSong);
 		
 		preProcessor.process();
-		
-		System.out.println(preProcessor.processedEvents + " event(s) processed by pre-processor");
 	}
 	
 	private PreProcessor(ParsedSong parsedSong) {

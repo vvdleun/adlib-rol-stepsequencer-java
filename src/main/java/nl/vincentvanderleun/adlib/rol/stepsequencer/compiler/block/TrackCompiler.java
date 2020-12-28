@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.track.FadeInFunction;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.track.FadeOutFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
@@ -74,18 +75,19 @@ public class TrackCompiler {
 	}
 	
 	private void compileFunctionCall(Track track, int tick, FunctionCall functionCall) throws CompileException {
-		List<Object> convertedArguments = new ArrayList<>();
 
 		switch(functionCall.getFunctionName()) {
 			case "fade-in":
 				FadeInFunction fadeInFunction = new FadeInFunction();
-				convertedArguments.add(Integer.parseInt(functionCall.getArguments().get(0)));
-				fadeInFunction.execute(track, tick, convertedArguments);
+				fadeInFunction.execute(track, tick, functionCall.getArguments());
+				break;
+			case "fade-out":
+				FadeOutFunction fadeOutFunction = new FadeOutFunction();
+				fadeOutFunction.execute(track, tick,functionCall.getArguments());
 				break;
 			default:
 				throw new CompileException("Unknown function: " + functionCall.getFunctionName());
 		}
-		
 	}
 
 	private static class ContextAwareFunctionCall {

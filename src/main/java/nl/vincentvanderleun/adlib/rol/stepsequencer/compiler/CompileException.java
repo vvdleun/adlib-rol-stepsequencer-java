@@ -8,4 +8,8 @@ public class CompileException extends IOException {
 	public CompileException(String msg) {
 		super(msg);
 	}
+
+	public CompileException(String msg, Throwable cause) {
+		super(msg, cause);
+	}
 }
