@@ -35,34 +35,9 @@ public class SongCompiler {
 
 		TrackCompiler.compile(parsedSong, compiledSong, channelManager, context);
 
-		long stats = calcGeneratedEvents(compiledSong);
-		System.out.println(stats + " event(s) were generated before conversion to ROL file");
-
 		return compiledSong;
 	}
 
-	private long calcGeneratedEvents(CompiledSong song) {
-		long countEvents = song.getTempoEvents().size();
-
-		for(Channel channel : song.getChannels()) {
-			for(ChannelEvents event : channel.getAllEvents()) {
-				if(event.getNote() != null) {
-					countEvents++;
-				}
-				if(event.getInstrument() != null) {
-					countEvents++;
-				}
-				if(event.getVolume() != null) {
-					countEvents++;
-				}
-				if(event.getPitch() != null) {
-					countEvents++;
-				}
-			}
-		}
-		return countEvents;
-	}
-	
 	private CompiledSong initializeCompiledSong(ParsedSong song) {
 		return new CompiledSong(
 				song.getHeader().getTarget(),

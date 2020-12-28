@@ -9,7 +9,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.AdLibRol
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.rol.format.Channel;
 
 public class AdLibRolSongRenderer {
-	
+
 	public void renderRolFile(CompiledSong song, OutputStream outputStream) throws IOException {
 		CompiledSongToRolFileConverter compiledSongToRolFileConverter = new CompiledSongToRolFileConverter();
 		
@@ -32,6 +32,6 @@ public class AdLibRolSongRenderer {
 					+ channel.getVolumeTrack().getEvents().size();
 		}
 		
-		System.out.println(countEvents + " event(s) generated in ROL file");
+		System.out.println("Successfully generated ROL file with " + countEvents + " event(s).");
 	}
 }

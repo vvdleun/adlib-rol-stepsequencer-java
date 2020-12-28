@@ -22,10 +22,10 @@ public class FadeOutFunction extends CompilableTrackFunction {
 		checkArgumentCount(FUNCTION_NAME, arguments, 1);
 		final int duration = parseTicksArgument(FUNCTION_NAME, arguments.get(0), track.getSong());
 
-		track.getChannels().forEach(channel -> createFadeOutOn(channel, tick, duration));
+		track.getChannels().forEach(channel -> createFadeOut(channel, tick, duration));
 	}
 	
-	private void createFadeOutOn(Channel channel, int startTick, int duration) {
+	private void createFadeOut(Channel channel, int startTick, int duration) {
 		final int endTick = startTick + duration - 1;
 		final float fromVolume = channel.getEventsAtOrBeforeTick(startTick).getVolume();
 		final float step = fromVolume / duration;
@@ -37,5 +37,4 @@ public class FadeOutFunction extends CompilableTrackFunction {
 		}
 		channel.addEvent(endTick, new VolumeMultiplierEvent(0.0f));
 	}
-
 }

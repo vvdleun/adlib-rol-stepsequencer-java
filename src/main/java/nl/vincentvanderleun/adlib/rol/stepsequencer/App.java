@@ -10,10 +10,43 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.OutputFileRenderer;
 
 public class App {
     public static void main(String[] args) throws IOException {
- 		ParsedSong parsedSong = SongParser.parse("C:\\Users\\Vincent\\eclipse-workspace\\adlib-rol-stepsequencer-java\\sample.mss.txt");
+    	String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
+    	
+    	System.out.println("adlib-rol-stepsequencer (powered by: " + jvmString + ")\n");
+    	
+    	if(args.length != 2) {
+    		System.out.println("Error: two paths must be specified on the command-line: one for the source file and one for the destination file.\n");
+    		System.out.println("Beware that the specified destination file will be overwritten.");
+    		System.exit(1);;
+    	}
+    	
+    	String sourceFile = args[0];
+    	String destFile = args[1];
+
+    	if(sourceFile.equals(destFile)) {
+    		System.out.println("Error: the source file must be different than the destination file.");
+    		System.exit(1);;
+    	}
+
+    	try {
+    		convertToAdLibROlFile(sourceFile, destFile);
+    	} catch(Exception ex) {
+    		System.out.println("ERROR: " + ex.getMessage());
+    		throw ex;
+    	}
+    }
+    
+    private static void convertToAdLibROlFile(String inputFilePath, String outputFilePath) throws IOException {
+    	System.out.println("Parsing \"" + inputFilePath + "\"...\n");
+    	
+ 		ParsedSong parsedSong = SongParser.parse(inputFilePath);
+
+    	System.out.println("Converting events...\n");
 
 		CompiledSong compiledSong = SongCompiler.compile(parsedSong);
 
-		OutputFileRenderer.renderAdLibRolFile(compiledSong, "c:\\dos\\temp\\test.rol");
+    	System.out.println("\nWriting ROL file to \"" + outputFilePath + "\"...\n");
+		
+		OutputFileRenderer.renderAdLibRolFile(compiledSong, outputFilePath);
     }
 }
