@@ -20,6 +20,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 
 public class PatternCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
@@ -45,24 +46,29 @@ public class PatternCompiler {
 		
 		for(Event event : pattern.getEvents()) {
 			switch(event.getEventType()) {
+				case HOLD:
+					throw new CompileException("Internal error: event " + event.getEventType() + " was supposed to be handled by pre-processor");
+				case NOTE:
+					convertNote((nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
+					break;
 				case OCTAVE:
 					context.octave = ((OctaveChange)event).getOctave();
 					break;
 				case PATCH:
-					convertPatch((PatchChange)event, context);
+					PatchChange patchChangeEvent = (PatchChange)event;
+					convertPatch(patchChangeEvent, context);
+					// Update context
+					context.patch = patches.get(patchChangeEvent.getPatchName());
 					break; 
-				case NOTE:
-					convertNote((nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
+				case PITCH:
+					convertPitch((Pitch)event, context);
 					break;
 				case REST:
 					// Silence notes are handled during rendering. Just skip the ticks.
 					++context.tick;
 					break;
-				case FUNCTION:
-				case HOLD:
-					throw new CompileException("Internal error: event " + event.getEventType() + " was supposed to be handled by pre-processor");
 				default:
-					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
+					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" event is not implemented yet");
 			}
 		}
 	}
@@ -91,7 +97,20 @@ public class PatternCompiler {
 		};
 	}
 
+	private void convertPitch(Pitch pitchEvent, CompilerContext context) throws CompileException {
+		final List<Channel> patchChannels = track.claimChannels(context.patch.getVoices().size());
+
+		int channel = 0;
+		for(Voice voice : context.patch.getVoices()) {
+			final float diff = 1.0f - voice.getPitch();
+			final var compiledPitchEvent = new PitchMultiplierEvent(pitchEvent.getPitch() - diff);
+			patchChannels.get(channel++).addPitchEvent(context.tick, compiledPitchEvent);
+		}
+	}
+	
 	private void convertNote(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompilerContext context) throws CompileException {
+		final List<Channel> patchChannels = track.claimChannels(context.patch.getVoices().size());
+
 		int channel = 0;
 
 		for(Voice voice : context.patch.getVoices()) {
@@ -108,7 +127,7 @@ public class PatternCompiler {
 			track.claimTickOnChannels(noteTick + noteEvent.getDuration() - 1);
 
 			if(noteTick >= 0) {
-				compiledSong.getChannels().get(channel++).addNoteEvent(noteTick, noteEvent);
+				patchChannels.get(channel++).addNoteEvent(noteTick, noteEvent);
 			} else {
 				System.out.println("Warning: Discarded note on voice \"" + voice.getName() + "\" of patch \"" + context.patch.getName() + "\", because calculated tick was < 0");
 			}

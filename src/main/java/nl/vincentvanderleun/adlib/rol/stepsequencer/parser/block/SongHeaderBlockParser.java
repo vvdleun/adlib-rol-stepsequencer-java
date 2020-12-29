@@ -36,7 +36,10 @@ public class SongHeaderBlockParser extends BlockParser<SongHeader> {
 			
 			switch(key) {
 				case "target":
-					if(!value.equals("ROL")) {
+					if(value.equals("RL2")) {
+						throw new ParseException("<easter-egg>You know, producing Ad Lib Gold RL2 files is on my bucket list... but since I have "
+								+ "exactly zero means to playback those songs, I have been unsuccesfull in my attempts to reverse-engineer those files :(</easter-egg>");
+					} else if(!value.equals("ROL")) {
 						throw new ParseException("This program does not support the declared target \"" + value + "\" at line " + lineParser.getLineNumber());
 					}
 					break;

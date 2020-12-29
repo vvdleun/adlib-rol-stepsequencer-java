@@ -18,6 +18,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEven
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
 
 public class PatternBlockParser extends BlockParser<Pattern> {
@@ -65,23 +66,15 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			while(scanner.hasNext()) {
 				final String inputToken = scanner.next();
 
-				// FIXME: everything is parsed twice
-				final PatternTokenType tokenType = determineTypeOfToken(inputToken);
+				ParseResult parseResult = parseToken(inputToken);
 				
-				switch(tokenType) {
-					case NOTE:
-						NoteEvent noteEvent = parseNote(inputToken);
-						events.add(noteEvent);
-						break;
-					case REST:
-						events.add(new Rest());
-						break;
-					case HOLD:
-						events.add(new Hold());
-						break;
+				switch(parseResult.getTokenType()) {
 					case FUNCTION:
-						Event functionEvent = parseFunction(inputToken);
-						events.add(functionEvent);
+					case HOLD:
+					case NOTE:
+					case PITCH:
+					case REST:
+						events.add(parseResult.getEvent());
 						break;
 					default:
 						throw new ParseException("Cannot parse sequence token \"" + inputToken + "\" at line " + lineParser.getLineNumber());
@@ -96,6 +89,32 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return pattern;
 	}
 
+	private ParseResult parseToken(String inputToken) throws ParseException {
+		if(inputToken.equals("-")) {
+			return new ParseResult(PatternTokenType.REST, new Rest());
+		} else if(inputToken.equals("h")) {
+			return new ParseResult(PatternTokenType.HOLD, new Hold());
+		}
+	
+		if(structureParser.isFunction(inputToken)) {
+			Event parsedFunctionEvent = parseFunction(inputToken);
+			return new ParseResult(PatternTokenType.FUNCTION, parsedFunctionEvent);
+		}
+	
+		final NoteEvent parsedNoteEvent = parseNote(inputToken);
+		if(parsedNoteEvent != null) {
+			return new ParseResult(PatternTokenType.NOTE, parsedNoteEvent);
+		}
+
+		final Pitch pitchEvent = parsePitchEvent(inputToken);
+		if(pitchEvent != null) {
+			return new ParseResult(PatternTokenType.PITCH, pitchEvent);
+		}
+		
+		return new ParseResult(PatternTokenType.UNKNOWN, null);
+		
+	}
+	
 	private Event parseFunction(String inputToken) throws ParseException {
 		BlockFunction function = structureParser.parseFunction(inputToken);		
 		switch(function.getName()) {
@@ -106,28 +125,6 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			default:
 				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
 		}
-	}
-	
-	private PatternTokenType determineTypeOfToken(String inputToken) {
-		if(inputToken.equals("-")) {
-			return PatternTokenType.REST;
-		} else if(inputToken.equals("h")) {
-			return PatternTokenType.HOLD;
-		}
-
-		if(structureParser.isFunction(inputToken)) {
-			return PatternTokenType.FUNCTION;
-		}
-
-		if(isNote(inputToken)) {
-			return PatternTokenType.NOTE;
-		}
-		
-		return PatternTokenType.UNKNOWN;
-	}
-	
-	private boolean isNote(String inputToken) {
-		return parseNote(inputToken) != null;
 	}
 	
 	private NoteEvent parseNote(String inputToken) {
@@ -176,11 +173,44 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		}
 	}
 	
+	private Pitch parsePitchEvent(String inputToken) {
+		// Valid: "P1.00"
+		if(!inputToken.startsWith("P") || inputToken.length() == 1) {
+			return null;
+		}
+		
+		try {
+			String value = inputToken.substring(1);
+			return new Pitch(Float.valueOf(value));
+		} catch(NumberFormatException ex) {
+			return null;
+		}
+	}
+	
 	private enum PatternTokenType {
-		NOTE,
-		REST,
-		HOLD,
 		FUNCTION,
+		HOLD,
+		NOTE,
+		PITCH,
+		REST,
 		UNKNOWN
+	}
+	
+	private static final class ParseResult {
+		private final PatternTokenType tokenType;
+		private final Event event;
+		
+		public ParseResult(PatternTokenType tokenType, Event event) {
+			this.tokenType = tokenType;
+			this.event = event;
+		}
+		
+		public PatternTokenType getTokenType() {
+			return tokenType;
+		}
+		
+		public Event getEvent() {
+			return event;
+		}
 	}
 }
