@@ -9,6 +9,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.EventType;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Hold;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
@@ -23,8 +24,6 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
 public class PreProcessor {
 	private final ParsedSong parsedSong;
 
-	private int processedEvents;
-	
 	public static void process(ParsedSong parsedSong) throws CompileException {
 		PreProcessor preProcessor = new PreProcessor(parsedSong);
 		
@@ -33,7 +32,6 @@ public class PreProcessor {
 	
 	private PreProcessor(ParsedSong parsedSong) {
 		this.parsedSong = parsedSong;
-		processedEvents = 0;
 	}
 	
 	public void process() throws CompileException {
@@ -74,26 +72,17 @@ public class PreProcessor {
 	 * @param holdEventIndex
 	 */
 	private void processHoldEvent(Pattern pattern, int holdEventIndex, NavigableSet<Integer> eventsToDelete, Map<Integer, Event> eventsToReplace) {
-		// Find note to hold
-		boolean found = false;
-
+		final Hold holdEvent = (Hold) pattern.getEvents().get(holdEventIndex);
 		for(int i = holdEventIndex - 1; i >= 0; i--) {
 			final Event earlierEvent = pattern.getEvents().get(i);
 			if(earlierEvent.getEventType() == EventType.NOTE) {
-				found = true;
-				((NoteEvent)earlierEvent).increaseDuration(1);
-				break;
+				((NoteEvent)earlierEvent).increaseDuration(holdEvent.getDuration());
+				eventsToDelete.add(holdEventIndex);
+				return;
 			}
 		}
 
-		if (found) {
-			eventsToDelete.add(holdEventIndex);
-		} else {
-			System.out.println("Preprocessor warning: no note found to hold. Replacing with rest instead");
-			eventsToReplace.put(holdEventIndex, new Rest());
-		}
-		
-		processedEvents++;
+		System.out.println("Preprocessor warning: no note found to hold. Replacing with rest instead");
+		eventsToReplace.put(holdEventIndex, new Rest(1));
 	}
-	
 }

@@ -1,7 +1,6 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.block;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -48,7 +47,7 @@ public class TrackCompiler {
 		// Initialize context with all track-related properties.
 		context.tick = 0;
 
-		PatternCompiler patternCompiler = new PatternCompiler(track, parsedSong, compiledSong);
+		PatternCompiler patternCompiler = new PatternCompiler(track, parsedSong);
 		
 		var functionCalls = new ArrayList<ContextAwareFunctionCall>();
 		

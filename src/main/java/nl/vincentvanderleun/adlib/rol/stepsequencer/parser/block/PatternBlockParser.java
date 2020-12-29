@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
@@ -25,6 +26,15 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 	private static final Map<String, Note> NOTES = new HashMap<>(12);
 
 	private final String patternName;
+
+	private enum PatternTokenType {
+		FUNCTION,
+		HOLD,
+		NOTE,
+		PITCH,
+		REST,
+		UNKNOWN
+	}
 
 	static {
 		NOTES.put("C", Note.C);
@@ -76,8 +86,9 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 					case REST:
 						events.add(parseResult.getEvent());
 						break;
+					case UNKNOWN:
 					default:
-						throw new ParseException("Cannot parse sequence token \"" + inputToken + "\" at line " + lineParser.getLineNumber());
+						throw new ParseException("Unknown token \"" + inputToken + "\" at line " + lineParser.getLineNumber());
 				}
 			}
 		});
@@ -90,43 +101,65 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 	}
 
 	private ParseResult parseToken(String inputToken) throws ParseException {
-		if(inputToken.equals("-")) {
-			return new ParseResult(PatternTokenType.REST, new Rest());
-		} else if(inputToken.equals("h")) {
-			return new ParseResult(PatternTokenType.HOLD, new Hold());
+		Event parsedEvent;
+		
+		parsedEvent = parseRest(inputToken);
+		if(parsedEvent != null) {
+			return new ParseResult(PatternTokenType.REST, parsedEvent);
+		} 
+
+		parsedEvent = parseHold(inputToken);
+		if(parsedEvent != null) {
+			return new ParseResult(PatternTokenType.HOLD, parsedEvent);
 		}
-	
+
+		parsedEvent = parsePitchEvent(inputToken);
+		if(parsedEvent != null) {
+			return new ParseResult(PatternTokenType.PITCH, parsedEvent);
+		}
+
 		if(structureParser.isFunction(inputToken)) {
 			Event parsedFunctionEvent = parseFunction(inputToken);
 			return new ParseResult(PatternTokenType.FUNCTION, parsedFunctionEvent);
 		}
 	
-		final NoteEvent parsedNoteEvent = parseNote(inputToken);
-		if(parsedNoteEvent != null) {
-			return new ParseResult(PatternTokenType.NOTE, parsedNoteEvent);
+		parsedEvent = parseNote(inputToken);
+		if(parsedEvent != null) {
+			return new ParseResult(PatternTokenType.NOTE, parsedEvent);
 		}
 
-		final Pitch pitchEvent = parsePitchEvent(inputToken);
-		if(pitchEvent != null) {
-			return new ParseResult(PatternTokenType.PITCH, pitchEvent);
-		}
-		
 		return new ParseResult(PatternTokenType.UNKNOWN, null);
 		
 	}
 	
-	private Event parseFunction(String inputToken) throws ParseException {
-		BlockFunction function = structureParser.parseFunction(inputToken);		
-		switch(function.getName()) {
-			case "patch":
-				return new PatchChange(function.getArgument(0));
-			case "octave":
-				return new OctaveChange(function.parseArgumentAsInteger(0));
-			default:
-				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
-		}
+	private Rest parseRest(String inputToken) {
+		return parseEventWithDuration("r", inputToken, (duration) -> new Rest(duration));
+	}
+
+	private Hold parseHold(String inputToken) {
+		return parseEventWithDuration("h", inputToken, (duration) -> new Hold(duration));
 	}
 	
+	private <T> T parseEventWithDuration(String eventToken, String inputToken, Function<Integer, T> eventSupplier) {
+		if(!inputToken.startsWith(eventToken)) {
+			return null;
+		}
+
+		// Is a duration specified?
+		int duration = 1;
+		int dashIndex = inputToken.indexOf('-');
+		if(dashIndex == eventToken.length()) {
+			int parsedDuration = parseDuration(inputToken);
+			if(parsedDuration > 0) {
+				duration = parsedDuration;
+			}
+		} else if(dashIndex > eventToken.length()) {
+			return null;
+		}
+		return eventSupplier.apply(duration);
+	}
+	
+
 	private NoteEvent parseNote(String inputToken) {
 		// Valid notes:
 		// "C", "+C", "-C", "+++C", "---C", "C-4", "--C-4", "++C-4"
@@ -134,19 +167,21 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		int duration = 1;
 
 		// Remove optional + and - prefixes
-		while(inputToken.startsWith("+")) {
-			offsetOctave++;
-			inputToken = inputToken.substring(1);
-		}
-		while(inputToken.startsWith("-")) {
-			offsetOctave--;
-			inputToken = inputToken.substring(1);
+		while(inputToken.startsWith("+") || inputToken.startsWith("-")) {
+			if(inputToken.startsWith("+")) {
+				offsetOctave++;
+				inputToken = inputToken.substring(1);
+			}
+			if(inputToken.startsWith("-")) {
+				offsetOctave--;
+				inputToken = inputToken.substring(1);
+			}
 		}
 		
 		// Is a duration specified?
 		int dashIndex = inputToken.indexOf('-');
 		if(dashIndex > 0) {
-			int parsedDuration = parseNoteDuration(inputToken);
+			int parsedDuration = parseDuration(inputToken);
 			if(parsedDuration > 0) {
 				duration = parsedDuration;
 				inputToken = inputToken.substring(0, dashIndex);
@@ -162,10 +197,10 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return new NoteEvent(note, duration, offsetOctave);
 	}
 
-	private int parseNoteDuration(String note) {
+	private int parseDuration(String inputToken) {
 		try {
-			String[] splitNote = note.split(java.util.regex.Pattern.quote("-"), 2);
-			return Integer.parseInt(splitNote[1]);
+			String[] splitToken = inputToken.split(java.util.regex.Pattern.quote("-"), 2);
+			return Integer.parseInt(splitToken[1]);
 		} catch(NumberFormatException ex) {
 			// There must be a better way to detect whether a String
 			// contains a number, without resorting to reg-ex :'(
@@ -186,16 +221,19 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			return null;
 		}
 	}
-	
-	private enum PatternTokenType {
-		FUNCTION,
-		HOLD,
-		NOTE,
-		PITCH,
-		REST,
-		UNKNOWN
+
+	private Event parseFunction(String inputToken) throws ParseException {
+		BlockFunction function = structureParser.parseFunction(inputToken);		
+		switch(function.getName()) {
+			case "patch":
+				return new PatchChange(function.getArgument(0));
+			case "octave":
+				return new OctaveChange(function.parseArgumentAsInteger(0));
+			default:
+				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
+		}
 	}
-	
+
 	private static final class ParseResult {
 		private final PatternTokenType tokenType;
 		private final Event event;

@@ -27,7 +27,7 @@ mode = MELODIC
   offset = -1
 
 [PATTERN one]
- patch(lead)    octave(3)   C D E F - G h -G P0.5 ++G-8 
+ patch(lead)    octave(3)   C D E F r-1 G h-1 -G P0.5 ++G-8 
  
 [TRACK one]
 fade-in(48) one one one fade-out(16) one

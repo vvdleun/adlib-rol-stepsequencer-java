@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Channel;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Track;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.InstrumentEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
@@ -21,19 +20,18 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveCh
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
 
 public class PatternCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
 
 	private final Track track;
 	private final ParsedSong parsedSong;
-	private final CompiledSong compiledSong;
 	private final Map<String, Patch> patches;
 	
-	public PatternCompiler(Track track, ParsedSong parsedSong, CompiledSong compiledSong) {
+	public PatternCompiler(Track track, ParsedSong parsedSong) {
 		this.track = track;
 		this.parsedSong = parsedSong;
-		this.compiledSong = compiledSong;
 		
 		this.patches = parsedSong.getPatches().stream()
 				.collect(Collectors.toMap(
@@ -65,7 +63,7 @@ public class PatternCompiler {
 					break;
 				case REST:
 					// Silence notes are handled during rendering. Just skip the ticks.
-					++context.tick;
+					context.tick += ((Rest)event).getDuration();
 					break;
 				default:
 					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" event is not implemented yet");

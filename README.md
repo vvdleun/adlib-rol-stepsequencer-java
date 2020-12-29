@@ -14,9 +14,9 @@ Ad Lib, Inc. from Canada was the manufacterer of the first well known soundcard 
 
 It's interesting to note that nowadays the AdLib soundcard is remembered as a soundcard for DOS games, but from early marketing materials, it looks like, at least initially, song creation and playback was the primary intended purpose of the card.
 
-A revolutionary commercial software package, the Ad Lib Visual Composer, was released separately, which made it possible to actually create and edit existing ROL files with a mouse. Primitive by today's standards, but unlike most niche software released back then, it was very easy to use: users could draw notes on a piano roll (undoubtedly that is where the name from the format was derived from) with a mouse, one channel at a time. The program was generally stable and largely menu-driven. Some developers at Ad Lib, Inc. must have spend a lot of time on user-interface design. 
+They released Ad Lib Visual Composer, a software package that made it possible to visually create and edit ROL files. Primitive by today's standards, but unlike most niche software released back then, it was very easy to use, with an impressive 2-color CGA menu-driven GUI. The program required music theory knowledge to make the best of it. Also, entering instrument changes, pitch and volume events, which had to be done by entering values manually on the PC keyboard, required some skill. 
 
-The program required music theory knowledge to make the best of it. Also, entering instrument changes, pitch and volume events, which had to be done by entering values manually on the PC keyboard, required some skill. In conclusion, composing music with Visual Composer was quite a time consuming process, but resulting songs could, in the right skilled hands, sound impressive.
+Although there were several shareware programs that could produce ROL files, this was the primary program used to compose those files. In the right skilled hands, excellent sounding songs could be produced in this simple, binary, format.
 
 ### Origin of ROL files
 
@@ -26,30 +26,49 @@ I absolutely have not any proof to back this up, but I wonder whether Ad Lib ROL
 
 To me, the ROL file format looks more like an early take on a universal, but much more primitive, MIDI file alternative to store musical data (not the sound itself, but instructions to drive a tone generator, i.e. synthesizer), then a format designed for the OPL2 chip specifically. I could be completely off here, though.
 
-### Are there better alternatives for OPL2 chiptunes?
-
-If you want to produce the very best songs on the OPL2 chip known to mankind, you're probably better off looking at a dedicated OPL2 (or even better OPL3) "tracker" program, that let the user tweak most FM chip parameters in real-time. The ROL format is too static in nature to make the most out of the OPL2 chip: most chip parameters can only be altered by switching instruments. 
-
-OPL2 instrument definitions are not even stored in the ROL file itself. In typical Ad Lib, Inc. style, the purchase of a separately available commercial add-on program was necessary to create new, or edit existing instruments: Ad Lib Instrument Maker. Instrument Maker saved the instrument in external individual instrument files and later versions bundled those in an external instrument bank file. Visual Composer could only import instrument (bank) files for loading purposes and did not offer any instrument editing feature.
-
-If after reading all this (congrats! I expected most people to have stopped reading by now!), you are not scared and still like to mess with the technically simple, but rather curious, ROL format, read on...
-
 ## ABOUT THE STEP-SEQUENCER
 
 I wondered what would happen if one would approach the ROL format from a simple, monophonic step-sequencer point of view, where multiple voices are layered and triggered from one track (instead of the usual other way around, where each channel is treated as a single indivdual entity, producing rather thin  sounds... especially listening back at it now, literally dozens of years later).
 
 Back in the early '00s I bought the rather obscure MAM SQ16 MIDI hardware step-sequencer from the German company Music And More. It had some awesome crazy experimental features. I used it to try to breath some life into some cheap digital sample-based MIDI synthesizers that I owned back then. This is exactly what I now attempt to do with this program and the ROL format: the program cannot offer anything that cannot be done in Visual Composer, but it approaches everything from a different angle.
 
-This program is not here to be taken too seriously, or take the retro world by storm. I just wanted to see what I could bring to the table to this quite obscure retro file format.
+This program is not here to be taken too seriously. I just wanted to see what I could bring to the table to this simple and quite obscure retro file format.
 
-It's early days however. At this time, the program can layer different sounds, produce notes and generate fade-in/out effects.
+The structure of a song:
+
+A `patch` is an instrument:
+* It can have multiple voices, that all play at the same time (nearly, each voice can define its own offsets)
+* Each voice has different parameters that affect that voice only:
+  * pitch: a pitch variation of the triggered note. 2.0 is one note higher than the played note. Range: -2.0 to 2.0, default 1.0
+  * volume: default volume of this voice. Range 0.0 to 1.0, default 0.75.
+  * transpose: the amount of notes that will be added or subtracted from the played note. 12 is one octave higher, -12 one octave lower.
+  * instrument: the used instrument (usually loaded from an external BNK file, see below)
+  * offset: the amount of ticks that will be added or substracted for this voice, when the patch is triggered
+
+A `pattern` is a series of notes and events. There can be many patterns defined in a single song
+
+* The active patch can be changed during a pattern with the `patch(NAME)` function (note that no spaces are allowed at this time)
+* The octave is hard-coded (for now) to `4` when a pattern is defined, can be switched with the `octave()` function: i.e. `octave(3)`
+* Notes can be entered by their name: `C`, `D`, `C#`, `Db`
+* The octave can be overruled for a single note by prefixing `+` or `-` characters: `+++C` will transpose that `C` note (only!) `3` octaves higher
+* The length can be appended to a note with a dash: `C-4` will translate to a `C` note of `4` ticks
+* You can also add a `h` character to hold a note `C h` will be translated to a `C` note of `2` ticks. `C h-2` would create a `C` note of `3` ticks.
+* The pitch can be changed dynamically by placing a `P1.10` event (change pitch to `1.10`). This will always respect the pitch offsets of each voice.
+  * A rest can be added by adding a `r` character. The duration can be added as well `r-4` for a rest of `4` ticks.
+* Only note and rest events increases the current tick. So, you can define multiple events on a single tick, then proceed with either a note or a rest.
+
+A `track` triggers the patterns
+
+* There can only be one track in a song right now (the stepsequencer is mono-trimbral)
+* A track triggers a series of patterns, which are played after each other
+* The `fade-in` and `fade-out` functions can be triggered inside a track: `fade-in(16)` for a fade-in that takes `16` ticks. It respects the volume settings of the voice. Duration can also be specified in beats: `fade-in(4b)` or measures: `fade-in(1m)`
 
 Plans for the future include: 
-* Dynamically changing pitch and volume in patterns, easily per tick
 * Using spare channels for fully configurable automatically generated delays
-* Some primitive voice/pitch LFO-alike modification features for pitch and volume
+* Some primitive voice/pitch LFO-alike features for dynamic pitch and volume alteration of a voice
 * Functions to introduce some randomness in notes, timing and/or pitch and volume settings
 * Make the program multi-timbral (although when layering instruments, channels are used up quickly!)
+* More functions!
 * Maybe introduce a special track for chords
 * Dedicated track type for percussion mode
 
@@ -96,7 +115,7 @@ Successfully generated ROL file with 318 event(s).
 
 The generated file should play back in any program that can playback Ad Lib ROL files (i.e. Ad Lib Visual Composer running on the DOSBox emulator, but also Foobar2000 with the AdPlug plugin installed).
 
-Note that an instrument bank (usually called STANDARD.BNK) will be required for playback. Since I'm not the author of any bank file, I can't add one to this repository under the open source license. It was a standard practice to share instrument banks on Bulletin Board Systems back in the day, so it should be easy to find one on the web. Feel free to poke me if you need a bank file.
+Note that an instrument bank (usually called STANDARD.BNK) will be required for playback. In typical Ad Lib, Inc. style, a separate commercial product, called Ad Lib Instrument Maker, would have been needed to create and edit those instruments, Visual Composer can not do this. Since I'm not the author of any bank file, I can't add one to this repository under the open source license. It was a standard practice to share instrument banks on Bulletin Board Systems back in the day, so it should be easy to find one on the web. Feel free to poke me if you need a bank file.
 
 ## SPECIAL THANKS
 
