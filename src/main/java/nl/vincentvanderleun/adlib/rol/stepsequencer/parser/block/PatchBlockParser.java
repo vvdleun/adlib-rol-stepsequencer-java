@@ -49,7 +49,7 @@ public class PatchBlockParser extends BlockParser<Patch> {
 				
 				parsedVoiceKeys.clear();
 			} else {
-				// Parse key/value of the last added instrument
+				// Parse key/value of the last added voice
 				int lastIndex = voices.size() - 1;
 				Voice lastAddedVoice = voices.get(lastIndex);
 				parseVoiceKeyValue(lastAddedVoice, line, parsedVoiceKeys);

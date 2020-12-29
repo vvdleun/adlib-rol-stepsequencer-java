@@ -7,15 +7,21 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
  */
 public class Pitch extends Event {
 	private final float pitch;
+	private final int duration;
 	
-	public Pitch(float pitch) {
+	public Pitch(float pitch, int duration) {
 		super(EventType.PITCH);
 
 		this.pitch = pitch;
+		this.duration = duration;
 	}
 
 	public float getPitch() {
 		return pitch;
+	}
+	
+	public int getDuration() {
+		return duration;
 	}
 
 	@Override

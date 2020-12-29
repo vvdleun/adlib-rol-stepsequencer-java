@@ -156,6 +156,7 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		} else if(dashIndex > eventToken.length()) {
 			return null;
 		}
+
 		return eventSupplier.apply(duration);
 	}
 	
@@ -197,17 +198,6 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return new NoteEvent(note, duration, offsetOctave);
 	}
 
-	private int parseDuration(String inputToken) {
-		try {
-			String[] splitToken = inputToken.split(java.util.regex.Pattern.quote("-"), 2);
-			return Integer.parseInt(splitToken[1]);
-		} catch(NumberFormatException ex) {
-			// There must be a better way to detect whether a String
-			// contains a number, without resorting to reg-ex :'(
-			return -1;
-		}
-	}
-	
 	private Pitch parsePitchEvent(String inputToken) {
 		// Valid: "P1.00"
 		if(!inputToken.startsWith("P") || inputToken.length() == 1) {
@@ -215,8 +205,17 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		}
 		
 		try {
+			int duration;
+			if(inputToken.contains("-")) {
+				 duration = parseDuration(inputToken);
+				 inputToken = inputToken.substring(0, inputToken.indexOf('-'));
+			} else {
+				duration = 1;
+			}
+
 			String value = inputToken.substring(1);
-			return new Pitch(Float.valueOf(value));
+
+			return new Pitch(Float.valueOf(value), duration);
 		} catch(NumberFormatException ex) {
 			return null;
 		}
@@ -231,6 +230,17 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 				return new OctaveChange(function.parseArgumentAsInteger(0));
 			default:
 				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
+		}
+	}
+
+	private int parseDuration(String inputToken) {
+		try {
+			String[] splitToken = inputToken.split(java.util.regex.Pattern.quote("-"), 2);
+			return Integer.parseInt(splitToken[1]);
+		} catch(NumberFormatException ex) {
+			// There must be a better way to detect whether a String
+			// contains a number, without resorting to reg-ex :'(
+			return -1;
 		}
 	}
 

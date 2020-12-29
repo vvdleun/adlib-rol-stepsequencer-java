@@ -30,17 +30,15 @@ To me, the ROL file format looks more like an early take on a universal, but muc
 
 I wondered what would happen if one would approach the ROL format from a simple, monophonic step-sequencer point of view, where multiple voices are layered and triggered from one track (instead of the usual other way around, where each channel is treated as a single indivdual entity, producing rather thin  sounds... especially listening back at it now, literally dozens of years later).
 
-Back in the early '00s I bought the rather obscure MAM SQ16 MIDI hardware step-sequencer from the German company Music And More. It had some awesome crazy experimental features. I used it to try to breath some life into some cheap digital sample-based MIDI synthesizers that I owned back then. This is exactly what I now attempt to do with this program and the ROL format: the program cannot offer anything that cannot be done in Visual Composer, but it approaches everything from a different angle.
-
-This program is not here to be taken too seriously. I just wanted to see what I could bring to the table to this simple and quite obscure retro file format.
+This program is not here to be taken too seriously. I just wanted to see what I could bring to the table to this simple and quite obscure retro file format. Feature-wise, the program cannot offer anything that cannot be done in Visual Composer, but it approaches everything from a different angle.
 
 The structure of a song:
 
 A `patch` is an instrument:
 * It can have multiple voices, that all play at the same time (nearly, each voice can define its own offsets)
 * Each voice has different parameters that affect that voice only:
-  * pitch: a pitch variation of the triggered note. 2.0 is one note higher than the played note. Range: -2.0 to 2.0, default 1.0
-  * volume: default volume of this voice. Range 0.0 to 1.0, default 0.75.
+  * pitch: a pitch variation of the triggered note. Range: 0.0 (1 note lower) to 2.0 (1 note higher), default is 1.0
+  * volume: default volume of this voice. Range 0.0 (silence) to 1.0 (loudest), default 0.75.
   * transpose: the amount of notes that will be added or subtracted from the played note. 12 is one octave higher, -12 one octave lower.
   * instrument: the used instrument (usually loaded from an external BNK file, see below)
   * offset: the amount of ticks that will be added or substracted for this voice, when the patch is triggered
@@ -53,8 +51,8 @@ A `pattern` is a series of notes and events. There can be many patterns defined 
 * The octave can be overruled for a single note by prefixing `+` or `-` characters: `+++C` will transpose that `C` note (only!) `3` octaves higher
 * The length can be appended to a note with a dash: `C-4` will translate to a `C` note of `4` ticks
 * You can also add a `h` character to hold a note `C h` will be translated to a `C` note of `2` ticks. `C h-2` would create a `C` note of `3` ticks.
-* The pitch can be changed dynamically by placing a `P1.10` event (change pitch to `1.10`). This will always respect the pitch offsets of each voice.
-  * A rest can be added by adding a `r` character. The duration can be added as well `r-4` for a rest of `4` ticks.
+* The pitch can be changed dynamically by placing a `P1.10` event (change pitch to `1.10`). This will always respect the pitch offsets of each voice. You can even add a duration: `P0.50-4`, this means that the pitch will reset to the previous value after 4 ticks.
+* A rest can be added by adding a `r` character. The duration can be added as well `r-4` for a rest of `4` ticks.
 * Only note and rest events increases the current tick. So, you can define multiple events on a single tick, then proceed with either a note or a rest.
 
 A `track` triggers the patterns

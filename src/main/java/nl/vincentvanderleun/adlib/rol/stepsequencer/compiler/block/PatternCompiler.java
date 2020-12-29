@@ -21,6 +21,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchCha
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.util.FloatDiffUtils;
 
 public class PatternCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
@@ -100,9 +101,20 @@ public class PatternCompiler {
 
 		int channel = 0;
 		for(Voice voice : context.patch.getVoices()) {
-			final float diff = 1.0f - voice.getPitch();
-			final var compiledPitchEvent = new PitchMultiplierEvent(pitchEvent.getPitch() - diff);
-			patchChannels.get(channel++).addPitchEvent(context.tick, compiledPitchEvent);
+			// Try to keep ratio of voice intact
+			float value = FloatDiffUtils.changePitchAndKeepRatio(voice.getPitch(), pitchEvent.getPitch());
+			
+			final float previousValue = patchChannels.get(channel).getEventsAtOrBeforeTick(context.tick).getPitch();
+
+			final var compiledPitchEvent = new PitchMultiplierEvent(value);
+			patchChannels.get(channel).addPitchEvent(context.tick, compiledPitchEvent);
+
+			if(pitchEvent.getDuration() > 1) {
+				var compiledPreviousValue = new PitchMultiplierEvent(previousValue);
+				patchChannels.get(channel).addPitchEvent(context.tick + pitchEvent.getDuration() - 1, compiledPreviousValue);
+			}
+
+			channel++;
 		}
 	}
 	

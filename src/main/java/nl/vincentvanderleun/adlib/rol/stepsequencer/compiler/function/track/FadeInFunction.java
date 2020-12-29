@@ -8,7 +8,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Track;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
 
 import static nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.ArgumentParseUtils.checkArgumentCount;
-import static nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.ArgumentParseUtils.parseTicksArgument;;
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.util.ParseUtils.parseDuration;;
 
 public class FadeInFunction extends CompilableTrackFunction {
 	private static final String FUNCTION_NAME = "fade-in";
@@ -20,8 +20,16 @@ public class FadeInFunction extends CompilableTrackFunction {
 	@Override
 	public void execute(Track track, int tick, List<String> arguments) throws CompileException {
 		checkArgumentCount(FUNCTION_NAME, arguments, 1);
-		final int duration = parseTicksArgument(FUNCTION_NAME, arguments.get(0), track.getSong());
-		
+		final int duration = parseDuration(
+				FUNCTION_NAME,
+				arguments.get(0),
+				track.getSong().getTicksPerBeat(),
+				track.getSong().getBeatsPerMeasure());
+
+		if(duration <= 0) {
+			throw new CompileException("Duration of " + FUNCTION_NAME + " must be higher than 0 ticks");
+		}
+
 		track.getChannels().forEach(channel -> createFadeIn(channel, tick, duration));
 	}
 	
@@ -34,6 +42,9 @@ public class FadeInFunction extends CompilableTrackFunction {
 		for(int tick = startTick; tick < endTick; tick++) {
 			channel.addEvent(tick, new VolumeMultiplierEvent(nextVolume));
 			nextVolume += step;
+			if(nextVolume > 1.0f) {
+				nextVolume = 1.0f;
+			}
 		}
 		channel.addEvent(endTick, new VolumeMultiplierEvent(toVolume));
 	}
