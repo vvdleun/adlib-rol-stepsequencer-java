@@ -13,21 +13,73 @@ mode = MELODIC
   instrument = moogsynt
   volume = 1.00
   offset = 0
-- VOICE two
+- VOICE h1
   pitch = 1.5 
   transpose = 12
   instrument = moogsynt
   volume = 0.80 
   offset = 1
-- VOICE three
+- VOICE h2
   pitch = 0.5
   transpose = -12
   instrument = moogsynt
   volume = 0.70
   offset = -1
 
-[PATTERN one]
+[PATCH thick-piano]
+- VOICE one
+  pitch = 0.00
+  transpose = 0
+  instrument = piano1
+  volume = 0.80
+  offset = 0
+- VOICE h1
+  pitch = 0.0
+  transpose = -12
+  instrument = piano1
+  volume = 0.60 
+  offset = 1
+- VOICE h2
+  pitch = 0.0
+  transpose = 12
+  instrument = piano1
+  volume = 0.70
+  offset = 0
+- VOICE four
+  pitch = 0.0
+  transpose = 24
+  instrument = piano1
+  volume = 0.60
+  offset = 1
+- VOICE five
+  pitch = 0.0
+  transpose = -24
+  instrument = piano1
+  volume = 0.70
+  offset = 0
+- VOICE six
+  pitch = 0.0
+  transpose = 36
+  instrument = vibra1
+  volume = 1.00
+  offset = 0
+
+[PATCH thin-piano]
+- VOICE one
+  pitch = 0.00
+  transpose = 0
+  instrument = piano1
+  volume = 0.95
+  offset = 0
+
+[PATTERN demo]
  patch(lead)    octave(3)   C D E F r-1 G h-1 -G P0.5-4 ++G-8 
+
+[PATTERN h1]
+ patch(thick-piano) octave(4) G# C# C# G# C# C# A C#
+
+[PATTERN h2]
+ patch(thin-piano) octave(5) G# C# C# G# C# C# A C#
  
-[TRACK one]
-fade-in(48) one one one fade-out(16) one
+[TRACK big-hit]
+fade-in(2m) h1 h2 h1 h2 h1 h2 h2 h1 h1 h1 h1 h1 h2 h2 h1 h1 h1 h1 fade-out(1m) h2 h1 h2 h2 h1

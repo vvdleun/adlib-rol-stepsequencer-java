@@ -41,14 +41,16 @@ public class PatternCompiler {
 
 	public void compile(Pattern pattern, CompilerContext context) throws CompileException {
 		context.octave = DEFAULT_OCTAVE;
-		context.patch = parsedSong.getPatches().get(0);
+
+		// First patch is always the default at the start of a pattern for now
+		track.registerPatchChange(context.tick, parsedSong.getPatches().get(0));
 		
 		for(Event event : pattern.getEvents()) {
 			switch(event.getEventType()) {
 				case HOLD:
 					throw new CompileException("Internal error: event " + event.getEventType() + " was supposed to be handled by pre-processor");
 				case NOTE:
-					convertNote((nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
+					convertNote(pattern, (nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
 					break;
 				case OCTAVE:
 					context.octave = ((OctaveChange)event).getOctave();
@@ -56,11 +58,10 @@ public class PatternCompiler {
 				case PATCH:
 					PatchChange patchChangeEvent = (PatchChange)event;
 					convertPatch(patchChangeEvent, context);
-					// Update context
-					context.patch = patches.get(patchChangeEvent.getPatchName());
+					track.registerPatchChange(context.tick, patches.get(patchChangeEvent.getPatchName()));
 					break; 
 				case PITCH:
-					convertPitch((Pitch)event, context);
+					convertPitch(pattern, (Pitch)event, context);
 					break;
 				case REST:
 					// Silence notes are handled during rendering. Just skip the ticks.
@@ -96,11 +97,13 @@ public class PatternCompiler {
 		};
 	}
 
-	private void convertPitch(Pitch pitchEvent, CompilerContext context) throws CompileException {
-		final List<Channel> patchChannels = track.claimChannels(context.patch.getVoices().size());
+	private void convertPitch(Pattern pattern, Pitch pitchEvent, CompilerContext context) throws CompileException {
+		final Patch patch = getCurrentPatch(context.tick);
 
+		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
+	
 		int channel = 0;
-		for(Voice voice : context.patch.getVoices()) {
+		for(Voice voice : patch.getVoices()) {
 			// Try to keep ratio of voice intact
 			float value = FloatDiffUtils.changePitchAndKeepRatio(voice.getPitch(), pitchEvent.getPitch());
 			
@@ -118,12 +121,13 @@ public class PatternCompiler {
 		}
 	}
 	
-	private void convertNote(nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompilerContext context) throws CompileException {
-		final List<Channel> patchChannels = track.claimChannels(context.patch.getVoices().size());
+	private void convertNote(Pattern pattern, nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompilerContext context) throws CompileException {
+		final Patch patch = getCurrentPatch(context.tick);
+		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
 
 		int channel = 0;
 
-		for(Voice voice : context.patch.getVoices()) {
+		for(Voice voice : patch.getVoices()) {
 			final NoteEvent noteEvent = new NoteEvent(
 					parsedNote.getNote(),
 					parsedNote.getDuration(),
@@ -139,10 +143,14 @@ public class PatternCompiler {
 			if(noteTick >= 0) {
 				patchChannels.get(channel++).addNoteEvent(noteTick, noteEvent);
 			} else {
-				System.out.println("Warning: Discarded note on voice \"" + voice.getName() + "\" of patch \"" + context.patch.getName() + "\", because calculated tick was < 0");
+				System.out.println("Warning: Discarded note on voice \"" + voice.getName() + "\" of patch \"" + patch.getName() + "\", because calculated tick was < 0");
 			}
 		}
 
 		context.tick += parsedNote.getDuration();
+	}
+	
+	private Patch getCurrentPatch(int tick) {
+		return track.getActivePatchAtTick(tick);
 	}
 }

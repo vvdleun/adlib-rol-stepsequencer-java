@@ -34,18 +34,18 @@ public class FadeOutFunction extends CompilableTrackFunction {
 	}
 	
 	private void createFadeOut(Channel channel, int startTick, int duration) {
-		final int endTick = startTick + duration - 1;
-		final float fromVolume = channel.getEventsAtOrBeforeTick(startTick).getVolume();
-		final float step = fromVolume / duration;
-		
-		float nextVolume = fromVolume;
-		for(int tick = startTick; tick < endTick; tick++) {
-			channel.addEvent(tick, new VolumeMultiplierEvent(nextVolume));
-			nextVolume -= step;
-			if(nextVolume < 0.0f) {
-				nextVolume = 0.0f;
-			}
-		}
-		channel.addEvent(endTick, new VolumeMultiplierEvent(0.0f));
+//		final int endTick = startTick + duration - 1;
+//		final float fromVolume = channel.getEventsAtOrBeforeTick(startTick).getVolume();
+//		final float step = fromVolume / duration;
+//		
+//		float nextVolume = fromVolume;
+//		for(int tick = startTick; tick < endTick; tick++) {
+//			channel.addEvent(tick, new VolumeMultiplierEvent(nextVolume));
+//			nextVolume -= step;
+//			if(nextVolume < 0.0f) {
+//				nextVolume = 0.0f;
+//			}
+//		}
+//		channel.addEvent(endTick, new VolumeMultiplierEvent(0.0f));
 	}
 }

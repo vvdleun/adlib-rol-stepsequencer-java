@@ -2,10 +2,13 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 
 /**
  * A track is a independent track of music, that "owns" one or more channels
@@ -29,6 +32,7 @@ public class Track {
 	private final CompiledSong compiledSong;
 	private final ChannelManager channelManager;
 	private final List<Integer> claimedChannels;
+	private final NavigableMap<Integer, Patch> patchSwitches;
 	
 	private int startTick = 0;
 	private int endTick = 0;
@@ -37,6 +41,7 @@ public class Track {
 		this.compiledSong = compiledSong;
 		this.channelManager = channelManager;
 		this.claimedChannels = new ArrayList<>();
+		this.patchSwitches = new TreeMap<>();
 	}
 
 	public void claimTickOnChannels(int tick) {
@@ -85,5 +90,13 @@ public class Track {
 	
 	public CompiledSong getSong() {
 		return compiledSong;
+	}
+	
+	public void registerPatchChange(int tick, Patch patch) {
+		patchSwitches.put(tick, patch);
+	}
+	
+	public Patch getActivePatchAtTick(int tick) {
+		return patchSwitches.floorEntry(tick).getValue();
 	}
 }

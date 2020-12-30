@@ -1,6 +1,10 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 
 /**
  * Contains all events that make up a single pattern.
