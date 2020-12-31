@@ -66,7 +66,7 @@ public class TrackCompiler {
 			}
 		}
 		
-		// Now that all events are generated, execute the function calls
+		functionCalls.sort((f1, f2) -> Integer.compare(f1.getTick(), f2.getTick()));
 		for (ContextAwareFunctionCall call : functionCalls) {
 			// Stupid checked exceptions handling in forEach lambdas in Java...
 			compileFunctionCall(track, call.getTick(), call.getFunctionCall());
@@ -74,7 +74,6 @@ public class TrackCompiler {
 	}
 	
 	private void compileFunctionCall(Track track, int tick, FunctionCall functionCall) throws CompileException {
-
 		switch(functionCall.getFunctionName()) {
 			case "fade-in":
 				FadeInFunction fadeInFunction = new FadeInFunction();
