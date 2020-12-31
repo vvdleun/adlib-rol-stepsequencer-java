@@ -16,22 +16,35 @@ public class FadeInFunction extends FadeBase {
 
 	@Override
 	protected void createFadeEffect(Track track, int startTick, int endTick) {
-		final float[] originalChannelVolumes = getVolumeForAllChannelsAtTick(track, endTick + 1);
+		float[] originalChannelVolumes = getVolumeForAllChannelsAtTick(track, endTick);
+		
+		for(int channelIndex = 0; channelIndex < track.getChannels().size(); channelIndex++) {
+			Channel channel = track.getChannels().get(channelIndex);
+			
+			final Patch finalPatch = track.getActivePatchAtTick(endTick);
+			
+			final float toVolume;
+			if(channelIndex < finalPatch.getVoices().size()) {
+				toVolume = finalPatch.getVoices().get(channelIndex).getVolume();
+			} else {
+				toVolume = originalChannelVolumes[channelIndex];
+			}
+			
+			final float step = toVolume / (endTick - startTick - 1);
 
-		for(int tick = startTick; tick <= endTick; tick++) {
-			final Patch currentPatch = track.getActivePatchAtTick(tick);
-
-			for(int channelIndex = 0; channelIndex < track.getChannels().size(); channelIndex++) {
+			float nextValue = 0.0f;
+			for(int tick = startTick; tick <= endTick; tick++) {
+				final Patch currentPatch = track.getActivePatchAtTick(tick);
+				nextValue += step;
 				if(channelIndex >= currentPatch.getVoices().size()) {
 					break;
 				}
 
-				Channel channel = track.getChannels().get(channelIndex);
-				Voice voice = currentPatch.getVoices().get(channelIndex);
+				if(nextValue > toVolume) {
+					nextValue = toVolume;
+				}
 
-				float value = (voice.getVolume() / 100f) * (tick / (endTick / 100.0f));
-				
-				channel.addEvent(tick, new VolumeMultiplierEvent(value));
+				channel.addEvent(tick, new VolumeMultiplierEvent(nextValue));
 			}
 		}
 		

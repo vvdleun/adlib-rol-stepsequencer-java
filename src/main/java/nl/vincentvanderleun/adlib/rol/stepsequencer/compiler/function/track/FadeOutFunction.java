@@ -25,17 +25,21 @@ public class FadeOutFunction extends FadeBase {
 				final Patch currentPatch = track.getActivePatchAtTick(tick);
 
 				if(channelIndex >= currentPatch.getVoices().size()) {
+					// It's cheating... but this channel is done.
+					// Subsequent voices on this channel will be silent
+					// TODO: calculate proper volume when this happens
+					channel.addEvent(tick, new VolumeMultiplierEvent(0));
 					break;
 				}
-				
-				channel.addEvent(tick, new VolumeMultiplierEvent(nextVolume));
+
 				nextVolume -= step;
 				if(nextVolume < 0.0f) {
 					nextVolume = 0.0f;
 				}
+				channel.addEvent(tick, new VolumeMultiplierEvent(nextVolume));
 			}
 			
-			// Reset all channels to 0 for consistency
+			// Reset all channels to 0 to be sure
 			channel.addEvent(endTick + 1, new VolumeMultiplierEvent(0.0f));
 		}
 	}
