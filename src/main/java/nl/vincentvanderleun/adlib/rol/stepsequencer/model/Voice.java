@@ -12,6 +12,7 @@ public class Voice {
 	private int transpose;
 	private float volume;
 	private int offset;
+	private boolean enabled;
 	
 	public String getName() {
 		return name;
@@ -59,5 +60,13 @@ public class Voice {
 	
 	public void setOffset(int offset) {
 		this.offset = offset;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 }

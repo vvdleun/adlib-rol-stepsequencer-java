@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
@@ -14,10 +13,9 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.BlockFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Function;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Hold;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
@@ -140,7 +138,7 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return parseEventWithDuration("h", inputToken, (duration) -> new Hold(duration));
 	}
 	
-	private <T> T parseEventWithDuration(String eventToken, String inputToken, Function<Integer, T> eventSupplier) {
+	private <T> T parseEventWithDuration(String eventToken, String inputToken, java.util.function.Function<Integer, T> eventSupplier) {
 		if(!inputToken.startsWith(eventToken)) {
 			return null;
 		}
@@ -225,9 +223,9 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		BlockFunction function = structureParser.parseFunction(inputToken);		
 		switch(function.getName()) {
 			case "patch":
-				return new PatchChange(function.getArgument(0));
+				return new Function(function.getName(), function.getArgument(0));
 			case "octave":
-				return new OctaveChange(function.parseArgumentAsInteger(0));
+				return new Function(function.getName(), function.parseArgumentAsInteger(0));
 			default:
 				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
 		}

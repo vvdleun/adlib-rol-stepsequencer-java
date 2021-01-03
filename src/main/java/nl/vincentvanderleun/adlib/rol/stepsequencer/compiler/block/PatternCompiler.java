@@ -5,23 +5,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.pattern.Octave;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.FloatDiffUtils;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Channel;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Track;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.InstrumentEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.PitchMultiplierEvent;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.OctaveChange;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.PatchChange;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Function;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.util.FloatDiffUtils;
 
 public class PatternCompiler {
 	private static final int DEFAULT_OCTAVE = 4;
@@ -52,20 +51,15 @@ public class PatternCompiler {
 				case NOTE:
 					convertNote(pattern, (nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
 					break;
-				case OCTAVE:
-					context.octave = ((OctaveChange)event).getOctave();
-					break;
-				case PATCH:
-					PatchChange patchChangeEvent = (PatchChange)event;
-					convertPatch(patchChangeEvent, context);
-					track.registerPatchChange(context.tick, patches.get(patchChangeEvent.getPatchName()));
-					break; 
-				case PITCH:
-					convertPitch(pattern, (Pitch)event, context);
-					break;
 				case REST:
 					// Silence notes are handled during rendering. Just skip the ticks.
 					context.tick += ((Rest)event).getDuration();
+					break;
+				case PITCH:
+					convertPitch(pattern, (Pitch)event, context);
+					break;
+				case FUNCTION:
+					compileFunctionCall(pattern, (Function)event, context);
 					break;
 				default:
 					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" event is not implemented yet");
@@ -73,30 +67,22 @@ public class PatternCompiler {
 		}
 	}
 
-	private void convertPatch(PatchChange patchEvent, CompilerContext context) throws CompileException {
-		final String patchName = patchEvent.getPatchName();
-		final Patch patch = patches.get(patchName);
-
-		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
-	
-		for(int voiceIndex = 0; voiceIndex < patch.getVoices().size(); voiceIndex++) {
-			final Voice voice = patch.getVoices().get(voiceIndex);
-		
-			int tick = context.tick + voice.getOffset();
-			if(tick < 0) {
-				System.out.println("Warning: Moved patch change of voice \"" + voice.getName() 
-						+ "\" of patch \"" + patchEvent.getPatchName() 
-						+ "\" to tick 0, because of its offset the calculated tick was < 0.");
-				tick = 0;
-			}
-
-			Channel channel = patchChannels.get(voiceIndex);
-			channel.addInstrumentEvent(tick, new InstrumentEvent(voice.getInstrument()));
-			channel.addPitchEvent(tick, new PitchMultiplierEvent(voice.getPitch()));
-			channel.addVolumeEvent(tick, new VolumeMultiplierEvent(voice.getVolume()));
-		};
+	private void compileFunctionCall(Pattern pattern, Function function, CompilerContext context) throws CompileException {
+		switch(function.getFunctionName()) {
+			case "octave":
+				Octave octave = new Octave();
+				octave.execute(track, context, function.getArguments());
+				break;
+			case "patch":
+				PatchChange patchChange = new PatchChange(patches);
+				patchChange.execute(track, context, function.getArguments());
+				break;
+			default:
+				throw new CompileException("Unknown function call \"" + function.getFunctionName() 
+						+ "\" in pattern \"" + pattern.getName() + "\"");
+		}
 	}
-
+	
 	private void convertPitch(Pattern pattern, Pitch pitchEvent, CompilerContext context) throws CompileException {
 		final Patch patch = getCurrentPatch(context.tick);
 

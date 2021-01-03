@@ -4,8 +4,6 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.block.PreProcessor;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.block.TrackCompiler;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.ChannelManager;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Channel;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.ChannelEvents;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 

@@ -5,7 +5,6 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.ChannelEvents;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Track;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.event.VolumeMultiplierEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 
 public class FadeInFunction extends FadeBase {
 	private static final String FUNCTION_NAME = "fade-in";

@@ -1,7 +1,7 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.track;
 
 import static nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.ArgumentParseUtils.checkArgumentCount;
-import static nl.vincentvanderleun.adlib.rol.stepsequencer.util.ParseUtils.parseDuration;
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerParseUtils.parseDuration;
 
 import java.util.List;
 

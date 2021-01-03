@@ -90,6 +90,10 @@ public class PatchBlockParser extends BlockParser<Patch> {
 				int offset = line.parseValueAsInteger();
 				voice.setOffset(offset);
 				break;
+			case "enabled":
+				boolean enabled = line.parseValueAsBoolean();
+				voice.setEnabled(enabled);
+				break;
 			default:
 				throw new ParseException("Unsupported voice key \"" + key + "\" encountered on line " + lineParser.getLineNumber());	
 		}

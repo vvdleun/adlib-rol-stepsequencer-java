@@ -1,37 +1,30 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.util;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
-
 public class ParseUtils {
 
-	public static int parseDuration(String functionName, Object argument, int ticksPerBeat, int beatsPerMeasure) throws CompileException {
-		// Numeric value: ticks
-		// Number with "b" suffix ("4b") --> 4 beats
-		// Number with "m" suffix ("4m") --> 4 measures
-		final String inputValue = ((String)argument).toLowerCase();
-		
-		String toConvert = inputValue;
-		if(toConvert.endsWith("b") || toConvert.endsWith("m")) {
-			toConvert = toConvert.substring(0, toConvert.length() - 1);
-		}
-
-		int parsedValue;
+	public static int parseInteger(String value) {
 		try {
-			parsedValue = Integer.parseInt(toConvert);
+			return Integer.parseInt(value);
 		} catch(NumberFormatException ex) {
-			throw new CompileException("Expected integer value as parameter of function \""
-					+ functionName + "\", with optionally \"b\" or \"m\" suffix, but parsed \""
-					+ argument + "\" instead.", ex);
+			throw new IllegalArgumentException("Expected integer value", ex);
 		}
-
-		if(inputValue.endsWith("b")) {
-			parsedValue = parsedValue * ticksPerBeat;
-		} else if(inputValue.endsWith("m")) {
-			parsedValue = parsedValue * ticksPerBeat * beatsPerMeasure;
-		}
-		
-		return parsedValue;
 	}
-
+	
+	public static float parseFloat(String value) {
+		try {
+			return Float.parseFloat(value);
+		} catch(NumberFormatException ex) {
+			throw new IllegalArgumentException("Expected float value", ex);
+		}
+	}
+	
+	public static boolean parseBoolean(String value) {
+		if(value.equalsIgnoreCase("true") || value.equals("1")) {
+			return true;
+		} else if (value.equalsIgnoreCase("false") || value.equals("0")) {
+			return false;
+		} else {
+			throw new IllegalArgumentException("Expected boolean value (\"true\", '\"false\", \"1\", \"0\"...)");
+		}
+	}
 }

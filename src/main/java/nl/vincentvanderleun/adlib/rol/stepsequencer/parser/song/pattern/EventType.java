@@ -9,8 +9,6 @@ public enum EventType {
 	FUNCTION,
 	HOLD,
 	NOTE,
-	OCTAVE,
-	PATCH,
 	PITCH,
 	REST,
 	VOLUME

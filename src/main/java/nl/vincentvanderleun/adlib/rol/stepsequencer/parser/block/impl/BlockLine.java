@@ -46,6 +46,10 @@ public class BlockLine {
 	public float parseValueAsFloat() throws ParseException {
 		return valueParser.parseFloat(parseValue(), lineParser.getLineNumber());
 	}
+
+	public boolean parseValueAsBoolean() throws ParseException {
+		return valueParser.parseBoolean(parseValue(), lineParser.getLineNumber());
+	}
 	
 	public boolean isStartOfList() {
 		return structureParser.isStartList(line);

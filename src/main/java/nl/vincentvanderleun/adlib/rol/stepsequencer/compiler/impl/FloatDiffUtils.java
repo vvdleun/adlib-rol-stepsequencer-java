@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer.util;
+package nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl;
 
 public class FloatDiffUtils {
 	private static final float BASE_PITCH = 1.0f;

@@ -63,6 +63,12 @@ mode = MELODIC
   instrument = vibra1
   volume = 1.00
   offset = 0
+- VOICE seven
+  pitch = 0.0
+  transpose = -36
+  instrument = piano1
+  volume = 0.65
+  offset = 0
 
 [PATCH thin-piano]
 - VOICE one
