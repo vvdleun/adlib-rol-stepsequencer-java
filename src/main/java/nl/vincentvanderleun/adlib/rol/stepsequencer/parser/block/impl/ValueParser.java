@@ -19,7 +19,7 @@ public class ValueParser {
 		int parsedValue;
 		try {
 			parsedValue = parseInteger(toConvert, lineNumber);
-		} catch(NumberFormatException ex) {
+		} catch(ParseException ex) {
 			throw new ParseException("Expected note duration, a numeric value with optionally \"b\" or \"m\" suffix, but parsed \""
 					+ duration + "\" instead at line " + lineNumber, ex);
 		}

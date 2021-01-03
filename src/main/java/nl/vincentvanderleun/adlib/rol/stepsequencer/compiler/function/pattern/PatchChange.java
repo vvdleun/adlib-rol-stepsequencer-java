@@ -26,10 +26,13 @@ public class PatchChange extends CompilablePatternFunction {
 
 	@Override
 	public void execute(Track track, CompilerContext context, List<Object> arguments) throws CompileException {
-		final String patchName = arguments.get(0).toString();
+		final String patchName = (String)arguments.get(0);
 
 		final Patch patch = patches.get(patchName);
-
+		if(patch == null) {
+			throw new CompileException("Cannot switch to unknown patch \"" + patchName + "\"");
+		}
+		
 		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
 	
 		for(int voiceIndex = 0; voiceIndex < patch.getVoices().size(); voiceIndex++) {

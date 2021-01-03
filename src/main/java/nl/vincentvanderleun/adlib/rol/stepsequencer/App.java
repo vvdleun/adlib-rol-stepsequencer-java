@@ -41,7 +41,7 @@ public class App {
     	
  		ParsedSong parsedSong = SongParser.parse(inputFilePath);
 
-    	System.out.println("Converting events...\n");
+    	System.out.println("Converting events...");
 
 		CompiledSong compiledSong = SongCompiler.compile(parsedSong);
 

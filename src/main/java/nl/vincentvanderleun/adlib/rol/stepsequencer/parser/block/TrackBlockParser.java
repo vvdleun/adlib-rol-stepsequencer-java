@@ -18,6 +18,8 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.FunctionCa
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.PlayPattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
 
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.FunctionArgumentHelper.checkArgumentCount;
+
 public class TrackBlockParser extends BlockParser<Track> {
 	private final SongHeader header;
 	
@@ -92,13 +94,6 @@ public class TrackBlockParser extends BlockParser<Track> {
 		parsedArguments.add(durationTicks);
 		
 		return new FunctionCall(functionName, parsedArguments);
-	}
-	
-	private void checkArgumentCount(String functionName, List<String> arguments, int expectedNumberOfArguments, long lineNumber) throws ParseException {
-		if(arguments.size() != expectedNumberOfArguments) {
-			throw new ParseException("Function " + functionName + " expects " + expectedNumberOfArguments
-					+ "arguments , but got " + arguments.size() + " instead at line " + lineNumber);
-		}
 	}
 	
 	private EventType determineEventType(String inputToken) {

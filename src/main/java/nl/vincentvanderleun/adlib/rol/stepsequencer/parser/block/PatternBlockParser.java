@@ -13,12 +13,16 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.BlockFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Function;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.FunctionCall;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Hold;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
+
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.FunctionArgumentHelper.checkArgumentCount;
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser.parseFloat;
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser.parseInteger;
 
 public class PatternBlockParser extends BlockParser<Pattern> {
 	private static final Map<String, Note> NOTES = new HashMap<>(12);
@@ -130,15 +134,15 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		
 	}
 	
-	private Rest parseRest(String inputToken) {
+	private Rest parseRest(String inputToken) throws ParseException {
 		return parseEventWithDuration("r", inputToken, (duration) -> new Rest(duration));
 	}
 
-	private Hold parseHold(String inputToken) {
+	private Hold parseHold(String inputToken) throws ParseException {
 		return parseEventWithDuration("h", inputToken, (duration) -> new Hold(duration));
 	}
 	
-	private <T> T parseEventWithDuration(String eventToken, String inputToken, java.util.function.Function<Integer, T> eventSupplier) {
+	private <T> T parseEventWithDuration(String eventToken, String inputToken, java.util.function.Function<Integer, T> eventSupplier) throws ParseException {
 		if(!inputToken.startsWith(eventToken)) {
 			return null;
 		}
@@ -147,19 +151,15 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		int duration = 1;
 		int dashIndex = inputToken.indexOf('-');
 		if(dashIndex == eventToken.length()) {
-			int parsedDuration = parseDuration(inputToken);
-			if(parsedDuration > 0) {
-				duration = parsedDuration;
-			}
+			duration = parseDuration(inputToken);
 		} else if(dashIndex > eventToken.length()) {
 			return null;
 		}
 
 		return eventSupplier.apply(duration);
 	}
-	
 
-	private NoteEvent parseNote(String inputToken) {
+	private NoteEvent parseNote(String inputToken) throws ParseException {
 		// Valid notes:
 		// "C", "+C", "-C", "+++C", "---C", "C-4", "--C-4", "++C-4"
 		int offsetOctave = 0;
@@ -180,11 +180,8 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		// Is a duration specified?
 		int dashIndex = inputToken.indexOf('-');
 		if(dashIndex > 0) {
-			int parsedDuration = parseDuration(inputToken);
-			if(parsedDuration > 0) {
-				duration = parsedDuration;
-				inputToken = inputToken.substring(0, dashIndex);
-			}
+			duration = parseDuration(inputToken);
+			inputToken = inputToken.substring(0, dashIndex);
 		}
 		
 		Note note = NOTES.get(inputToken);
@@ -196,50 +193,62 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return new NoteEvent(note, duration, offsetOctave);
 	}
 
-	private Pitch parsePitchEvent(String inputToken) {
+	private Pitch parsePitchEvent(String inputToken) throws ParseException {
 		// Valid: "P1.00"
 		if(!inputToken.startsWith("P") || inputToken.length() == 1) {
 			return null;
 		}
 		
-		try {
-			int duration;
-			if(inputToken.contains("-")) {
-				 duration = parseDuration(inputToken);
-				 inputToken = inputToken.substring(0, inputToken.indexOf('-'));
-			} else {
-				duration = 1;
-			}
-
-			String value = inputToken.substring(1);
-
-			return new Pitch(Float.valueOf(value), duration);
-		} catch(NumberFormatException ex) {
-			return null;
+		int duration;
+		if(inputToken.contains("-")) {
+			 duration = parseDuration(inputToken);
+			 inputToken = inputToken.substring(0, inputToken.indexOf('-'));
+		} else {
+			duration = 1;
 		}
+
+		String value = inputToken.substring(1);
+
+		final float parsedFloat = parseFloat(value, lineParser.getLineNumber());
+			
+		return new Pitch(parsedFloat, duration);
 	}
 
-	private Event parseFunction(String inputToken) throws ParseException {
-		BlockFunction function = structureParser.parseFunction(inputToken);		
-		switch(function.getName()) {
+	private FunctionCall parseFunction(String inputToken) throws ParseException {
+		BlockFunction parsedBlockFunction = structureParser.parseFunction(inputToken);		
+		switch(parsedBlockFunction.getName()) {
 			case "patch":
-				return new Function(function.getName(), function.getArgument(0));
+				return parsePatchFunction(parsedBlockFunction);
 			case "octave":
-				return new Function(function.getName(), function.parseArgumentAsInteger(0));
+				return parseOctaveFunction(parsedBlockFunction);
 			default:
 				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
 		}
 	}
+	
+	private FunctionCall parsePatchFunction(BlockFunction parsedFunction) throws ParseException {
+		checkArgumentCount(parsedFunction.getName(), parsedFunction.getArguments(), 1, lineParser.getLineNumber());
 
-	private int parseDuration(String inputToken) {
-		try {
-			String[] splitToken = inputToken.split(java.util.regex.Pattern.quote("-"), 2);
-			return Integer.parseInt(splitToken[1]);
-		} catch(NumberFormatException ex) {
-			// There must be a better way to detect whether a String
-			// contains a number, without resorting to reg-ex :'(
-			return -1;
+		String patch = parsedFunction.getArguments().get(0);
+		
+		return new FunctionCall(parsedFunction.getName(), patch);
+	}
+
+	private FunctionCall parseOctaveFunction(BlockFunction parsedFunction) throws ParseException {
+		checkArgumentCount(parsedFunction.getName(), parsedFunction.getArguments(), 1, lineParser.getLineNumber());
+
+		int octave = parseInteger(parsedFunction.getArguments().get(0), lineParser.getLineNumber());
+		
+		return new FunctionCall(parsedFunction.getName(), octave);
+	}
+
+	private int parseDuration(String inputToken) throws ParseException {
+		String[] splitToken = inputToken.split(java.util.regex.Pattern.quote("-"), 2);
+		int duration = parseInteger(splitToken[1], lineParser.getLineNumber());
+		if(duration <= 0) {
+			throw new ParseException("Duration specified in \"" + inputToken + "\" must be 1 or higher at line " + lineParser.getLineNumber());
 		}
+		return duration;
 	}
 
 	private static final class ParseResult {

@@ -1,6 +1,7 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
@@ -125,6 +126,6 @@ public class StructureParser {
 		
 		String[] arguments = inputToken.substring(openParamsIndex + 1, inputToken.length() - 1).split(Pattern.quote(","));
 
-		return new BlockFunction(functionName, arguments, lineParser.getLineNumber());		
+		return new BlockFunction(functionName, Arrays.asList(arguments));
 	}
 }

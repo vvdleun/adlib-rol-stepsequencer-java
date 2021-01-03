@@ -17,7 +17,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Patch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Voice;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Function;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.FunctionCall;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
@@ -58,7 +58,7 @@ public class PatternCompiler {
 					compilePitch(pattern, (Pitch)event, context);
 					break;
 				case FUNCTION:
-					compileFunctionCall(pattern, (Function)event, context);
+					compileFunctionCall(pattern, (FunctionCall)event, context);
 					break;
 				default:
 					throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" event is not implemented yet");
@@ -66,18 +66,18 @@ public class PatternCompiler {
 		}
 	}
 
-	private void compileFunctionCall(Pattern pattern, Function function, CompilerContext context) throws CompileException {
-		switch(function.getFunctionName()) {
+	private void compileFunctionCall(Pattern pattern, FunctionCall functionCall, CompilerContext context) throws CompileException {
+		switch(functionCall.getFunctionName()) {
 			case "octave":
 				OctaveChange octaveChange = new OctaveChange();
-				octaveChange.execute(track, context, function.getArguments());
+				octaveChange.execute(track, context, functionCall.getArguments());
 				break;
 			case "patch":
 				PatchChange patchChange = new PatchChange(patches);
-				patchChange.execute(track, context, function.getArguments());
+				patchChange.execute(track, context, functionCall.getArguments());
 				break;
 			default:
-				throw new CompileException("Unknown function call \"" + function.getFunctionName() 
+				throw new CompileException("Unknown function call \"" + functionCall.getFunctionName() 
 						+ "\" in pattern \"" + pattern.getName() + "\"");
 		}
 	}
