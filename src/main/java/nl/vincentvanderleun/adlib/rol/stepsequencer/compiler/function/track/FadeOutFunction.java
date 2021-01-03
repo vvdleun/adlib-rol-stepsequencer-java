@@ -12,12 +12,12 @@ public class FadeOutFunction extends FadeBase {
 		super(FUNCTION_NAME);
 	}
 
-	protected void createFadeEffect(Track track, int startTick, int endTick) {
+	protected void createFadeEffect(Track track, int startTick, int endTick, int numberEvents) {
 		for(int channelIndex = 0; channelIndex < track.getChannels().size(); channelIndex++) {
 			Channel channel = track.getChannels().get(channelIndex);
 		
 			final float fromVolume = channel.getEventsAtOrBeforeTick(startTick).getVolume();
-			final float step = fromVolume / (endTick - startTick - 1);
+			final float step = fromVolume / numberEvents;
 			
 			float nextVolume = fromVolume;
 		

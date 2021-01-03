@@ -14,7 +14,7 @@ public class FadeInFunction extends FadeBase {
 	}
 
 	@Override
-	protected void createFadeEffect(Track track, int startTick, int endTick) {
+	protected void createFadeEffect(Track track, int startTick, int endTick, int numberEvents) {
 		float[] originalChannelVolumes = getVolumeForAllChannelsAtTick(track, endTick);
 		
 		for(int channelIndex = 0; channelIndex < track.getChannels().size(); channelIndex++) {
@@ -29,7 +29,7 @@ public class FadeInFunction extends FadeBase {
 				toVolume = originalChannelVolumes[channelIndex];
 			}
 			
-			final float step = toVolume / (endTick - startTick - 1);
+			final float step = toVolume / numberEvents;
 
 			float nextValue = 0.0f;
 			for(int tick = startTick; tick <= endTick; tick++) {

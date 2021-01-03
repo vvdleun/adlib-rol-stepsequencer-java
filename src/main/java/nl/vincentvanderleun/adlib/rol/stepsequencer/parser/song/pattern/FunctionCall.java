@@ -1,6 +1,7 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class FunctionCall extends Event {
@@ -14,6 +15,11 @@ public class FunctionCall extends Event {
 		
 		var argumentsList = new ArrayList<Object>();
 		for(var argument : arguments) {
+			if(argument instanceof Collection) {
+				// Easy mistake to make, due to the varargs arguments and and can take terrible long to debug...
+				throw new IllegalStateException("Having a collection as function argument is not supported for now");
+			}
+			
 			argumentsList.add(argument);
 		}
 		
