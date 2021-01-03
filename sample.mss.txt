@@ -88,5 +88,5 @@ mode = MELODIC
  patch(thin-piano) octave(5) G# C# C# G# C# C# A C#
  
 [TRACK big-hit]
-fade-in(1m) h1 h2 h1 h2 h1 h2 h2 h1 h1 h1 h1 h1 h2 h2 h1 h1 h1 h1 h2 fade-out(2m) h1 h2 h2 h1
-h1 h1 h1 fade-in(1m) h1 h1 h1 h1
+fade-in(1m) h1 h2 h1 h2 h1 h2*2 h1*5 h2*2 h1*4 h2 fade-out(2m) h1 h2*2 h1
+h1*3 fade-in(1m) h1*4

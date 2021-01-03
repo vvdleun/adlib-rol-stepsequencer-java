@@ -19,6 +19,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.PlayPatter
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
 
 import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.FunctionArgumentHelper.checkArgumentCount;
+import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser.parseInteger;
 
 public class TrackBlockParser extends BlockParser<Track> {
 	private final SongHeader header;
@@ -42,8 +43,8 @@ public class TrackBlockParser extends BlockParser<Track> {
 
 				switch(eventType) {
 					case PLAY_PATTERN:
-						var playPattern = new PlayPattern(inputToken);
-						events.add(playPattern);
+						PlayPattern pattern = parsePlayPatternEvent(inputToken);
+						events.add(pattern);
 						break;
 					case FUNCTION_CALL:
 						FunctionCall functionCall = parseFunctionCall(inputToken, line.getLineNumber());
@@ -59,6 +60,26 @@ public class TrackBlockParser extends BlockParser<Track> {
 		track.setEvents(events);
 		
 		return track;
+	}
+	
+	private PlayPattern parsePlayPatternEvent(String inputToken) throws ParseException {
+		// TODO validate pattern name
+		int repeatTimes = 1;
+
+		final int asteriskIndex = inputToken.indexOf('*');
+		if(asteriskIndex > 0) {
+			repeatTimes = parseInteger(inputToken.substring(asteriskIndex + 1), lineParser.getLineNumber());
+
+			if(repeatTimes < 0) {
+				throw new ParseException("The amount of times specified in \"" + inputToken + "\" must be 0 or higher at line " + lineParser.getLineNumber());
+			}
+
+			inputToken = inputToken.substring(0, asteriskIndex);
+		}
+
+		var playPattern = new PlayPattern(inputToken, repeatTimes);
+
+		return playPattern;
 	}
 
 	private FunctionCall parseFunctionCall(String inputToken, long lineNumber) throws ParseException {

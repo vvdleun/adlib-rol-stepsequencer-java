@@ -66,22 +66,6 @@ public class PatternCompiler {
 		}
 	}
 
-	private void compileFunctionCall(Pattern pattern, FunctionCall functionCall, CompilerContext context) throws CompileException {
-		switch(functionCall.getFunctionName()) {
-			case "octave":
-				OctaveChange octaveChange = new OctaveChange();
-				octaveChange.execute(track, context, functionCall.getArguments());
-				break;
-			case "patch":
-				PatchChange patchChange = new PatchChange(patches);
-				patchChange.execute(track, context, functionCall.getArguments());
-				break;
-			default:
-				throw new CompileException("Unknown function call \"" + functionCall.getFunctionName() 
-						+ "\" in pattern \"" + pattern.getName() + "\"");
-		}
-	}
-
 	private void compileRest(Rest rest, CompilerContext context) {
 		// Silence notes are handled during rendering. Just skip the ticks.
 		context.tick += rest.getDuration();
@@ -139,7 +123,23 @@ public class PatternCompiler {
 
 		context.tick += parsedNote.getDuration();
 	}
-	
+
+	private void compileFunctionCall(Pattern pattern, FunctionCall functionCall, CompilerContext context) throws CompileException {
+		switch(functionCall.getFunctionName()) {
+			case "octave":
+				OctaveChange octaveChange = new OctaveChange();
+				octaveChange.execute(track, context, functionCall.getArguments());
+				break;
+			case "patch":
+				PatchChange patchChange = new PatchChange(patches);
+				patchChange.execute(track, context, functionCall.getArguments());
+				break;
+			default:
+				throw new CompileException("Unknown function call \"" + functionCall.getFunctionName() 
+						+ "\" in pattern \"" + pattern.getName() + "\"");
+		}
+	}
+
 	private Patch getCurrentPatch(int tick) {
 		return track.getActivePatchAtTick(tick);
 	}

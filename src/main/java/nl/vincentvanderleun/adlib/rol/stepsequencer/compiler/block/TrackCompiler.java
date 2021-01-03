@@ -44,22 +44,18 @@ public class TrackCompiler {
 		Track track = new Track(compiledSong, channelManager);
 		
 		// For now each and every Track starts on the start of the song.
-		// Initialize context with all track-related properties.
 		context.tick = 0;
 
-		PatternCompiler patternCompiler = new PatternCompiler(track, parsedSong);
-		
 		var functionCalls = new ArrayList<ContextAwareFunctionCall>();
 		
 		for(Event event : parsedSong.getTrack().getEvents()) {
 			switch(event.getEventType() ) {
 				case PLAY_PATTERN:
-					PlayPattern playPattern = (PlayPattern)event;
-					Pattern pattern = patterns.get(playPattern.getPatternName());
-					patternCompiler.compile(pattern, context);
+					compilePlayPattern((PlayPattern)event, track);
 					break;
 				case FUNCTION_CALL:
-					functionCalls.add(new ContextAwareFunctionCall((FunctionCall)event, context.tick));
+					var delayedFunctionCall = new ContextAwareFunctionCall((FunctionCall)event, context.tick);
+					functionCalls.add(delayedFunctionCall);
 					break;
 				default:
 					 throw new CompileException("Internal error: support for \"" + event.getEventType() + "\" is not implemented");
@@ -70,6 +66,19 @@ public class TrackCompiler {
 		for (ContextAwareFunctionCall call : functionCalls) {
 			// Stupid checked exceptions handling in forEach lambdas in Java...
 			compileFunctionCall(track, call.getTick(), call.getFunctionCall());
+		}
+	}
+	
+	private void compilePlayPattern(PlayPattern playPattern, Track track) throws CompileException {
+		PatternCompiler patternCompiler = new PatternCompiler(track, parsedSong);
+
+		Pattern pattern = patterns.get(playPattern.getPatternName());
+		if(pattern == null) {
+			throw new CompileException("Pattern \"" + playPattern.getPatternName() + "\" was not found");
+		}
+
+		for (int i = 0; i < playPattern.getTimes(); i++) {
+			patternCompiler.compile(pattern, context);
 		}
 	}
 	

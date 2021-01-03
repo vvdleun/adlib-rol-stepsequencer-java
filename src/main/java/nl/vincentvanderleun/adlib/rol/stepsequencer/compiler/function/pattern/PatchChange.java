@@ -27,11 +27,7 @@ public class PatchChange extends CompilablePatternFunction {
 	@Override
 	public void execute(Track track, CompilerContext context, List<Object> arguments) throws CompileException {
 		final String patchName = (String)arguments.get(0);
-
-		final Patch patch = patches.get(patchName);
-		if(patch == null) {
-			throw new CompileException("Cannot switch to unknown patch \"" + patchName + "\"");
-		}
+		final Patch patch = getPatch(patchName);
 		
 		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
 	
@@ -47,11 +43,23 @@ public class PatchChange extends CompilablePatternFunction {
 			}
 
 			Channel channel = patchChannels.get(voiceIndex);
-			channel.addInstrumentEvent(tick, new InstrumentEvent(voice.getInstrument()));
-			channel.addPitchEvent(tick, new PitchMultiplierEvent(voice.getPitch()));
-			channel.addVolumeEvent(tick, new VolumeMultiplierEvent(voice.getVolume()));
+			setVoiceEventsOnTick(tick, channel, voice);
 		};
 		
 		track.registerPatchChange(context.tick, patch);
+	}
+
+	private void setVoiceEventsOnTick(int tick, Channel channel, Voice voice) {
+		channel.addInstrumentEvent(tick, new InstrumentEvent(voice.getInstrument()));
+		channel.addPitchEvent(tick, new PitchMultiplierEvent(voice.getPitch()));
+		channel.addVolumeEvent(tick, new VolumeMultiplierEvent(voice.getVolume()));
+	}
+	
+	private Patch getPatch(String patchName) throws CompileException {
+		final Patch patch = patches.get(patchName);
+		if(patch == null) {
+			throw new CompileException("Cannot switch to unknown patch \"" + patchName + "\"");
+		}
+		return patch;
 	}
 }

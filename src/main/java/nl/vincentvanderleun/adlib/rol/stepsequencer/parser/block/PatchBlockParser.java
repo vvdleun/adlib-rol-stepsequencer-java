@@ -93,6 +93,7 @@ public class PatchBlockParser extends BlockParser<Patch> {
 			case "enabled":
 				boolean enabled = line.parseValueAsBoolean();
 				voice.setEnabled(enabled);
+				System.out.println("Warning: updating \"enabled\" state is not implemented yet");
 				break;
 			default:
 				throw new ParseException("Unsupported voice key \"" + key + "\" encountered on line " + lineParser.getLineNumber());	
