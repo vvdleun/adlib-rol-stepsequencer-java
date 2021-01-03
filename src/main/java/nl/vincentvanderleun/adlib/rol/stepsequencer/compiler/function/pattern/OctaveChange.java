@@ -6,10 +6,10 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.Track;
 
-public class Octave extends CompilablePatternFunction {
-	private static final String FUNCTION_NAME = "Octave";
+public class OctaveChange extends CompilablePatternFunction {
+	private static final String FUNCTION_NAME = "OctaveChange";
 	
-	public Octave() {
+	public OctaveChange() {
 		super(FUNCTION_NAME);
 	}
 	

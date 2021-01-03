@@ -56,7 +56,7 @@ public class SongParser {
 					parseNextPattern(nextHeader[1]);
 					break;
 				case "TRACK":
-					parseTrack();
+					parseTrack(header);
 					break;
 				case "SONG":
 					throw new ParseException("There can only be one \"SONG\" block in the file at line " + lineParser.getLineNumber());
@@ -139,12 +139,13 @@ public class SongParser {
 		patterns.add(pattern);
 	}
 
-	private void parseTrack() throws IOException {
+	private void parseTrack(SongHeader header) throws IOException {
 		if(track != null) {
 			throw new ParseException("Found more than one [TRACK] block at line " + lineParser.getLineNumber());
 		}
 		
 		TrackBlockParser parser = new TrackBlockParser(
+				header,
 				lineParser,
 				() -> new Track());
 		

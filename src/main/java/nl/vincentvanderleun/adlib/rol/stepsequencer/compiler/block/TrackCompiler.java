@@ -81,7 +81,7 @@ public class TrackCompiler {
 				break;
 			case "fade-out":
 				FadeOutFunction fadeOutFunction = new FadeOutFunction();
-				fadeOutFunction.execute(track, tick,functionCall.getArguments());
+				fadeOutFunction.execute(track, tick, functionCall.getArguments());
 				break;
 			default:
 				throw new CompileException("Unknown function: " + functionCall.getFunctionName());

@@ -12,5 +12,5 @@ public abstract class CompilableTrackFunction extends CompilableFunction {
 		super(name);
 	}
 
-	public abstract void execute(Track track, int tick, List<String> arguments) throws CompileException;
+	public abstract void execute(Track track, int tick, List<Object> arguments) throws CompileException;
 }

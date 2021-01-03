@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.pattern.Octave;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.pattern.OctaveChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.function.pattern.PatchChange;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.CompilerContext;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.impl.FloatDiffUtils;
@@ -49,14 +49,13 @@ public class PatternCompiler {
 				case HOLD:
 					throw new CompileException("Internal error: event " + event.getEventType() + " was supposed to be handled by pre-processor");
 				case NOTE:
-					convertNote(pattern, (nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
+					compileNote(pattern, (nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent)event, context);
 					break;
 				case REST:
-					// Silence notes are handled during rendering. Just skip the ticks.
-					context.tick += ((Rest)event).getDuration();
+					compileRest(((Rest)event), context);
 					break;
 				case PITCH:
-					convertPitch(pattern, (Pitch)event, context);
+					compilePitch(pattern, (Pitch)event, context);
 					break;
 				case FUNCTION:
 					compileFunctionCall(pattern, (Function)event, context);
@@ -70,8 +69,8 @@ public class PatternCompiler {
 	private void compileFunctionCall(Pattern pattern, Function function, CompilerContext context) throws CompileException {
 		switch(function.getFunctionName()) {
 			case "octave":
-				Octave octave = new Octave();
-				octave.execute(track, context, function.getArguments());
+				OctaveChange octaveChange = new OctaveChange();
+				octaveChange.execute(track, context, function.getArguments());
 				break;
 			case "patch":
 				PatchChange patchChange = new PatchChange(patches);
@@ -82,8 +81,13 @@ public class PatternCompiler {
 						+ "\" in pattern \"" + pattern.getName() + "\"");
 		}
 	}
+
+	private void compileRest(Rest rest, CompilerContext context) {
+		// Silence notes are handled during rendering. Just skip the ticks.
+		context.tick += rest.getDuration();
+	}
 	
-	private void convertPitch(Pattern pattern, Pitch pitchEvent, CompilerContext context) throws CompileException {
+	private void compilePitch(Pattern pattern, Pitch pitchEvent, CompilerContext context) throws CompileException {
 		final Patch patch = getCurrentPatch(context.tick);
 
 		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
@@ -107,7 +111,7 @@ public class PatternCompiler {
 		}
 	}
 	
-	private void convertNote(Pattern pattern, nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompilerContext context) throws CompileException {
+	private void compileNote(Pattern pattern, nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEvent parsedNote, CompilerContext context) throws CompileException {
 		final Patch patch = getCurrentPatch(context.tick);
 		final List<Channel> patchChannels = track.claimChannels(patch.getVoices().size());
 

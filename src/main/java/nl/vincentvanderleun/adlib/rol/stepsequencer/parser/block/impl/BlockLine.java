@@ -6,17 +6,19 @@ public class BlockLine {
 	private final String line;
 	private final LineParser lineParser;
 	private final StructureParser structureParser;
-	private final ValueParser valueParser;
 	
 	public BlockLine(String line, LineParser lineParser) {
 		this.line = line;
 		this.lineParser = lineParser;
 		this.structureParser = new StructureParser(lineParser);
-		this.valueParser = new ValueParser();
 	}
 	
 	public String getRawLine() {
 		return line;
+	}
+	
+	public long getLineNumber() {
+		return lineParser.getLineNumber();
 	}
 	
 	public boolean reachedEndOfFile() {
@@ -40,15 +42,15 @@ public class BlockLine {
 	}
 
 	public int parseValueAsInteger() throws ParseException {
-		return valueParser.parseInteger(parseValue(), lineParser.getLineNumber());
+		return ValueParser.parseInteger(parseValue(), lineParser.getLineNumber());
 	}
 	
 	public float parseValueAsFloat() throws ParseException {
-		return valueParser.parseFloat(parseValue(), lineParser.getLineNumber());
+		return ValueParser.parseFloat(parseValue(), lineParser.getLineNumber());
 	}
 
 	public boolean parseValueAsBoolean() throws ParseException {
-		return valueParser.parseBoolean(parseValue(), lineParser.getLineNumber());
+		return ValueParser.parseBoolean(parseValue(), lineParser.getLineNumber());
 	}
 	
 	public boolean isStartOfList() {

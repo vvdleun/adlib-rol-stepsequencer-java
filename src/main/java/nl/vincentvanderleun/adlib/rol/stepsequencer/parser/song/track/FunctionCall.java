@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public class FunctionCall extends Event {
 	private final String functionName;
-	private final List<String> arguments;
+	private final List<Object> arguments;
 
-	public FunctionCall(String functionName, List<String> arguments) {
+	public FunctionCall(String functionName, List<Object> arguments) {
 		super(EventType.FUNCTION_CALL);
 		this.functionName = functionName;
 		this.arguments = arguments;
@@ -17,7 +17,7 @@ public class FunctionCall extends Event {
 		return functionName;
 	}
 	
-	public List<String> getArguments() {
+	public List<Object> getArguments() {
 		return arguments;
 	}
 
