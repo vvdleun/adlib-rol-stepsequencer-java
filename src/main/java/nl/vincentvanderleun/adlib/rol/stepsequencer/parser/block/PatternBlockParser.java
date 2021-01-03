@@ -120,9 +120,9 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			return new ParseResult(PatternTokenType.PITCH, parsedEvent);
 		}
 
-		if(structureParser.isFunction(inputToken)) {
-			Event parsedFunctionEvent = parseFunction(inputToken);
-			return new ParseResult(PatternTokenType.FUNCTION, parsedFunctionEvent);
+		parsedEvent = parseFunction(inputToken);
+		if(parsedEvent != null) {
+			return new ParseResult(PatternTokenType.FUNCTION, parsedEvent);
 		}
 	
 		parsedEvent = parseNote(inputToken);
@@ -215,7 +215,11 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 	}
 
 	private FunctionCall parseFunction(String inputToken) throws ParseException {
-		BlockFunction parsedBlockFunction = structureParser.parseFunction(inputToken);		
+		BlockFunction parsedBlockFunction = structureParser.parseFunction(inputToken);
+		if(parsedBlockFunction == null) {
+			return null;
+		}
+
 		switch(parsedBlockFunction.getName()) {
 			case "patch":
 				return parsePatchFunction(parsedBlockFunction);

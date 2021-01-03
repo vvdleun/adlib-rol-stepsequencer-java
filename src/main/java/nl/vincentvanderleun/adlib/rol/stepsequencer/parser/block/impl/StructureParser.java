@@ -107,6 +107,7 @@ public class StructureParser {
 		return line.startsWith("-");
 	}
 
+	// TODO either remove, or re-implement this function
 	public boolean isFunction(String inputToken) {
 		return parseFunction(inputToken) != null;
 	}
