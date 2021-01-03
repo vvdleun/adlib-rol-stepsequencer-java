@@ -44,7 +44,7 @@ public class AdLibBankFileReader {
 		}
 
 		if(instrumentsUsed != instrumentNames.size()) {
-			System.out.println("\nWarning: only " + instrumentNames.size() + " read, while there should have been " + instrumentsUsed + " instruments in the bank file\n");
+			System.out.println("\nWarning: only " + instrumentNames.size() + " instrument(s) were found, while there should have been " + instrumentsUsed + " instrument(s) in the bank file\n");
 		}
 
 		return instrumentNames;
@@ -90,9 +90,5 @@ public class AdLibBankFileReader {
 		if(!version.equals("1.0") || !signature.equals("ADLIB-")) {
 			throw new IOException("The file does not appear to be a valid Ad Lib Instrument Bank (BNK) file.");
 		}
-	}
-	
-	public static void main(String[] args) throws Exception {
-		System.out.println(readInstrumentNamesFrom("C:\\DOS\\TEMP\\TESTBNK.BNK"));
 	}
 }
