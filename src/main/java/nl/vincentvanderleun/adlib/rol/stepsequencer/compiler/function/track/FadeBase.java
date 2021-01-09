@@ -16,9 +16,7 @@ public abstract class FadeBase extends CompilableTrackFunction {
 
 		final int endTick = tick + duration - 1;
 
-		final int numberEvents = duration + 1;
-		
-		createFadeEffect(track, tick, endTick, numberEvents);
+		createFadeEffect(track, tick, endTick, duration);
 	}
 
 	protected abstract void createFadeEffect(Track track, int tick, int endTick, int numberEvents);
