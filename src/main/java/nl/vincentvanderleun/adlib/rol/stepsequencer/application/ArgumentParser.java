@@ -37,7 +37,7 @@ public class ArgumentParser {
 			}
 			
 			if (arg.equals("--bank")) {
-				bankFile = parseNext(i++);
+				bankFile = parseAt(++i);
 				if(bankFile == null) {
 					return ParsedArguments.error("No bank file specified", false);
 				}
@@ -74,8 +74,8 @@ public class ArgumentParser {
 		return ParsedArguments.convertSong(inputFile, outputFile, bankFile, debugMode);
 	}
 	
-	private String parseNext(int argIndex) {
-		if (++argIndex >= args.size()) {
+	private String parseAt(int argIndex) {
+		if (argIndex >= args.size()) {
 			return null;
 		}
 		return args.get(argIndex);

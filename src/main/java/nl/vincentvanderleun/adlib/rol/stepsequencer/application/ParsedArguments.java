@@ -13,7 +13,7 @@ public class ParsedArguments {
 	}
 
 	public static ParsedArguments error(String msg, boolean debugMode) {
-		return new ParsedArguments(State.ERROR, debugMode, null, null, null, msg);
+		return new ParsedArguments(State.SHOW_WRONG_USAGE_ERROR, debugMode, null, null, null, msg);
 	}
 
 	public static ParsedArguments convertSong(String inputPath, String outputPath, String bankFilePath, boolean debugMode) {

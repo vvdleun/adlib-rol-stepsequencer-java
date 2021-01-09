@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class ArgumentParserTests {
 
 	@Test
-	public void shouldRecognizeImplicitHelpArgument() {
+	public void shouldRecognizeImplicitHelpWhenNoParametersWereProvided() {
 		String[] args = { };
 
 		ParsedArguments parsedArguments = ArgumentParser.parseArguments(args);
@@ -113,7 +113,7 @@ public class ArgumentParserTests {
 		
 		ParsedArguments parsedArguments = ArgumentParser.parseArguments(args);
 		
-		assertEquals(State.ERROR, parsedArguments.getState());
+		assertEquals(State.SHOW_WRONG_USAGE_ERROR, parsedArguments.getState());
 		assertEquals("No output file specified", parsedArguments.getErrorMessage());
 		assertNull(parsedArguments.getBankFilePath());
 		assertNull(parsedArguments.getInputPath());
@@ -127,7 +127,7 @@ public class ArgumentParserTests {
 		
 		ParsedArguments parsedArguments = ArgumentParser.parseArguments(args);
 		
-		assertEquals(State.ERROR, parsedArguments.getState());
+		assertEquals(State.SHOW_WRONG_USAGE_ERROR, parsedArguments.getState());
 		assertEquals("No bank file specified", parsedArguments.getErrorMessage());
 		assertNull(parsedArguments.getBankFilePath());
 		assertNull(parsedArguments.getInputPath());

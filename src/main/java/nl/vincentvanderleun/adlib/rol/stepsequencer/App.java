@@ -1,4 +1,4 @@
-package nl.vincentvanderleun.adlib.rol.stepsequencer;
+ package nl.vincentvanderleun.adlib.rol.stepsequencer;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,10 +17,8 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.util.AdLibBankFileReader;
 
 public class App {
     public static void main(String[] args) throws Exception {
-    	String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
+    	printHeader();
     	
-    	System.out.println("adlib-rol-stepsequencer (powered by: " + jvmString + ")\n");
-
     	ParsedArguments parsedArguments = ArgumentParser.parseArguments(args);
     	
     	try {
@@ -34,38 +32,42 @@ public class App {
 	    		case SHOW_HELP:
 	    			displayHelp();
 	    			break;
-	    		case ERROR:
+	    		case SHOW_WRONG_USAGE_ERROR:
 	    			displayError(parsedArguments.getErrorMessage());
 	    			break;
 	    		default:
 	    			throw new IllegalStateException("Internal error: unknown state: \"" + parsedArguments.getState() + "\"");
 			}
-	    	
-	    	System.exit(parsedArguments.getState() == State.ERROR ? 1 : 0);
+
+	    	System.exit(parsedArguments.getState() == State.SHOW_WRONG_USAGE_ERROR ? 1 : 0);
     	} catch(ParseException ex) {
     		System.out.println("Error occurred during parsing of input file: " + ex.getMessage());
-    		if(parsedArguments.getDebugMode()) {
-    			throw ex;
-    		}
-	    	System.exit(1);
+    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedArguments.getDebugMode());
     	} catch(CompileException ex) {
     		System.out.println("Error occurred during conversion of input file: " + ex.getMessage());
-    		if(parsedArguments.getDebugMode()) {
-    			throw ex;
-    		}
-	    	System.exit(1);
+    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedArguments.getDebugMode());
     	} catch(IOException ex) {
     		System.out.println("Error occurred during reading or writing of file: " + ex.getMessage());
-    		if(parsedArguments.getDebugMode()) {
-    			throw ex;
-    		}
-	    	System.exit(1);
+    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedArguments.getDebugMode());
     	} catch(Exception ex) {
     		// Internal error
    			throw ex;
     	}
     }
 
+    private static void printHeader() {
+    	String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
+    	System.out.println("adlib-rol-stepsequencer (powered by: " + jvmString + ")\n");
+    }
+    
+    private static void exitWithErrorCodeOrThrowOnDebugMode(Exception ex, boolean debugMode) throws Exception {
+		if(debugMode) {
+			System.out.println();
+			throw ex;
+		}
+    	System.exit(1);
+    }
+    
     private static void displayError(String msg) {
 		System.out.println("ERROR: " + msg + "\n");
 		displayHelp();    	

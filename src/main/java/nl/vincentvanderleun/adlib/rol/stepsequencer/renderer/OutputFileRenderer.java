@@ -21,7 +21,8 @@ public class OutputFileRenderer {
 		try(var outputStream = new BufferedOutputStream(new FileOutputStream(path))) {
 			AdLibRolSongRenderer adLibRolSongRenderer = new AdLibRolSongRenderer();
 			adLibRolSongRenderer.renderRolFile(song, outputStream);
+		} catch(IOException ex) {
+			throw new IOException("Cannot create " + path + " file", ex);
 		}
 	}
-	
 }
