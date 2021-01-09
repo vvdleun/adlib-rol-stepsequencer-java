@@ -4,9 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import nl.vincentvanderleun.dos.io.DosBinaryFileReader;
 
@@ -18,7 +18,7 @@ public class AdLibBankFileReader {
 	private int instrumentsTotal;
 	private long offsetNames;
 
-	private static SortedSet<String> readInstrumentNamesFrom(String path) throws IOException {
+	public static List<String> readInstrumentNamesFrom(String path) throws IOException {
 		try(var inputStream = new BufferedInputStream(new FileInputStream(path))) {
 			var bnkFileReader = new AdLibBankFileReader(inputStream);
 	
@@ -30,12 +30,13 @@ public class AdLibBankFileReader {
 		this.reader = new DosBinaryFileReader(inputStream);
 	}
 	
-	public SortedSet<String> readUsedInstrumentNames() throws IOException {
+	public List<String> readUsedInstrumentNames() throws IOException {
 		readAndValidateHeader();
 		
-		reader.skipBytes(calcOffsetStartInstruments());
+		reader.skipBytes(calcOffsetStartInstrumentNames());
 
-		var instrumentNames = new TreeSet<String>();
+		// Instrument names must have been sorted by Ad Lib, Inc. Instrument Bank File specification
+		var instrumentNames = new ArrayList<String>(instrumentsUsed);
 		for(int i = 0; i < instrumentsTotal; i++) {
 			Optional<String> instrument = readNextInstrumentName();
 			if(instrument.isPresent()) {
@@ -51,7 +52,7 @@ public class AdLibBankFileReader {
 	}
 	
 	private Optional<String> readNextInstrumentName() throws IOException {
-		reader.skipBytes(2); // Not interested in data offset
+		reader.skipBytes(2); // Not interested in instrument definition data
 		boolean isUsed = reader.readBoolean();
 		if(!isUsed) {
 			return Optional.empty();
@@ -60,7 +61,7 @@ public class AdLibBankFileReader {
 		return Optional.of(instrumentName);
 	}
 	
-	private long calcOffsetStartInstruments() {
+	private long calcOffsetStartInstrumentNames() {
 		// Work around fact that inputStream does not have "seek()"
 		return offsetNames - readHeaderBytes;
 	}
@@ -74,7 +75,7 @@ public class AdLibBankFileReader {
 		int minorVersion = reader.readUnsignedByte();
 		this.readHeaderBytes++;
 
-		String signature = reader.readAsciiString(6);
+		final String signature = reader.readAsciiString(6);
 		this.readHeaderBytes += 6;
 	
 		this.instrumentsUsed = reader.readWord();
@@ -86,9 +87,14 @@ public class AdLibBankFileReader {
 		this.offsetNames = reader.readDoubleWord();
 		this.readHeaderBytes += 4;
 		
-		String version = majorVersion + "." + minorVersion;
+		// Validate header
+		final String version = majorVersion + "." + minorVersion;
 		if(!version.equals("1.0") || !signature.equals("ADLIB-")) {
 			throw new IOException("The file does not appear to be a valid Ad Lib Instrument Bank (BNK) file.");
 		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		System.out.println(readInstrumentNamesFrom("c:\\dos\\temp\\standard.bnk"));
 	}
 }

@@ -105,9 +105,9 @@ mvn clean compile test package
 
 ## USAGE
 
-After building and packaging, you should be able run the packaged project:
+(Examples are shown for the Windows operating system).
 
-*Windows:*
+After building and packaging, you can convert a song text file to a Ad Lib ROL file by specifying the input and output paths:
 
 ```
 java -jar target\adlib-rol-stepsequencer-java-0.0.1-SNAPSHOT-jar-with-dependencies.jar sample.mss.txt sample.rol
@@ -127,9 +127,30 @@ Writing ROL file to "sample.rol"...
 Successfully generated ROL file with 1599 event(s).
 ```
 
-The generated file should play back in any program that can playback Ad Lib ROL files (i.e. Ad Lib Visual Composer running on the DOSBox emulator, but also Foobar2000 with the AdPlug plugin installed).
+The generated file should play back in any program that is compatible with Ad Lib ROL files (i.e. Ad Lib Visual Composer running on the DOSBox emulator, but also Foobar2000 with the AdPlug plugin installed).
 
 Note that an instrument bank (usually called STANDARD.BNK) will be required for playback. In typical Ad Lib, Inc. style, a separate commercial product, called Ad Lib Instrument Maker, would have been needed to create and edit those instruments, Visual Composer can not do this. Since I'm not the author of any bank file, I can't add one to this repository under the open source license. It was a standard practice to share instrument banks on Bulletin Board Systems back in the day, so it should be easy to find one on the web. Feel free to poke me if you need a bank file.
+
+I provided an utility that can display the instruments stored in a Ad Lib BNK instrument bank file.
+
+```
+java -jar target\adlib-rol-stepsequencer-java-0.0.1-SNAPSHOT-jar-with-dependencies.jar --bank C:\DOS\ADLIB\STANDARD.BNK
+```
+
+Sample output:
+
+```
+adlib-rol-stepsequencer (powered by: Eclipse OpenJ9 VM 11.0.9+11)
+
+Instruments stored in "C:\DOS\ADLIB\STANDARD.BNK":
+
+1) ACCORDN
+2) BAGPIPE1
+3) BAGPIPE2
+...
+```
+
+If you encounter problems, you can add the optional `--debug` argument to put the program in debug mode. This may help during troubleshooting.
 
 ## SPECIAL THANKS
 

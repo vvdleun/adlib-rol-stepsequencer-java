@@ -1,52 +1,113 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer;
 
 import java.io.IOException;
+import java.util.List;
 
+import nl.vincentvanderleun.adlib.rol.stepsequencer.application.ArgumentParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.application.ParsedArguments;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.application.State;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.SongCompiler;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.SongParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.ParsedSong;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.renderer.OutputFileRenderer;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.util.AdLibBankFileReader;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
     	String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
     	
     	System.out.println("adlib-rol-stepsequencer (powered by: " + jvmString + ")\n");
-    	
-    	if(args.length != 2) {
-    		System.out.println("Error: two paths must be specified on the command-line: one for the source file and one for the destination file.\n");
-    		System.out.println("Beware that the specified destination file will be overwritten.");
-    		System.exit(1);;
-    	}
-    	
-    	String sourceFile = args[0];
-    	String destFile = args[1];
 
-    	if(sourceFile.equals(destFile)) {
-    		System.out.println("Error: the source file must be different than the destination file.");
-    		System.exit(1);;
-    	}
-
+    	ParsedArguments parsedArguments = ArgumentParser.parseArguments(args);
+    	
     	try {
-    		convertToAdLibROlFile(sourceFile, destFile);
+	    	switch(parsedArguments.getState()) {
+	    		case CONVERT_SONG:
+	    			convertSongToAdLibRolFile(parsedArguments.getInputPath(), parsedArguments.getOutputPath());
+	    			break;
+	    		case SHOW_BANK_INSTRUMENTS:
+	    			showBankFileInstruments(parsedArguments.getBankFilePath());
+	    			break;
+	    		case SHOW_HELP:
+	    			displayHelp();
+	    			break;
+	    		case ERROR:
+	    			displayError(parsedArguments.getErrorMessage());
+	    			break;
+	    		default:
+	    			throw new IllegalStateException("Internal error: unknown state: \"" + parsedArguments.getState() + "\"");
+			}
+	    	
+	    	System.exit(parsedArguments.getState() == State.ERROR ? 1 : 0);
+    	} catch(ParseException ex) {
+    		System.out.println("Error occurred during parsing of input file: " + ex.getMessage());
+    		if(parsedArguments.getDebugMode()) {
+    			throw ex;
+    		}
+	    	System.exit(1);
+    	} catch(CompileException ex) {
+    		System.out.println("Error occurred during conversion of input file: " + ex.getMessage());
+    		if(parsedArguments.getDebugMode()) {
+    			throw ex;
+    		}
+	    	System.exit(1);
+    	} catch(IOException ex) {
+    		System.out.println("Error occurred during reading or writing of file: " + ex.getMessage());
+    		if(parsedArguments.getDebugMode()) {
+    			throw ex;
+    		}
+	    	System.exit(1);
     	} catch(Exception ex) {
-    		System.out.println("ERROR: " + ex.getMessage());
-    		throw ex;
+    		// Internal error
+   			throw ex;
     	}
     }
+
+    private static void displayError(String msg) {
+		System.out.println("ERROR: " + msg + "\n");
+		displayHelp();    	
+    }
     
-    private static void convertToAdLibROlFile(String inputFilePath, String outputFilePath) throws IOException {
-    	System.out.println("Parsing \"" + inputFilePath + "\"...\n");
+    private static void displayHelp() {
+		System.out.println("Usage:");
+		System.out.println("- To convert a song:");
+		System.out.println("     [path input song text file] [path output file]\n");
+		System.out.println("- To list instruments stored in an external AdLib BNK file:");
+		System.out.println("	--bank [path bank file]\n");
+		System.out.println("- To show this help screen");
+		System.out.println("	--help");
+		System.out.println("\nYou can optionally add a --debug parameter that puts the program in debug mode and may help during troubleshooting.");
+    }
+    
+    private static void convertSongToAdLibRolFile(String sourceFile, String destFile) throws Exception {
+    	if(sourceFile.equals(destFile)) {
+    		throw new IOException("Error: the source file must be different than the destination file.");
+    	}
+
+    	System.out.println("Parsing \"" + sourceFile + "\"...");
     	
- 		ParsedSong parsedSong = SongParser.parse(inputFilePath);
+ 		ParsedSong parsedSong = SongParser.parse(sourceFile);
 
     	System.out.println("Converting events...");
 
 		CompiledSong compiledSong = SongCompiler.compile(parsedSong);
 
-    	System.out.println("\nWriting ROL file to \"" + outputFilePath + "\"...\n");
+    	System.out.println("Writing ROL file to \"" + destFile + "\"...\n");
 		
-		OutputFileRenderer.renderAdLibRolFile(compiledSong, outputFilePath);
+		OutputFileRenderer.renderAdLibRolFile(compiledSong, destFile);
+    }
+    
+    private static void showBankFileInstruments(String bankFile) throws IOException {
+    	List<String> instruments = AdLibBankFileReader.readInstrumentNamesFrom(bankFile);
+    	
+    	System.out.println("Instruments stored in \"" + bankFile + "\":\n");
+    	
+    	int index = 0;
+    	for(String instrument : instruments) {
+    		System.out.println(++index + ") " + instrument);
+    	}
     }
 }

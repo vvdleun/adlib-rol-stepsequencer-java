@@ -10,7 +10,8 @@ import java.util.Arrays;
 
 public class DosBinaryFileReader {
 	private final static Charset DOS_CHARSET = StandardCharsets.US_ASCII;
-
+	private final static int MAX_BLOCK_SIZE = 1024 * 16;
+	
 	private final InputStream inputStream;
 	
 	public DosBinaryFileReader(InputStream inputStream) {
@@ -81,20 +82,23 @@ public class DosBinaryFileReader {
 	}
 	
 	public void skipBytes(long value) throws IOException {
-		// Work around issues in InputStream.skip() method that does not always skip the requested 
-		// amount of bytes. 
+		// Work around issues in InputStream.skip() method that does not always skip the 
+		// exact requested amount of bytes. 
 		long bytesRead = 0;
+
+		byte[] bytes = new byte[0];
 		
 		while(bytesRead < value) {
-			long diff = value - bytesRead;
-			int block = diff > 1024 ? 1024 : (int)diff;
+			final long diff = value - bytesRead;
+			final int block = diff > MAX_BLOCK_SIZE ? MAX_BLOCK_SIZE : (int)diff;
 			
-			byte[] bytes = new byte[block];
-			inputStream.read(bytes);
+			if(bytes.length != block) {
+				bytes = new byte[block];
+			}
+			readBytes(bytes);
 			
 			bytesRead += block;
 		}
-		
 	}
 	
 	private void readBytes(byte[] bytes) throws IOException {

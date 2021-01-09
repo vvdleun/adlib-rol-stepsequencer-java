@@ -47,22 +47,26 @@ public class CompiledSongToRolFileConverter {
 			int lastNoteTick = 0;
 			for(ChannelEvents events : channel.getAllEvents()) {
 				if(events.getNote() != null) {
+					final int channelNumber = events.getChannel();
+
 					// A ROL file requires silence events (note events with note=0) between
 					// events that are not on a subsequent tick. A compiled song only contains
 					// note events and does not take silence into account.
 					if(events.getTick() > lastNoteTick) {
 						// Add silence
 						int restDuration = events.getTick() - lastNoteTick;
-						builder.addNoteEvent(events.getChannel(), SILENCE, restDuration);
+						builder.addNoteEvent(channelNumber, SILENCE, restDuration);
 					}
 					
 					final int noteNumber = convertCompiledNoteEvent(events.getNote());
+					final int duration = events.getNote().getDuration();
+					
+					builder.addNoteEvent(channelNumber, noteNumber, duration);
 
-					builder.addNoteEvent(events.getChannel(), noteNumber, events.getNote().getDuration());
-					lastNoteTick = events.getTick() + events.getNote().getDuration();
+					lastNoteTick = events.getTick() + duration;
 				}
 
-				// The other events map nicely between the compiled song and ROL format events
+				// The other channel events map nicely between the compiled song and ROL format events
 				
 				if(events.getInstrument() != null) {
 					builder.addTimbreEvent(events.getChannel(), events.getTick(), events.getInstrument());
