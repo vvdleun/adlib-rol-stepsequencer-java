@@ -90,11 +90,7 @@ public class AdLibBankFileReader {
 		// Validate header
 		final String version = majorVersion + "." + minorVersion;
 		if(!version.equals("1.0") || !signature.equals("ADLIB-")) {
-			throw new IOException("The file does not appear to be a valid Ad Lib Instrument Bank (BNK) file.");
+			throw new IOException("The file does not appear to be a valid Ad Lib Instrument Bank (BNK) version 1.0 file.");
 		}
-	}
-	
-	public static void main(String[] args) throws Exception {
-		System.out.println(readInstrumentNamesFrom("c:\\dos\\temp\\standard.bnk"));
 	}
 }

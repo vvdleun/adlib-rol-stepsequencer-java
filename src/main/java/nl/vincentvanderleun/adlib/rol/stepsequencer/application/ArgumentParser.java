@@ -75,9 +75,9 @@ public class ArgumentParser {
 	}
 	
 	private String parseNext(int argIndex) {
-		if (argIndex > args.size()) {
+		if (++argIndex >= args.size()) {
 			return null;
 		}
-		return args.get(argIndex + 1);
+		return args.get(argIndex);
 	}
 }
