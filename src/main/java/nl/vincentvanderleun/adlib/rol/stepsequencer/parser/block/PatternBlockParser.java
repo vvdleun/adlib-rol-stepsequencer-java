@@ -74,18 +74,11 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 				final String inputToken = scanner.next();
 
 				Event event = parseNextEvent(inputToken, scanner);
-				
-				switch(event.getEventType()) {
-					case FUNCTION_CALL:
-					case HOLD:
-					case NOTE:
-					case PITCH:
-					case REST:
-						events.add(event);
-						break;
-					default:
-						throw new ParseException("Unknown token \"" + inputToken + "\" at line " + lineParser.getLineNumber());
+				if(event == null) {
+					throw new ParseException("Unknown token \"" + inputToken + "\" at line " + lineParser.getLineNumber());
 				}
+				
+				events.add(event);
 			}
 		});
 

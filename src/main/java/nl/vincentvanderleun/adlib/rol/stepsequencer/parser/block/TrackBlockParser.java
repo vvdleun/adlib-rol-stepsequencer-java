@@ -53,11 +53,9 @@ public class TrackBlockParser extends BlockParser<Track> {
 	}
 
 	private Event parseNextEvent(String inputToken, Scanner scanner, long lineNumber) throws ParseException {
-		FunctionParser functionParser = new FunctionParser(scanner);
-		
-		ParsableFunction function = functionParser.parse(inputToken, lineNumber);
-		if(function != null) {
-			return parseFunctionCall(function, lineNumber);
+		Event event = parseFunctionCall(inputToken, scanner, lineNumber);
+		if(event != null) {
+			return event;
 		}
 		
 		return parsePlayPatternEvent(inputToken); 
@@ -83,7 +81,14 @@ public class TrackBlockParser extends BlockParser<Track> {
 		return playPattern;
 	}
 	
-	private FunctionCall parseFunctionCall(ParsableFunction function, long lineNumber) throws ParseException {
+	private FunctionCall parseFunctionCall(String inputToken, Scanner scanner, long lineNumber) throws ParseException {
+		FunctionParser functionParser = new FunctionParser(scanner);
+
+		ParsableFunction function = functionParser.parse(inputToken, lineNumber);
+		if(function == null) {
+			return null;
+		}
+
 		TrackFunctionParser trackFunctionParser = null;
 
 		switch(function.getName()) {
