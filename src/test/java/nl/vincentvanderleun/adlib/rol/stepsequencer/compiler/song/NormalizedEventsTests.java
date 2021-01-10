@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.NormalizedEventMap;
-
 public class NormalizedEventsTests {
 	private NormalizedEventMap<Integer> normalizedEventMap = new NormalizedEventMap<>();
 	

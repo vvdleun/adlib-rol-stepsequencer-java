@@ -1,7 +1,6 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
@@ -105,28 +104,5 @@ public class StructureParser {
 
 	public boolean isStartList(String line) {
 		return line.startsWith("-");
-	}
-
-	// TODO either remove, or re-implement this function
-	public boolean isFunction(String inputToken) {
-		return parseFunction(inputToken) != null;
-	}
-
-	public BlockFunction parseFunction(String inputToken) {
-		int openParamsIndex = inputToken.indexOf("(");
-		if(openParamsIndex <= 0 || inputToken.indexOf("(", openParamsIndex + 1) >= 0) {
-			return null;
-		}
-
-		boolean endsWithClose = inputToken.endsWith(")");
-		if(!endsWithClose || inputToken.lastIndexOf(")", inputToken.length() - 2) >= 0) {
-			return null;
-		}
-
-		String functionName = inputToken.substring(0, openParamsIndex);
-		
-		String[] arguments = inputToken.substring(openParamsIndex + 1, inputToken.length() - 1).split(Pattern.quote(","));
-
-		return new BlockFunction(functionName, Arrays.asList(arguments));
 	}
 }

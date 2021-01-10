@@ -49,7 +49,7 @@ public class TrackCompiler {
 		var functionCalls = new ArrayList<ContextAwareFunctionCall>();
 		
 		for(Event event : parsedSong.getTrack().getEvents()) {
-			switch(event.getEventType() ) {
+			switch(event.getEventType()) {
 				case PLAY_PATTERN:
 					compilePlayPattern((PlayPattern)event, track);
 					break;
@@ -81,19 +81,19 @@ public class TrackCompiler {
 			patternCompiler.compile(pattern, context);
 		}
 	}
-	
+
 	private void compileFunctionCall(Track track, int tick, FunctionCall functionCall) throws CompileException {
-		switch(functionCall.getFunctionName()) {
-			case "fade-in":
+		switch(functionCall.getFunction().getFunctionType()) {
+			case FADE_IN:
 				FadeInFunction fadeInFunction = new FadeInFunction();
-				fadeInFunction.execute(track, tick, functionCall.getArguments());
+				fadeInFunction.execute(track, tick, functionCall.getFunction().getArguments());
 				break;
-			case "fade-out":
+			case FADE_OUT:
 				FadeOutFunction fadeOutFunction = new FadeOutFunction();
-				fadeOutFunction.execute(track, tick, functionCall.getArguments());
+				fadeOutFunction.execute(track, tick, functionCall.getFunction().getArguments());
 				break;
 			default:
-				throw new CompileException("Unknown function: " + functionCall.getFunctionName());
+				throw new CompileException("Unknown function: " + functionCall.getFunction().getFunctionType());
 		}
 	}
 

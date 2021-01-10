@@ -56,7 +56,8 @@ public class App {
     }
 
     private static void printHeader() {
-    	String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
+    	final String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
+
     	System.out.println("adlib-rol-stepsequencer (powered by: " + jvmString + ")\n");
     }
     

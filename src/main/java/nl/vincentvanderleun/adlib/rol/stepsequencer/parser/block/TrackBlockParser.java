@@ -2,23 +2,26 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.FunctionParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.ParsableFunction;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.ParsedFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.EventType;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.FunctionCall;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.PlayPattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.function.FadeInParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.function.FadeOutParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.function.TrackFunction;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.function.TrackFunctionParser;
 
-import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.FunctionArgumentHelper.checkArgumentCount;
 import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser.parseInteger;
 
 public class TrackBlockParser extends BlockParser<Track> {
@@ -39,19 +42,22 @@ public class TrackBlockParser extends BlockParser<Track> {
 			while(scanner.hasNext()) {
 				final String inputToken = scanner.next();
 
-				final EventType eventType = determineEventType(inputToken);
+				final EventTypeCheckResult examineResult = determineEventType(inputToken, scanner, line.getLineNumber());
 
-				switch(eventType) {
+				switch(examineResult.getEventType()) {
 					case PLAY_PATTERN:
 						PlayPattern pattern = parsePlayPatternEvent(inputToken);
 						events.add(pattern);
 						break;
 					case FUNCTION_CALL:
-						FunctionCall functionCall = parseFunctionCall(inputToken, line.getLineNumber());
+						FunctionCall functionCall = parseFunctionCall(examineResult.getFunction(), line.getLineNumber());
 						events.add(functionCall);
 						break;
 					default:
-						throw new IllegalStateException("Track token not supported by compiler: " + eventType);
+						throw new IllegalStateException("Unsupported event \""
+								+ examineResult.getEventType()
+								+ "\" encountered at line "
+								+ line.getLineNumber());
 				}
 			}
 		});
@@ -61,7 +67,18 @@ public class TrackBlockParser extends BlockParser<Track> {
 		
 		return track;
 	}
-	
+
+	private EventTypeCheckResult determineEventType(String inputToken, Scanner scanner, long lineNumber) throws ParseException {
+		FunctionParser functionParser = new FunctionParser(scanner);
+		
+		ParsableFunction function = functionParser.parse(inputToken, lineNumber);
+		if(function != null) {
+			return new EventTypeCheckResult(EventType.FUNCTION_CALL, function);
+		}
+		
+		return new EventTypeCheckResult(EventType.PLAY_PATTERN, null); 
+	}
+
 	private PlayPattern parsePlayPatternEvent(String inputToken) throws ParseException {
 		// TODO validate pattern name
 		int repeatTimes = 1;
@@ -81,46 +98,41 @@ public class TrackBlockParser extends BlockParser<Track> {
 
 		return playPattern;
 	}
+	
+	private FunctionCall parseFunctionCall(ParsableFunction function, long lineNumber) throws ParseException {
+		TrackFunctionParser trackFunctionParser = null;
 
-	private FunctionCall parseFunctionCall(String inputToken, long lineNumber) throws ParseException {
-		final int startArgumentsIndex = inputToken.indexOf('(');
-		final String functionName = inputToken.substring(0, startArgumentsIndex);
-		final String argumentsString = inputToken.substring(startArgumentsIndex + 1, inputToken.length() - 1);
-		
-		final List<String> arguments = Arrays.asList(argumentsString.split(Pattern.quote(",")));
-		
-		FunctionCall function;
-		switch(functionName) {
+		switch(function.getName()) {
 			case "fade-in":
+				trackFunctionParser = new FadeInParser(function, header, lineNumber);
+				break;
 			case "fade-out":
-				function = parseFadeInOrOutFunction(functionName, arguments, lineNumber);
+				trackFunctionParser = new FadeOutParser(function, header, lineNumber);
 				break;
 			default:
-				throw new ParseException("Unknown function \"" + functionName + "\" called at line " + lineNumber);
+				throw new ParseException("Encountered unknown track function \"" + function.getName() + "\" on line " + lineParser.getLineNumber());
 		}
 		
-		return function;
+		TrackFunction trackFunction = trackFunctionParser.parse();
+		
+		return new FunctionCall(trackFunction);
 	}
-	
-	private FunctionCall parseFadeInOrOutFunction(String functionName, List<String> arguments, long lineNumber) throws ParseException {
-		checkArgumentCount(functionName, arguments, 1, lineNumber);
 
-		int durationTicks = ValueParser.parseNoteDuration(
-				arguments.get(0),
-				header.getTicksPerBeat(),
-				header.getBeatsPerMeasure(),
-				lineNumber);
+	private static final class EventTypeCheckResult {
+		private final EventType eventType;
+		private final ParsableFunction function;
 		
-		var parsedArguments = new ArrayList<>();
-		parsedArguments.add(durationTicks);
-		
-		return new FunctionCall(functionName, parsedArguments);
-	}
-	
-	private EventType determineEventType(String inputToken) {
-		if(structureParser.isFunction(inputToken)) {
-			return EventType.FUNCTION_CALL;
+		public EventTypeCheckResult(EventType eventType, ParsableFunction function) {
+			this.eventType = eventType;
+			this.function = function;
 		}
-		return EventType.PLAY_PATTERN;
+		
+		public EventType getEventType() {
+			return eventType;
+		}
+		
+		public ParsableFunction getFunction() {
+			return function;
+		}
 	}
 }

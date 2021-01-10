@@ -57,7 +57,7 @@ public class PatternCompiler {
 				case PITCH:
 					compilePitch(pattern, (Pitch)event, context);
 					break;
-				case FUNCTION:
+				case FUNCTION_CALL:
 					compileFunctionCall(pattern, (FunctionCall)event, context);
 					break;
 				default:
@@ -125,17 +125,17 @@ public class PatternCompiler {
 	}
 
 	private void compileFunctionCall(Pattern pattern, FunctionCall functionCall, CompilerContext context) throws CompileException {
-		switch(functionCall.getFunctionName()) {
-			case "octave":
+		switch(functionCall.getFunction().getFunctionType() ) {
+			case OCTAVE_CHANGE:
 				OctaveChange octaveChange = new OctaveChange();
-				octaveChange.execute(track, context, functionCall.getArguments());
+				octaveChange.execute(track, context, functionCall.getFunction().getArguments());
 				break;
-			case "patch":
+			case PATCH_CHANGE:
 				PatchChange patchChange = new PatchChange(patches);
-				patchChange.execute(track, context, functionCall.getArguments());
+				patchChange.execute(track, context, functionCall.getFunction().getArguments());
 				break;
 			default:
-				throw new CompileException("Unknown function call \"" + functionCall.getFunctionName() 
+				throw new CompileException("Unknown function call \"" + functionCall.getEventType() 
 						+ "\" in pattern \"" + pattern.getName() + "\"");
 		}
 	}

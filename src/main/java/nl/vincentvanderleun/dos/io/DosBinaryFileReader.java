@@ -23,46 +23,57 @@ public class DosBinaryFileReader {
 	}
 
     public short readInt() throws IOException {
-        byte[] bits16 = new byte[2];
-        inputStream.read(bits16);
-        return ByteBuffer.wrap(bits16).order(ByteOrder.LITTLE_ENDIAN).getShort();
+        byte[] signedIntBytes = new byte[2];
+
+        inputStream.read(signedIntBytes);
+        
+        return ByteBuffer.wrap(signedIntBytes).order(ByteOrder.LITTLE_ENDIAN).getShort();
     }
 	
 	public int readUnsignedByte() throws IOException {
-		byte[] bytes = new byte[1];
-		readBytes(bytes);
-		return Byte.toUnsignedInt(bytes[0]);
+		byte[] unsignedByte = new byte[1];
+		
+		readBytes(unsignedByte);
+		
+		return Byte.toUnsignedInt(unsignedByte[0]);
 	}
 
 	public int readWord() throws IOException {
-		byte[] bytes = new byte[2];
-		readBytes(bytes);
-		return (Byte.toUnsignedInt(bytes[1]) << 8) |
-				Byte.toUnsignedInt(bytes[0]);
+		byte[] unsignedIntBytes = new byte[2];
+		
+		readBytes(unsignedIntBytes);
+		
+		return (Byte.toUnsignedInt(unsignedIntBytes[1]) << 8) |
+				Byte.toUnsignedInt(unsignedIntBytes[0]);
 	}
 	
 	public long readDoubleWord() throws IOException {
-		byte[] bytes = new byte[4];
-		readBytes(bytes);
-		return ((long)Byte.toUnsignedInt(bytes[3]) << 24) |
-				(Byte.toUnsignedInt(bytes[2]) << 16) |
-				(Byte.toUnsignedInt(bytes[1]) << 8) |
-				Byte.toUnsignedInt(bytes[0]);
+		byte[] doubleWordBytes = new byte[4];
+		
+		readBytes(doubleWordBytes);
+		
+		return ((long)Byte.toUnsignedInt(doubleWordBytes[3]) << 24) |
+				(Byte.toUnsignedInt(doubleWordBytes[2]) << 16) |
+				(Byte.toUnsignedInt(doubleWordBytes[1]) << 8) |
+				Byte.toUnsignedInt(doubleWordBytes[0]);
 	}
 
     public float readFloat() throws IOException {
         byte[] floatBytes = new byte[4];
+        
         inputStream.read(floatBytes);
+        
         return ByteBuffer.wrap(floatBytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
     }
 	
 	public String readZeroTerminatedAsciiString(int len) throws IOException {
-		byte[] bytes = new byte[len];
-		readBytes(bytes);
+		byte[] stringBytes = new byte[len];
+		
+		readBytes(stringBytes);
 		
 		int zeroByteIndex = -1;
 		for (int i = 0; i < len; i++) {
-			if (bytes[i] == 0) {
+			if (stringBytes[i] == 0) {
 				zeroByteIndex = i;
 				break;
 			}
@@ -72,13 +83,15 @@ public class DosBinaryFileReader {
 			throw new IllegalStateException("No zero byte encountered in zero-terminated string");
 		}
 		
-		return new String(Arrays.copyOf(bytes, zeroByteIndex), DOS_CHARSET);
+		return new String(Arrays.copyOf(stringBytes, zeroByteIndex), DOS_CHARSET);
 	}
 	
 	public String readAsciiString(int len) throws IOException {
-		byte[] bytes = new byte[len];
-		readBytes(bytes);
-		return new String(bytes, DOS_CHARSET);
+		byte[] stringBytes = new byte[len];
+		
+		readBytes(stringBytes);
+		
+		return new String(stringBytes, DOS_CHARSET);
 	}
 	
 	public void skipBytes(long value) throws IOException {
@@ -86,16 +99,16 @@ public class DosBinaryFileReader {
 		// exact requested amount of bytes. 
 		long bytesRead = 0;
 
-		byte[] bytes = new byte[0];
+		byte[] blockBytes = new byte[0];
 		
 		while(bytesRead < value) {
 			final long diff = value - bytesRead;
 			final int block = diff > MAX_BLOCK_SIZE ? MAX_BLOCK_SIZE : (int)diff;
 			
-			if(bytes.length != block) {
-				bytes = new byte[block];
+			if(blockBytes.length != block) {
+				blockBytes = new byte[block];
 			}
-			readBytes(bytes);
+			readBytes(blockBytes);
 			
 			bytesRead += block;
 		}
@@ -103,6 +116,7 @@ public class DosBinaryFileReader {
 	
 	private void readBytes(byte[] bytes) throws IOException {
 		int value = inputStream.read(bytes);
+		
 		if(value < 0) {
 			throw new IOException("Reached EOF");
 		}

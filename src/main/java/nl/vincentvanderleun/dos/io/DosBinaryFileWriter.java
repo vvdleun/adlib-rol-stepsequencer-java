@@ -18,6 +18,7 @@ public class DosBinaryFileWriter {
 
 	public void writeBoolean(boolean value) throws IOException {
 		byte bytes = value ? Byte.MIN_VALUE : 0;
+
 		outputStream.write(bytes);
 	}
 
@@ -27,30 +28,38 @@ public class DosBinaryFileWriter {
 	
     public void writeInt(short value) throws IOException {
 		byte[] bytes = new byte[2];
+
 		bytes[0] = (byte)(value & 0xFF);
 		bytes[1] = (byte)((value >> 8) & 0xFF);
+		
 		outputStream.write(bytes);
     }
 	
 	public void writeUnsignedByte(int value) throws IOException {
 		byte[] bytes = new byte[1];
+
 		bytes[0] = (byte)(value & 0xFF);
+		
 		outputStream.write(bytes);
 	}
 
 	public void writeWord(int value) throws IOException {
 		byte[] bytes = new byte[2];
+
 		bytes[0] = (byte)(value & 0xFF);
 		bytes[1] = (byte)((value >> 8) & 0xFF);
+		
 		outputStream.write(bytes);
 	}
 	
 	public void writeDoubleWord(long value) throws IOException {
 		byte[] bytes = new byte[4];
+
 		bytes[0] = (byte)(value & 0xFF);
 		bytes[1] = (byte)((value >> 8) & 0xFF);
 		bytes[2] = (byte)((value >> 16) & 0xFF);
 		bytes[3] = (byte)((value >> 24) & 0xFF);
+
 		outputStream.write(bytes);
 	}
 
@@ -58,6 +67,7 @@ public class DosBinaryFileWriter {
         byte[] bytes = ByteBuffer.allocate(4)
         		.order(ByteOrder.LITTLE_ENDIAN)
         		.putFloat(value).array();
+
         outputStream.write(bytes);
     }
 	
@@ -75,6 +85,7 @@ public class DosBinaryFileWriter {
 	
 	public void writeAsciiString(String value) throws IOException {
 		byte[] bytes = value.getBytes(DOS_CHARSET);
+
 		outputStream.write(bytes);
 	}
 	
@@ -83,6 +94,7 @@ public class DosBinaryFileWriter {
 		// amount of bytes. This implementation wastes memory though, so only use it on smaller amount 
 		// of bytes.
 		byte[] bytes = new byte[len];
+
 		outputStream.write(bytes);
 	}
 }

@@ -10,8 +10,9 @@ import java.util.function.Supplier;
 
 import nl.vincentvanderleun.adlib.rol.stepsequencer.model.Note;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.BlockFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.FunctionParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.ParsableFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Event;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.FunctionCall;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Hold;
@@ -19,8 +20,11 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.NoteEven
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Pitch;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.Rest;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.function.OctaveChangeParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.function.PatchChangeParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.function.PatternFunction;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern.function.PatternFunctionParser;
 
-import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.FunctionArgumentHelper.checkArgumentCount;
 import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser.parseFloat;
 import static nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParser.parseInteger;
 
@@ -78,7 +82,7 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			while(scanner.hasNext()) {
 				final String inputToken = scanner.next();
 
-				ParseResult parseResult = parseToken(inputToken);
+				ParseResult parseResult = parseNextToken(inputToken, scanner);
 				
 				switch(parseResult.getTokenType()) {
 					case FUNCTION:
@@ -102,7 +106,7 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return pattern;
 	}
 
-	private ParseResult parseToken(String inputToken) throws ParseException {
+	private ParseResult parseNextToken(String inputToken, Scanner scanner) throws ParseException {
 		Event parsedEvent;
 		
 		parsedEvent = parseRest(inputToken);
@@ -120,7 +124,7 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			return new ParseResult(PatternTokenType.PITCH, parsedEvent);
 		}
 
-		parsedEvent = parseFunction(inputToken);
+		parsedEvent = parseFunction(inputToken, scanner);
 		if(parsedEvent != null) {
 			return new ParseResult(PatternTokenType.FUNCTION, parsedEvent);
 		}
@@ -131,7 +135,6 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		}
 
 		return new ParseResult(PatternTokenType.UNKNOWN, null);
-		
 	}
 	
 	private Rest parseRest(String inputToken) throws ParseException {
@@ -214,38 +217,6 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return new Pitch(parsedFloat, duration);
 	}
 
-	private FunctionCall parseFunction(String inputToken) throws ParseException {
-		BlockFunction parsedBlockFunction = structureParser.parseFunction(inputToken);
-		if(parsedBlockFunction == null) {
-			return null;
-		}
-
-		switch(parsedBlockFunction.getName()) {
-			case "patch":
-				return parsePatchFunction(parsedBlockFunction);
-			case "octave":
-				return parseOctaveFunction(parsedBlockFunction);
-			default:
-				throw new ParseException("Encountered unknown command \"" + inputToken + "\" on line " + lineParser.getLineNumber());
-		}
-	}
-	
-	private FunctionCall parsePatchFunction(BlockFunction parsedFunction) throws ParseException {
-		checkArgumentCount(parsedFunction.getName(), parsedFunction.getArguments(), 1, lineParser.getLineNumber());
-
-		String patch = parsedFunction.getArguments().get(0);
-		
-		return new FunctionCall(parsedFunction.getName(), patch);
-	}
-
-	private FunctionCall parseOctaveFunction(BlockFunction parsedFunction) throws ParseException {
-		checkArgumentCount(parsedFunction.getName(), parsedFunction.getArguments(), 1, lineParser.getLineNumber());
-
-		int octave = parseInteger(parsedFunction.getArguments().get(0), lineParser.getLineNumber());
-		
-		return new FunctionCall(parsedFunction.getName(), octave);
-	}
-
 	private int parseDuration(String inputToken) throws ParseException {
 		String[] splitToken = inputToken.split(java.util.regex.Pattern.quote("-"), 2);
 		int duration = parseInteger(splitToken[1], lineParser.getLineNumber());
@@ -253,6 +224,31 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			throw new ParseException("Duration specified in \"" + inputToken + "\" must be 1 or higher at line " + lineParser.getLineNumber());
 		}
 		return duration;
+	}
+
+	private FunctionCall parseFunction(String inputToken, Scanner scanner) throws ParseException {
+		FunctionParser functionParser = new FunctionParser(scanner);
+		
+		ParsableFunction parsableFunction = functionParser.parse(inputToken, lineParser.getLineNumber());
+		if(parsableFunction == null) {
+			return null;
+		}
+
+		PatternFunctionParser patternFunctionParser = null;
+		switch(parsableFunction.getName()) {
+			case "patch":
+				patternFunctionParser = new PatchChangeParser(parsableFunction, lineParser.getLineNumber());
+				break;
+			case "octave":
+				patternFunctionParser = new OctaveChangeParser(parsableFunction, lineParser.getLineNumber());
+				break;
+			default:
+				throw new ParseException("Encountered unknown pattern function \"" + inputToken + "\" on line " + lineParser.getLineNumber());
+		}
+		
+		PatternFunction parsedPatternFunction = patternFunctionParser.parse();
+		
+		return new FunctionCall(parsedPatternFunction);
 	}
 
 	private static final class ParseResult {

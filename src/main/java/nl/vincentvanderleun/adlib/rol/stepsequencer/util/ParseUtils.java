@@ -27,4 +27,5 @@ public class ParseUtils {
 			throw new IllegalArgumentException("Expected boolean value (\"true\", '\"false\", \"1\", \"0\"...)");
 		}
 	}
+
 }

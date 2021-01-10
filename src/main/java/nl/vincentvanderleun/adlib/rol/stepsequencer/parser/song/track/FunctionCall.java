@@ -1,47 +1,16 @@
 package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track;
 
-import java.util.List;
-import java.util.Objects;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.function.TrackFunction;
 
 public class FunctionCall extends Event {
-	private final String functionName;
-	private final List<Object> arguments;
+	private TrackFunction function;
 
-	public FunctionCall(String functionName, List<Object> arguments) {
+	public FunctionCall(TrackFunction function) {
 		super(EventType.FUNCTION_CALL);
-		this.functionName = functionName;
-		this.arguments = arguments;
+		this.function = function;
 	}
 	
-	public String getFunctionName() {
-		return functionName;
+	public TrackFunction getFunction() {
+		return function;
 	}
-	
-	public List<Object> getArguments() {
-		return arguments;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(arguments, functionName);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		FunctionCall other = (FunctionCall) obj;
-		return Objects.equals(arguments, other.arguments) && Objects.equals(functionName, other.functionName);
-	}
-
-	@Override
-	public String toString() {
-		return "FunctionCall [functionName=" + functionName + ", arguments=" + arguments + "]";
-	}
-	
-	
 }

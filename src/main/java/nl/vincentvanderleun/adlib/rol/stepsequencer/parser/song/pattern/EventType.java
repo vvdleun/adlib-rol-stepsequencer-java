@@ -6,7 +6,7 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.pattern;
  * @author Vincent
  */
 public enum EventType {
-	FUNCTION,
+	FUNCTION_CALL,
 	HOLD,
 	NOTE,
 	PITCH,
