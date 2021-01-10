@@ -3,22 +3,22 @@ package nl.vincentvanderleun.adlib.rol.stepsequencer.application;
 import java.util.Arrays;
 import java.util.List;
 
-public class ArgumentParser {
+public class CommandLineParser {
 	private final List<String> args;
 	private boolean debugMode;
 	private String inputFile;
 	private String outputFile;
 	private String bankFile;
 	
-	public static ParsedArguments parseArguments(String[] args) {
-		return new ArgumentParser(args).determineState();
+	public static ParsedCommandLine parseArguments(String[] args) {
+		return new CommandLineParser(args).parse();
 	}
 	
-	private ArgumentParser(String[] args) {
+	private CommandLineParser(String[] args) {
 		this.args = Arrays.asList(args);
 	}
 	
-	public ParsedArguments determineState() {
+	public ParsedCommandLine parse() {
 		// Is mode explicitly set?
 		for(int i = 0; i < args.size(); i++) {
 			final String arg = args.get(i);
@@ -33,13 +33,13 @@ public class ArgumentParser {
 			}
 			
 			if (arg.equals("--help")) {
-				return ParsedArguments.showHelp();
+				return ParsedCommandLine.showHelp();
 			}
 			
 			if (arg.equals("--bank")) {
 				bankFile = parseAt(++i);
 				if(bankFile == null) {
-					return ParsedArguments.error("No bank file specified", false);
+					return ParsedCommandLine.error("No bank file specified", false);
 				}
 				continue;
 			}
@@ -54,24 +54,24 @@ public class ArgumentParser {
 				continue;
 			}
 			
-			return ParsedArguments.error("Unknown argument specified: " + arg, false);
+			return ParsedCommandLine.error("Unknown argument specified: " + arg, false);
 		}
 
 		if(inputFile == null && outputFile == null && bankFile == null) {
-			return ParsedArguments.showHelp();
+			return ParsedCommandLine.showHelp();
 		}
 
 		if(inputFile != null && outputFile == null) {
-			return ParsedArguments.error("No output file specified", false);
+			return ParsedCommandLine.error("No output file specified", false);
 		}
 
 
 		if(inputFile == null && outputFile == null && bankFile != null) {
-			return ParsedArguments.showBankInstruments(bankFile, debugMode);
+			return ParsedCommandLine.showBankInstruments(bankFile, debugMode);
 		}
 		
 		
-		return ParsedArguments.convertSong(inputFile, outputFile, bankFile, debugMode);
+		return ParsedCommandLine.convertSong(inputFile, outputFile, bankFile, debugMode);
 	}
 	
 	private String parseAt(int argIndex) {

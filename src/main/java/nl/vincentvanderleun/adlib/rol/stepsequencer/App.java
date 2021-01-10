@@ -3,9 +3,9 @@
 import java.io.IOException;
 import java.util.List;
 
-import nl.vincentvanderleun.adlib.rol.stepsequencer.application.ArgumentParser;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.application.ParsedArguments;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.application.State;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.application.CommandLineParser;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.application.ParsedCommandLine;
+import nl.vincentvanderleun.adlib.rol.stepsequencer.application.ProgramMode;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.CompileException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.SongCompiler;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.compiler.song.CompiledSong;
@@ -19,36 +19,36 @@ public class App {
     public static void main(String[] args) throws Exception {
     	printHeader();
     	
-    	ParsedArguments parsedArguments = ArgumentParser.parseArguments(args);
+    	ParsedCommandLine parsedOptions = CommandLineParser.parseArguments(args);
     	
     	try {
-	    	switch(parsedArguments.getState()) {
+	    	switch(parsedOptions.getMode()) {
 	    		case CONVERT_SONG:
-	    			convertSongToAdLibRolFile(parsedArguments.getInputPath(), parsedArguments.getOutputPath());
+	    			convertSongToAdLibRolFile(parsedOptions.getInputPath(), parsedOptions.getOutputPath());
 	    			break;
 	    		case SHOW_BANK_INSTRUMENTS:
-	    			showBankFileInstruments(parsedArguments.getBankFilePath());
+	    			showBankFileInstruments(parsedOptions.getBankFilePath());
 	    			break;
 	    		case SHOW_HELP:
 	    			displayHelp();
 	    			break;
 	    		case SHOW_WRONG_USAGE_ERROR:
-	    			displayError(parsedArguments.getErrorMessage());
+	    			displayError(parsedOptions.getErrorMessage());
 	    			break;
 	    		default:
-	    			throw new IllegalStateException("Internal error: unknown state: \"" + parsedArguments.getState() + "\"");
+	    			throw new IllegalStateException("Internal error: unknown mode: \"" + parsedOptions.getMode() + "\"");
 			}
 
-	    	System.exit(parsedArguments.getState() == State.SHOW_WRONG_USAGE_ERROR ? 1 : 0);
+	    	System.exit(parsedOptions.getMode() == ProgramMode.SHOW_WRONG_USAGE_ERROR ? 1 : 0);
     	} catch(ParseException ex) {
     		System.out.println("Error occurred during parsing of input file: " + ex.getMessage());
-    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedArguments.getDebugMode());
+    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedOptions.isDebugMode());
     	} catch(CompileException ex) {
     		System.out.println("Error occurred during conversion of input file: " + ex.getMessage());
-    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedArguments.getDebugMode());
+    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedOptions.isDebugMode());
     	} catch(IOException ex) {
     		System.out.println("Error occurred during reading or writing of file: " + ex.getMessage());
-    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedArguments.getDebugMode());
+    		exitWithErrorCodeOrThrowOnDebugMode(ex, parsedOptions.isDebugMode());
     	} catch(Exception ex) {
     		// Internal error
    			throw ex;
