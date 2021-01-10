@@ -79,7 +79,7 @@ public class PatternCompiler {
 		int channel = 0;
 		for(Voice voice : patch.getVoices()) {
 			// Try to keep ratio of voice intact
-			float value = FloatDiffUtils.changePitchAndKeepRatio(voice.getPitch(), pitchEvent.getPitch());
+			final float value = FloatDiffUtils.changePitchAndKeepRatio(voice.getPitch(), pitchEvent.getPitch());
 			
 			final float previousValue = patchChannels.get(channel).getEventsAtOrBeforeTick(context.tick).getPitch();
 

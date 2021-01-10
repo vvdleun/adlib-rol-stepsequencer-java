@@ -10,10 +10,8 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.ParseException;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.LineParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.FunctionParser;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.ParsableFunction;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.ParsedFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Event;
-import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.EventType;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.FunctionCall;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.PlayPattern;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.track.Track;
@@ -42,23 +40,9 @@ public class TrackBlockParser extends BlockParser<Track> {
 			while(scanner.hasNext()) {
 				final String inputToken = scanner.next();
 
-				final EventTypeCheckResult examineResult = determineEventType(inputToken, scanner, line.getLineNumber());
+				final Event event = parseNextEvent(inputToken, scanner, line.getLineNumber());
 
-				switch(examineResult.getEventType()) {
-					case PLAY_PATTERN:
-						PlayPattern pattern = parsePlayPatternEvent(inputToken);
-						events.add(pattern);
-						break;
-					case FUNCTION_CALL:
-						FunctionCall functionCall = parseFunctionCall(examineResult.getFunction(), line.getLineNumber());
-						events.add(functionCall);
-						break;
-					default:
-						throw new IllegalStateException("Unsupported event \""
-								+ examineResult.getEventType()
-								+ "\" encountered at line "
-								+ line.getLineNumber());
-				}
+				events.add(event);
 			}
 		});
 		
@@ -68,15 +52,15 @@ public class TrackBlockParser extends BlockParser<Track> {
 		return track;
 	}
 
-	private EventTypeCheckResult determineEventType(String inputToken, Scanner scanner, long lineNumber) throws ParseException {
+	private Event parseNextEvent(String inputToken, Scanner scanner, long lineNumber) throws ParseException {
 		FunctionParser functionParser = new FunctionParser(scanner);
 		
 		ParsableFunction function = functionParser.parse(inputToken, lineNumber);
 		if(function != null) {
-			return new EventTypeCheckResult(EventType.FUNCTION_CALL, function);
+			return parseFunctionCall(function, lineNumber);
 		}
 		
-		return new EventTypeCheckResult(EventType.PLAY_PATTERN, null); 
+		return parsePlayPatternEvent(inputToken); 
 	}
 
 	private PlayPattern parsePlayPatternEvent(String inputToken) throws ParseException {
@@ -116,23 +100,5 @@ public class TrackBlockParser extends BlockParser<Track> {
 		TrackFunction trackFunction = trackFunctionParser.parse();
 		
 		return new FunctionCall(trackFunction);
-	}
-
-	private static final class EventTypeCheckResult {
-		private final EventType eventType;
-		private final ParsableFunction function;
-		
-		public EventTypeCheckResult(EventType eventType, ParsableFunction function) {
-			this.eventType = eventType;
-			this.function = function;
-		}
-		
-		public EventType getEventType() {
-			return eventType;
-		}
-		
-		public ParsableFunction getFunction() {
-			return function;
-		}
 	}
 }

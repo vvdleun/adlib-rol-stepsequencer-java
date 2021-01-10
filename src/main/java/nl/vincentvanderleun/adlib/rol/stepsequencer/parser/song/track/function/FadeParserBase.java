@@ -5,7 +5,7 @@ import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.block.impl.ValueParse
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.function.ParsableFunction;
 import nl.vincentvanderleun.adlib.rol.stepsequencer.parser.song.SongHeader;
 
-public class FadeParserBase extends TrackFunctionParser {
+public abstract class FadeParserBase extends TrackFunctionParser {
 	private final SongHeader songHeader;
 	private final TrackFunctionType functionType;
 	

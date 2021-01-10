@@ -33,15 +33,6 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 
 	private final String patternName;
 
-	private enum PatternTokenType {
-		FUNCTION,
-		HOLD,
-		NOTE,
-		PITCH,
-		REST,
-		UNKNOWN
-	}
-
 	static {
 		NOTES.put("C", Note.C);
 		NOTES.put("C#", Note.C_SHARP);
@@ -82,17 +73,16 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 			while(scanner.hasNext()) {
 				final String inputToken = scanner.next();
 
-				ParseResult parseResult = parseNextToken(inputToken, scanner);
+				Event event = parseNextEvent(inputToken, scanner);
 				
-				switch(parseResult.getTokenType()) {
-					case FUNCTION:
+				switch(event.getEventType()) {
+					case FUNCTION_CALL:
 					case HOLD:
 					case NOTE:
 					case PITCH:
 					case REST:
-						events.add(parseResult.getEvent());
+						events.add(event);
 						break;
-					case UNKNOWN:
 					default:
 						throw new ParseException("Unknown token \"" + inputToken + "\" at line " + lineParser.getLineNumber());
 				}
@@ -106,35 +96,38 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		return pattern;
 	}
 
-	private ParseResult parseNextToken(String inputToken, Scanner scanner) throws ParseException {
+	private Event parseNextEvent(String inputToken, Scanner scanner) throws ParseException {
 		Event parsedEvent;
 		
 		parsedEvent = parseRest(inputToken);
 		if(parsedEvent != null) {
-			return new ParseResult(PatternTokenType.REST, parsedEvent);
+			return parsedEvent;
 		} 
 
 		parsedEvent = parseHold(inputToken);
 		if(parsedEvent != null) {
-			return new ParseResult(PatternTokenType.HOLD, parsedEvent);
+			return parsedEvent;
 		}
 
 		parsedEvent = parsePitchEvent(inputToken);
 		if(parsedEvent != null) {
-			return new ParseResult(PatternTokenType.PITCH, parsedEvent);
+			return parsedEvent;
 		}
 
 		parsedEvent = parseFunction(inputToken, scanner);
 		if(parsedEvent != null) {
-			return new ParseResult(PatternTokenType.FUNCTION, parsedEvent);
+			return parsedEvent;
 		}
 	
 		parsedEvent = parseNote(inputToken);
 		if(parsedEvent != null) {
-			return new ParseResult(PatternTokenType.NOTE, parsedEvent);
+			return parsedEvent;
 		}
 
-		return new ParseResult(PatternTokenType.UNKNOWN, null);
+		throw new ParseException("Unknown event \""
+					+ inputToken
+					+ "\" encountered at line "
+					+ lineParser.getLineNumber());
 	}
 	
 	private Rest parseRest(String inputToken) throws ParseException {
@@ -249,23 +242,5 @@ public class PatternBlockParser extends BlockParser<Pattern> {
 		PatternFunction parsedPatternFunction = patternFunctionParser.parse();
 		
 		return new FunctionCall(parsedPatternFunction);
-	}
-
-	private static final class ParseResult {
-		private final PatternTokenType tokenType;
-		private final Event event;
-		
-		public ParseResult(PatternTokenType tokenType, Event event) {
-			this.tokenType = tokenType;
-			this.event = event;
-		}
-		
-		public PatternTokenType getTokenType() {
-			return tokenType;
-		}
-		
-		public Event getEvent() {
-			return event;
-		}
 	}
 }
