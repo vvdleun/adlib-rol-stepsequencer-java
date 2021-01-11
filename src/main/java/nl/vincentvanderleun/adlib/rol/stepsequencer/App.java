@@ -56,9 +56,20 @@ public class App {
     }
 
     private static void printHeader() {
-    	final String jvmString = System.getProperty("java.vm.name") + " " + System.getProperty("java.runtime.version");
+    	final String jvmName = System.getProperty("java.vm.name");
+    	final String jvmVersion = System.getProperty("java.vm.version");
 
-    	System.out.println("adlib-rol-stepsequencer (powered by: " + jvmString + ")\n");
+    	System.out.print("adlib-rol-stepsequencer");
+    	if(jvmName != null) {
+    		System.out.print(" (powered by: ");
+    		System.out.print(jvmName);
+    		if(jvmVersion != null) {
+    			System.out.print(" version ");
+    			System.out.print(jvmVersion);
+    		}
+    		System.out.print(")");
+    	}
+    	System.out.println("\n");
     }
     
     private static void exitWithErrorCodeOrThrowOnDebugMode(Exception ex, boolean debugMode) throws Exception {
